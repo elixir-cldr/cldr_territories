@@ -173,9 +173,9 @@ defmodule Cldr.Territory do
   end
 
 
-  @parent (for {k, _v} <- Cldr.Config.territory_containment(), do: k)
+  @parents (for {k, _v} <- Cldr.Config.territory_containment(), do: k)
   @doc """
-  Lists territory subdivison for the given territory code.
+  Lists children(s) for the given territory code.
   Returns `{:ok, list}` if successful, otherwise `{:error, reason}`.
 
   * `locale` is any configured locale. See `Cldr.known_locales()`. The default
@@ -183,14 +183,14 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.contains(:EU)
+      iex> Cldr.Territory.children(:EU)
       {:ok,
        [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE,
         :IT, :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]}
   """
-  @spec contains(atom) :: {:ok, list(atom)} | {:error, term()}
-  def contains(territory_code) do
-    @parent
+  @spec children(atom) :: {:ok, list(atom)} | {:error, term()}
+  def children(territory_code) do
+    @parents
     |> Enum.member?(territory_code)
     |> case do
          true  -> {:ok, Cldr.Config.territory_containment()[territory_code]}
@@ -199,25 +199,46 @@ defmodule Cldr.Territory do
   end
 
   @doc """
-  The same as `contains/1`, but raises an error if it fails.
+  The same as `children/1`, but raises an error if it fails.
 
   * `locale` is any configured locale. See `Cldr.known_locales()`. The default
     is `locale: Cldr.get_current_locale()`
 
   ## Example
 
-      iex> Cldr.Territory.contains!(:EU)
+      iex> Cldr.Territory.children!(:EU)
       [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE, :IT,
        :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]
   """
-  @spec contains!(atom) :: list(atom) | term()
-  def contains!(territory_code) do
-    case contains(territory_code) do
+  @spec children!(atom) :: list(atom) | term()
+  def children!(territory_code) do
+    case children(territory_code) do
       {:ok, result}    -> result
       {:error, reason} -> raise reason
     end
   end
 
+  @doc """
+  Checks if a parant territory relative to the child territory.
+  Returns `true` if successful, otherwise `false`.
+
+  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
+    is `locale: Cldr.get_current_locale()`
+
+  ## Example
+
+      iex> Cldr.Territory.contains?(:EU, :DK)
+      true
+  """
+  @spec contains?(atom, atom) :: true | false
+  def contains?(parent, children) do
+    @parents
+    |> Enum.member?(parent)
+    |> case do
+         true  -> Enum.member?(Cldr.Config.territory_containment()[parent], children)
+         false -> false
+       end
+  end
 
   @doc """
   Maps territory info for the given territory code.
