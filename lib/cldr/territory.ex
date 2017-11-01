@@ -23,6 +23,9 @@ defmodule Cldr.Territory do
   """
   @spec available_territories(String.t | LanguageTag.t) :: list(atom)
   def available_territories(locale \\ Cldr.get_current_locale())
+  def available_territories(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
+    available_territories(cldr_locale_name)
+  end
 
   @doc """
   Returns a map of all knwon territories in a given locale.
@@ -51,6 +54,9 @@ defmodule Cldr.Territory do
   """
   @spec known_territories(String.t | LanguageTag.t) :: map
   def known_territories(locale \\ Cldr.get_current_locale())
+  def known_territories(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
+    available_territories(cldr_locale_name)
+  end
 
 
   @doc """
@@ -70,6 +76,10 @@ defmodule Cldr.Territory do
   """
   @spec from_territory_code(atom, String.t | LanguageTag.t) :: {:ok, String.t} | {:error, term}
   def from_territory_code(territory_code, locale \\ Cldr.get_current_locale())
+  def from_territory_code(territory_code, %LanguageTag{cldr_locale_name: cldr_locale_name}) do
+    from_territory_code(territory_code, cldr_locale_name)
+  end
+
 
   @doc """
   Localized string for the given territory code.
@@ -89,6 +99,15 @@ defmodule Cldr.Territory do
   """
   @spec from_territory_code!(atom, String.t | LanguageTag.t) :: String.t
   def from_territory_code!(territory_code, locale \\ Cldr.get_current_locale())
+  def from_territory_code!(territory_code, %LanguageTag{cldr_locale_name: cldr_locale_name}) do
+    from_territory_code!(territory_code, cldr_locale_name)
+  end
+  def from_territory_code!(territory_code, locale_name) do
+    case from_territory_code(territory_code, locale_name) do
+      {:ok, result}   -> result
+      {:error, error} -> raise error
+    end
+  end
 
   @doc """
   Translate a localized string from one locale to another.
@@ -107,6 +126,9 @@ defmodule Cldr.Territory do
   """
   @spec translate_territory(String.t, String.t, String.t | LanguageTag.t) :: String.t
   def translate_territory(localized_string, from_locale, to_locale \\ Cldr.get_current_locale())
+  def translate_territory(localized_string, from_locale, %LanguageTag{cldr_locale_name: cldr_locale_name}) do
+    translate_territory(localized_string, from_locale, cldr_locale_name)
+  end
 
   @doc """
   The same as `translate_territory/3`, but raises an error if it fails.
@@ -124,7 +146,15 @@ defmodule Cldr.Territory do
   """
   @spec translate_territory(String.t, String.t, String.t | LanguageTag.t) :: String.t
   def translate_territory!(localized_string, from_locale, to_locale \\ Cldr.get_current_locale())
-
+  def translate_territory!(localized_string, from_locale, %LanguageTag{cldr_locale_name: cldr_locale_name}) do
+    translate_territory!(localized_string, from_locale, cldr_locale_name)
+  end
+  def translate_territory!(localized_string, locale_from, locale_name) do
+    case translate_territory(localized_string, locale_from, locale_name) do
+      {:ok, result}   -> result
+      {:error, error} -> raise error
+    end
+  end
 
   @children List.flatten(for {_k, v} <- Cldr.Config.territory_containment(), do: v)
   @doc """
@@ -310,15 +340,15 @@ defmodule Cldr.Territory do
   for locale_name <- Cldr.Config.known_locales() do
     territories = locale_name |> Cldr.Config.get_locale() |> Map.get(:territories)
 
-    def available_territories(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
+    def available_territories(unquote(locale_name)) do
       unquote(Map.keys territories)
     end
 
-    def known_territories(%LanguageTag{cldr_locale_name: unquote(locale_name)}) do
+    def known_territories(unquote(locale_name)) do
       unquote(Macro.escape(territories))
     end
 
-    def from_territory_code(territory_code, unquote(locale_name)) when is_binary(unquote(locale_name)) do
+    def from_territory_code(territory_code, unquote(locale_name)) do
       unquote(locale_name)
       |> Cldr.validate_locale()
       |> case do
@@ -326,30 +356,8 @@ defmodule Cldr.Territory do
            error      -> error
          end
     end
-    def from_territory_code(territory_code, %LanguageTag{cldr_locale_name: unquote(locale_name)}) do
-      territory_code
-      |> from_territory_code(unquote(locale_name))
-    end
 
-    def from_territory_code!(territory_code, unquote(locale_name)) when is_binary(unquote(locale_name)) do
-      case from_territory_code(territory_code, unquote(locale_name)) do
-        {:ok, result}   -> result
-        {:error, error} -> raise error
-      end
-    end
-    def from_territory_code!(territory_code, %LanguageTag{cldr_locale_name: unquote(locale_name)}) do
-      Map.get(unquote(Macro.escape(territories)), territory_code)
-      case from_territory_code(territory_code, unquote(locale_name)) do
-        {:ok, result}   -> result
-        {:error, error} -> raise error
-      end
-    end
-
-    def translate_territory(localized_string, locale_from, %LanguageTag{cldr_locale_name: unquote(locale_name)}) do
-      localized_string
-      |> translate_territory(locale_from, unquote(locale_name))
-    end
-    def translate_territory(localized_string, locale_from, unquote(locale_name)) when is_binary(unquote(locale_name)) do
+    def translate_territory(localized_string, locale_from, unquote(locale_name)) do
       unquote(locale_name)
       |> Cldr.validate_locale()
       |> case do
@@ -373,20 +381,6 @@ defmodule Cldr.Territory do
                 end
          end
     end
-
-    def translate_territory!(localized_string, locale_from, unquote(locale_name)) when is_binary(unquote(locale_name)) do
-      case translate_territory(localized_string, locale_from, unquote(locale_name)) do
-        {:ok, result}   -> result
-        {:error, error} -> raise error
-      end
-    end
-    def translate_territory!(localized_string, locale_from, %LanguageTag{cldr_locale_name: unquote(locale_name)}) do
-      case translate_territory(localized_string, locale_from, unquote(locale_name)) do
-        {:ok, result}   -> result
-        {:error, error} -> raise error
-      end
-    end
-
   end
 
 end
