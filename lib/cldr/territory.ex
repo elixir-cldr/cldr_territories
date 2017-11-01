@@ -76,6 +76,11 @@ defmodule Cldr.Territory do
   """
   @spec from_territory_code(atom, String.t | LanguageTag.t) :: {:ok, String.t} | {:error, term}
   def from_territory_code(territory_code, locale \\ Cldr.get_current_locale())
+  def from_territory_code(territory_code, locale) do
+    territory_code
+    |> atomize
+    |> from_territory_code(locale)
+  end
   def from_territory_code(territory_code, %LanguageTag{cldr_locale_name: cldr_locale_name}) do
     from_territory_code(territory_code, cldr_locale_name)
   end
@@ -97,7 +102,7 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.from_territory_code!(:GB, "pt")
       "Reino Unido"
   """
-  @spec from_territory_code!(atom, String.t | LanguageTag.t) :: String.t
+  @spec from_territory_code!(atom, String.t | LanguageTag.t) :: String.t | term
   def from_territory_code!(territory_code, locale \\ Cldr.get_current_locale())
   def from_territory_code!(territory_code, %LanguageTag{cldr_locale_name: cldr_locale_name}) do
     from_territory_code!(territory_code, cldr_locale_name)
@@ -191,8 +196,8 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.parent!(:UN)
-      [:"001-status-grouping"]
+      iex> Cldr.Territory.parent!(:GB)
+      [:"154", :EU, :UN]
   """
   @spec parent!(atom) :: list(atom) | term()
   def parent!(territory_code) do
@@ -249,7 +254,7 @@ defmodule Cldr.Territory do
   end
 
   @doc """
-  Checks if a parant territory relative to the child territory.
+  Checks relationship between two territories, where the first argument is the `parent` and second the `child`.
   Returns `true` if successful, otherwise `false`.
 
   * `locale` is any configured locale. See `Cldr.known_locales()`. The default
@@ -261,11 +266,11 @@ defmodule Cldr.Territory do
       true
   """
   @spec contains?(atom, atom) :: true | false
-  def contains?(parent, children) do
+  def contains?(parent, child) do
     @parents
     |> Enum.member?(parent)
     |> case do
-         true  -> Enum.member?(Cldr.Config.territory_containment()[parent], children)
+         true  -> Enum.member?(Cldr.Config.territory_containment()[parent], child)
          false -> false
        end
   end
@@ -277,30 +282,36 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.info(:GB)
-      {:ok,
-       %{gdp: "2788000000000",
-         language_population: %{bn: %{population_percent: "0.67"},
-           cy: %{official_status: "official_regional", population_percent: "0.77"},
-           de: %{population_percent: "6"}, el: %{population_percent: "0.34"},
-           en: %{official_status: "official", population_percent: "99"},
-           fr: %{population_percent: "19"},
-           ga: %{official_status: "official_regional", population_percent: "0.026"},
-           gd: %{official_status: "official_regional", population_percent: "0.099",
-             writing_percent: "5"}, it: %{population_percent: "0.34"},
-           ks: %{population_percent: "0.19"}, kw: %{population_percent: "0.0031"},
-           ml: %{population_percent: "0.035"}, pa: %{population_percent: "0.79"},
-           sco: %{population_percent: "2.7", writing_percent: "5"},
-           syl: %{population_percent: "0.51"}, yi: %{population_percent: "0.049"},
-           zh_Hant: %{population_percent: "0.54"}}, literacy_percent: "99",
-         population: "64430400"}}
+      {:ok, %{currency: %{GBP: %{from: ~D[1694-07-27]}}, gdp: 2788000000000,
+              language_population: %{"bn" => %{population_percent: 0.67},
+                "cy" => %{official_status: "official_regional",
+                  population_percent: 0.77}, "de" => %{population_percent: 6},
+                "el" => %{population_percent: 0.34},
+                "en" => %{official_status: "official", population_percent: 99},
+                "fr" => %{population_percent: 19},
+                "ga" => %{official_status: "official_regional",
+                  population_percent: 0.026},
+                "gd" => %{official_status: "official_regional",
+                  population_percent: 0.099, writing_percent: 5},
+                "it" => %{population_percent: 0.34},
+                "ks" => %{population_percent: 0.19},
+                "kw" => %{population_percent: 0.0031},
+                "ml" => %{population_percent: 0.035},
+                "pa" => %{population_percent: 0.79},
+                "sco" => %{population_percent: 2.7, writing_percent: 5},
+                "syl" => %{population_percent: 0.51},
+                "yi" => %{population_percent: 0.049},
+                "zh-Hant" => %{population_percent: 0.54}}, literacy_percent: 99,
+              measurement_system: "metric", paper_size: "A4",
+              population: 64430400, telephone_country_code: 44,
+              temperature_measurement: "metric"}}
   """
   @spec info(atom) :: {:ok, map} | {:error, term()}
   def info(territory_code) do
-    Cldr.Config.territory_info()
-    |> Map.keys
-    |> Enum.member?(territory_code)
+    territory_code
+    |> is_valid?
     |> case do
-         true  -> {:ok, Cldr.Config.territory_info()[territory_code]}
+         true  -> {:ok, Cldr.Config.territory_info()[atomize(territory_code)]}
          false -> {:error, "territory code: #{territory_code} not available"}
        end
   end
@@ -311,21 +322,29 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.info!(:GB)
-      %{gdp: "2788000000000",
-        language_population: %{bn: %{population_percent: "0.67"},
-          cy: %{official_status: "official_regional", population_percent: "0.77"},
-          de: %{population_percent: "6"}, el: %{population_percent: "0.34"},
-          en: %{official_status: "official", population_percent: "99"},
-          fr: %{population_percent: "19"},
-          ga: %{official_status: "official_regional", population_percent: "0.026"},
-          gd: %{official_status: "official_regional", population_percent: "0.099",
-            writing_percent: "5"}, it: %{population_percent: "0.34"},
-          ks: %{population_percent: "0.19"}, kw: %{population_percent: "0.0031"},
-          ml: %{population_percent: "0.035"}, pa: %{population_percent: "0.79"},
-          sco: %{population_percent: "2.7", writing_percent: "5"},
-          syl: %{population_percent: "0.51"}, yi: %{population_percent: "0.049"},
-          zh_Hant: %{population_percent: "0.54"}}, literacy_percent: "99",
-        population: "64430400"}
+      %{currency: %{GBP: %{from: ~D[1694-07-27]}}, gdp: 2788000000000,
+        language_population: %{"bn" => %{population_percent: 0.67},
+          "cy" => %{official_status: "official_regional",
+            population_percent: 0.77}, "de" => %{population_percent: 6},
+          "el" => %{population_percent: 0.34},
+          "en" => %{official_status: "official", population_percent: 99},
+          "fr" => %{population_percent: 19},
+          "ga" => %{official_status: "official_regional",
+            population_percent: 0.026},
+          "gd" => %{official_status: "official_regional",
+            population_percent: 0.099, writing_percent: 5},
+          "it" => %{population_percent: 0.34},
+          "ks" => %{population_percent: 0.19},
+          "kw" => %{population_percent: 0.0031},
+          "ml" => %{population_percent: 0.035},
+          "pa" => %{population_percent: 0.79},
+          "sco" => %{population_percent: 2.7, writing_percent: 5},
+          "syl" => %{population_percent: 0.51},
+          "yi" => %{population_percent: 0.049},
+          "zh-Hant" => %{population_percent: 0.54}}, literacy_percent: 99,
+        measurement_system: "metric", paper_size: "A4",
+        population: 64430400, telephone_country_code: 44,
+        temperature_measurement: "metric"}
   """
   @spec info!(atom) :: map | term()
   def info!(territory_code) do
@@ -335,6 +354,51 @@ defmodule Cldr.Territory do
     end
   end
 
+  @territory_codes Map.keys Cldr.Config.territory_info()
+  @doc """
+  Checks if the territory code is a valid ISO 3166-1 alpha-2 code.
+  Returns `true` if successful, otherwise `false`.
+
+  ## Example
+
+      iex> Cldr.Territory.is_valid?(:GB)
+      true
+      iex> Cldr.Territory.is_valid?(:gb)
+      true
+      iex> Cldr.Territory.is_valid?("GB")
+      true
+      iex> Cldr.Territory.is_valid?("gb")
+      true
+      iex> Cldr.Territory.is_valid?(:zzz)
+      false
+      iex> Cldr.Territory.is_valid?("zzz")
+      false
+  """
+  @spec is_valid?(atom | String.t) :: true | false
+  def is_valid?(territory_code) do
+    territory_code
+    |> atomize
+    |> valid?
+  end
+
+  @spec valid?(atom, list(atom)) :: true | false
+  defp valid?(territory_code, territory_codes \\ @territory_codes) do
+    territory_codes
+    |> Enum.member?(territory_code)
+  end
+
+  @spec atomize(String.t | atom) :: atom
+  defp atomize(territory_code) when is_binary(territory_code) do
+    territory_code
+    |> String.upcase
+    |> String.to_atom
+  end
+  defp atomize(territory_code) when is_atom(territory_code) do
+    territory_code
+    |> Atom.to_string
+    |> String.upcase
+    |> String.to_atom
+  end
 
   # Generate the functions that encapsulate the territory data from CDLR
   for locale_name <- Cldr.Config.known_locales() do
@@ -349,12 +413,20 @@ defmodule Cldr.Territory do
     end
 
     def from_territory_code(territory_code, unquote(locale_name)) do
-      unquote(locale_name)
-      |> Cldr.validate_locale()
-      |> case do
-           {:ok, %LanguageTag{cldr_locale_name: unquote(locale_name)}} -> {:ok, Map.get(unquote(Macro.escape(territories)), territory_code)}
-           error      -> error
-         end
+      case is_valid?(territory_code) do
+        false ->
+          {:error, "territory code: #{territory_code} not available"}
+
+        true  ->
+          unquote(locale_name)
+          |> Cldr.validate_locale()
+          |> case do
+               {:ok, %LanguageTag{cldr_locale_name: unquote(locale_name)}} ->
+                 {:ok, Map.get(unquote(Macro.escape(territories)), territory_code)}
+
+               error -> error
+             end
+      end
     end
 
     def translate_territory(localized_string, locale_from, unquote(locale_name)) do
