@@ -6,6 +6,7 @@ defmodule Cldr.Territory do
 
   require Cldr
   alias Cldr.LanguageTag
+  alias Cldr.Locale
 
   @territory_style [:short, :standard, :variant]
   @default_style :standard
@@ -41,7 +42,7 @@ defmodule Cldr.Territory do
       {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
 
   """
-  @spec available_territories(String.t | LanguageTag.t) :: list(atom)
+  @spec available_territories(String.t | LanguageTag.t) :: list(atom) | {:error, {Exeption.t, String.t}}
   def available_territories(locale \\ Cldr.get_current_locale())
   def available_territories(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
     available_territories(cldr_locale_name)
@@ -86,7 +87,7 @@ defmodule Cldr.Territory do
       => Cldr.Territory.known_territories("zzz")
       {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
   """
-  @spec known_territories(String.t | LanguageTag.t) :: map
+  @spec known_territories(String.t | LanguageTag.t) :: map | {:error, {Exeption.t, String.t}}
   def known_territories(locale \\ Cldr.get_current_locale())
   def known_territories(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
     known_territories(cldr_locale_name)
@@ -113,10 +114,10 @@ defmodule Cldr.Territory do
       {:ok, "UK"}
 
       iex> Cldr.Territory.from_territory_code(:GB, [style: :ZZZ])
-      {:error, "style: ZZZ not available"}
+      {:error, {Cldr.UnknownStyleError, "The style :ZZZ is unknown"}}
 
       iex> Cldr.Territory.from_territory_code(:GB, [style: "ZZZ"])
-      {:error, "style: ZZZ not available"}
+      {:error, {Cldr.UnknownStyleError, "The style \\"ZZZ\\" is unknown"}}
 
       iex> Cldr.Territory.from_territory_code(:GB, [locale: "pt"])
       {:ok, "Reino Unido"}
@@ -127,7 +128,7 @@ defmodule Cldr.Territory do
       #iex> Cldr.Territory.from_territory_code(:GB, [locale: "zzz"])
       {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
   """
-  @spec from_territory_code(atom, String.t | LanguageTag.t) :: {:ok, String.t} | {:error, term} | {:error, Exeption.t, String.t}
+  @spec from_territory_code(atom, String.t | LanguageTag.t) :: {:ok, String.t} | {:error, {Exeption.t, String.t}}
   def from_territory_code(territory_code, options \\ @default_options)
   def from_territory_code(territory_code, [locale: %LanguageTag{cldr_locale_name: cldr_locale_name}]) do
     from_territory_code(territory_code, [locale: cldr_locale_name, style: @default_style])
@@ -173,7 +174,7 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.from_territory_code!(:GB, [locale: "pt"])
       "Reino Unido"
   """
-  @spec from_territory_code!(atom, String.t | LanguageTag.t) :: String.t | term
+  @spec from_territory_code!(atom, String.t | LanguageTag.t) :: String.t | Exeption.t
   def from_territory_code!(territory_code, opts \\ @default_options)
   def from_territory_code!(territory_code, [locale: %LanguageTag{cldr_locale_name: cldr_locale_name}]) do
     from_territory_code!(territory_code, [locale: cldr_locale_name, style: @default_style])
@@ -190,7 +191,7 @@ defmodule Cldr.Territory do
   def from_territory_code!(territory_code, options) do
     case from_territory_code(territory_code, options) do
       {:ok, result}    -> result
-      {:error, reason} -> raise reason
+      {:error, {exception, msg}} -> raise exception, msg
     end
   end
 
@@ -208,8 +209,14 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.translate_territory("United Kingdom", "en", "pt")
       {:ok, "Reino Unido"}
+
+      iex> Cldr.Territory.translate_territory("Reino Unido", :zzz)
+      {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
+
+      iex> Cldr.Territory.translate_territory("United Kingdom", "en", "zzz")
+      {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
   """
-  @spec translate_territory(String.t, String.t, String.t | LanguageTag.t) :: String.t
+  @spec translate_territory(String.t, String.t, String.t | LanguageTag.t) :: {:ok, String.t} | {:error, {Exeption.t, String.t}}
   def translate_territory(localized_string, from_locale, to_locale \\ Cldr.get_current_locale())
   def translate_territory(localized_string, from_locale, %LanguageTag{cldr_locale_name: cldr_locale_name}) do
     translate_territory(localized_string, from_locale, cldr_locale_name)
@@ -229,7 +236,7 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.translate_territory!("United Kingdom", "en", "pt")
       "Reino Unido"
   """
-  @spec translate_territory(String.t, String.t, String.t | LanguageTag.t) :: String.t
+  @spec translate_territory(String.t, String.t, String.t | LanguageTag.t) :: String.t | Exeption.t
   def translate_territory!(localized_string, from_locale, to_locale \\ Cldr.get_current_locale())
   def translate_territory!(localized_string, from_locale, %LanguageTag{cldr_locale_name: cldr_locale_name}) do
     translate_territory!(localized_string, from_locale, cldr_locale_name)
@@ -237,7 +244,7 @@ defmodule Cldr.Territory do
   def translate_territory!(localized_string, locale_from, locale_name) do
     case translate_territory(localized_string, locale_from, locale_name) do
       {:ok, result}    -> result
-      {:error, reason} -> raise reason
+      {:error, {exception, msg}} -> raise exception, msg
     end
   end
 
@@ -257,21 +264,28 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.parent(:ZZZ)
       {:error, {Cldr.UnknownTerritoryError, "The territory :ZZZ is unknown"}}
 
+      iex> Cldr.Territory.parent(:"001")
+      {:error, {Cldr.UnknownChildrenError, "The territory :\\"001\\" has no parent(s)"}}
   """
-  @spec parent(atom) :: {:ok, list(atom)} | {:error, Exeption.t, String.t}
+  @spec parent(atom) :: {:ok, list(atom)} | {:error, {Exeption.t, String.t}}
   for code <- [:UN, :EU, :EZ] do
     def parent(unquote(code)), do: {:ok, [:"001"]}
   end
   def parent(territory_code) do
-    @children
-    |> Enum.member?(territory_code)
+    territory_code
+    |> validate_territory()
     |> case do
-         true  -> {:ok, Cldr.Config.territory_containment()
-                        |> Enum.filter(fn({_parent, children}) -> Enum.member?(children, territory_code) end)
-                        |> Enum.map(fn({parent, _children}) -> parent end)
-                        |> Enum.sort}
+         {:error, error} -> {:error, error}
+         {:ok, code}     -> @children
+                            |> Enum.member?(code)
+                            |> case do
+                                 false -> {:error, {Cldr.UnknownChildrenError, "The territory #{inspect code} has no parent(s)"}}
 
-         false -> {:error, {Cldr.UnknownTerritoryError, "The territory #{inspect territory_code} is unknown"}}
+                                 true  -> {:ok, Cldr.Config.territory_containment()
+                                                |> Enum.filter(fn({_parent, children}) -> Enum.member?(children, code) end)
+                                                |> Enum.map(fn({parent, _children}) -> parent end)
+                                                |> Enum.sort}
+                               end
        end
   end
 
@@ -290,8 +304,8 @@ defmodule Cldr.Territory do
   @spec parent!(atom) :: list(atom) | term()
   def parent!(territory_code) do
     case parent(territory_code) do
-      {:ok, result}    -> result
-      {:error, reason} -> raise reason
+      {:ok, result}              -> result
+      {:error, {exception, msg}} -> raise exception, msg
     end
   end
 
@@ -314,14 +328,21 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.children(:ZZZ)
       {:error, {Cldr.UnknownTerritoryError, "The territory :ZZZ is unknown"}}
 
+      iex> Cldr.Territory.children(:GB)
+      {:error, {Cldr.UnknownParentError, "The territory :GB has no children"}}
   """
-  @spec children(atom) :: {:ok, list(atom)} | {:error, Exeption.t, String.t}
+  @spec children(atom) :: {:ok, list(atom)} | {:error, {Exeption.t, String.t}}
   def children(territory_code) do
-    @parents
-    |> Enum.member?(territory_code)
+    territory_code
+    |> validate_territory()
     |> case do
-         true  -> {:ok, Cldr.Config.territory_containment()[territory_code]}
-         false -> {:error, {Cldr.UnknownTerritoryError, "The territory #{inspect territory_code} is unknown"}}
+         {:error, error} -> {:error, error}
+         {:ok, code}     -> @parents
+                            |> Enum.member?(code)
+                            |> case do
+                                 true  -> {:ok, Cldr.Config.territory_containment()[code]}
+                                 false -> {:error, {Cldr.UnknownParentError, "The territory #{inspect code} has no children"}}
+                               end
        end
   end
 
@@ -340,8 +361,8 @@ defmodule Cldr.Territory do
   @spec children!(atom) :: list(atom) | term()
   def children!(territory_code) do
     case children(territory_code) do
-      {:ok, result}    -> result
-      {:error, reason} -> raise reason
+      {:ok, result}              -> result
+      {:error, {exception, msg}} -> raise exception, msg
     end
   end
 
@@ -411,7 +432,7 @@ defmodule Cldr.Territory do
   end
 
   @doc """
-  The same as `info/1`, but raises an error if it fails.
+  The same as `info/1`, but raises an exception if it fails.
 
   ## Example
 
@@ -442,8 +463,8 @@ defmodule Cldr.Territory do
   @spec info!(atom) :: map | term()
   def info!(territory_code) do
     case info(territory_code) do
-      {:ok, result}    -> result
-      {:error, reason} -> raise reason
+      {:ok, result}              -> result
+      {:error, {exception, msg}} -> raise exception, msg
     end
   end
 
@@ -460,41 +481,39 @@ defmodule Cldr.Territory do
     end
 
     def from_territory_code(territory_code, unquote(locale_name), style) do
-      case Map.get(unquote(Macro.escape(territories))[territory_code], style) do
-        nil    -> {:error, "style: #{style} not available"}
+      unquote(Macro.escape(territories))
+      |> get_in([territory_code, style])
+      |> case do
+        nil    -> {:error, {Cldr.UnknownStyleError, "The style #{inspect style} is unknown"}}
         string -> {:ok, string}
       end
     end
 
     def translate_territory(localized_string, locale_from, unquote(locale_name)) do
-      unquote(locale_name)
+      locale_from
       |> Cldr.validate_locale()
       |> case do
-           {:error, reason} -> {:error, reason}
+         {:error, reason} -> {:error, reason}
 
-           {:ok, %LanguageTag{cldr_locale_name: unquote(locale_name)}} ->
-             locale_from
-             |> Cldr.validate_locale()
-             |> case do
-                 {:error, reason} -> {:error, reason}
-
-                 {:ok, %LanguageTag{cldr_locale_name: locale}} ->
-                   {territory_code, style} = locale
-                                             |> Cldr.Config.get_locale()
-                                             |> Map.get(:territories)
-                                             |> Enum.map(fn {code, map} -> for {style, string} when string == localized_string <- map, do: {code, style} end)
-                                             |> List.flatten
-                                             |> Kernel.hd
+         {:ok, %LanguageTag{cldr_locale_name: locale}} ->
+           {code, style} = locale
+                           |> Cldr.Config.get_locale()
+                           |> Map.get(:territories)
+                           |> Enum.map(fn {code, map} -> for {style, string} when string == localized_string <- map, do: {code, style} end)
+                           |> List.flatten
+                           |> Kernel.hd
 
 
-                   {:ok, (unquote(Macro.escape(territories))[territory_code][style])}
-                end
-         end
+           {:ok, (unquote(Macro.escape(territories))[code][style])}
+        end
     end
   end
 
-  def available_territories(locale), do: {:error, {Cldr.UnknownLocaleError, "The locale \"#{locale}\" is not known."}}
-  def known_territories(locale), do: {:error, {Cldr.UnknownLocaleError, "The locale \"#{locale}\" is not known."}}
+  def available_territories(locale), do: {:error, Locale.locale_error(locale)}
+
+  def known_territories(locale), do: {:error, Locale.locale_error(locale)}
+
+  def translate_territory(_localized_string, _from, locale), do: {:error, Locale.locale_error(locale)}
 
   @spec validate_territory(atom | String.t) :: {:error, {Exeption.t, String.t}} | {:ok, atom}
   defp validate_territory(territory_code) do
