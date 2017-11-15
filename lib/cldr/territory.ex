@@ -33,10 +33,11 @@ defmodule Cldr.Territory do
   ## Example
 
       => Cldr.Territory.available_territories
-      [:GS, :AL, :"155", :AM, :IL, :CH, :CG, :EG, :SO, :MT, :AS, :GL, :MU, :AR, :TV,
-       :AI, :KR, :SA, :BI, :"054", :MY, :MW, :MS, :PM, :VC, :"143", :EC, :LK, :DG,
-       :KH, :BR, :CR, :HN, :"HK-alt-short", :NU, :LV, :FR, :CC, :CI, :KI, :KZ, :TM,
-       :KP, :MO, :TA, :BE, :BA, :ML, :XK, :US, ...]
+      [:"001", :"002", :"003", :"005", :"009", :"011", :"013", :"014", :"015", :"017",
+       :"018", :"019", :"021", :"029", :"030", :"034", :"035", :"039", :"053", :"054",
+       :"057", :"061", :"142", :"143", :"145", :"150", :"151", :"154", :"155", :"202",
+       :"419", :AC, :AD, :AE, :AF, :AG, :AI, :AL, :AM, :AO, :AQ, :AR, :AS, :AT, :AU,
+       :AW, :AX, :AZ, :BA, :BB, ...]
 
       => Cldr.Territory.available_territories("zzz")
       {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
@@ -468,7 +469,7 @@ defmodule Cldr.Territory do
     territories = locale_name |> Cldr.Config.get_locale() |> Map.get(:territories)
 
     def available_territories(unquote(locale_name)) do
-      unquote(Map.keys territories)
+      unquote(Map.keys territories) |> Enum.sort
     end
 
     def known_territories(unquote(locale_name)) do
