@@ -28,7 +28,7 @@ defmodule Cldr.Territory do
   Returns the available territories for a given locale.
 
   * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_current_locale()`
+    is `Cldr.get_current_locale()`
 
   ## Example
 
@@ -40,7 +40,6 @@ defmodule Cldr.Territory do
 
       => Cldr.Territory.available_territories("zzz")
       {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
-
   """
   @spec available_territories(String.t | LanguageTag.t) :: list(atom) | {:error, {Exeption.t, String.t}}
   def available_territories(locale \\ Cldr.get_current_locale())
@@ -49,10 +48,10 @@ defmodule Cldr.Territory do
   end
 
   @doc """
-  Returns a map of all knwon territories in a given locale.
+  Returns a map of all known territories in a given locale.
 
   * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_currenct_locale()`
+    is `Cldr.get_currenct_locale()`
 
   ## Example
 
@@ -199,9 +198,9 @@ defmodule Cldr.Territory do
 
   @doc """
   Translate a localized string from one locale to another.
-  Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
+  Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
+  * `to_locale` is any configured locale. See `Cldr.known_locales()`. The default
     is `locale: Cldr.get_current_locale()`
 
   ## Example
@@ -256,9 +255,6 @@ defmodule Cldr.Territory do
   Lists parent(s) for the given territory code.
   Returns `{:ok, list}` if successful, otherwise `{:error, reason}`.
 
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_current_locale()`
-
   ## Example
 
       iex> Cldr.Territory.parent(:GB)
@@ -296,9 +292,6 @@ defmodule Cldr.Territory do
   @doc """
   The same as `parent/1`, but raises an exception if it fails.
 
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_current_locale()`
-
   ## Example
 
       iex> Cldr.Territory.parent!(:GB)
@@ -319,9 +312,6 @@ defmodule Cldr.Territory do
   @doc """
   Lists children(s) for the given territory code.
   Returns `{:ok, list}` if successful, otherwise `{:error, reason}`.
-
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_current_locale()`
 
   ## Example
 
@@ -356,9 +346,6 @@ defmodule Cldr.Territory do
   @doc """
   The same as `children/1`, but raises an exception if it fails.
 
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_current_locale()`
-
   ## Example
 
       iex> Cldr.Territory.children!(:EU)
@@ -377,9 +364,6 @@ defmodule Cldr.Territory do
   @doc """
   Checks relationship between two territories, where the first argument is the `parent` and second the `child`.
   Returns `true` if successful, otherwise `false`.
-
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_current_locale()`
 
   ## Example
 
