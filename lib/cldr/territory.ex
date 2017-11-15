@@ -122,11 +122,11 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.from_territory_code(:GB, [locale: "pt"])
       {:ok, "Reino Unido"}
 
-      #iex> Cldr.Territory.from_territory_code(:GB, [locale: :zzz])
+      iex> Cldr.Territory.from_territory_code(:GB, [locale: :zzz])
       {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
 
-      #iex> Cldr.Territory.from_territory_code(:GB, [locale: "zzz"])
-      {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
+      iex> Cldr.Territory.from_territory_code(:GB, [locale: "zzz"])
+      {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
   """
   @spec from_territory_code(atom, String.t | LanguageTag.t) :: {:ok, String.t} | {:error, {Exeption.t, String.t}}
   def from_territory_code(territory_code, options \\ @default_options)
