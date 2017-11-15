@@ -8,7 +8,7 @@ defmodule Cldr.Territory do
   alias Cldr.LanguageTag
   alias Cldr.Locale
 
-  @territory_style [:short, :standard, :variant]
+  @styles [:short, :standard, :variant]
   @default_style :standard
   @default_locale Cldr.get_current_locale()
   @default_options [locale: @default_locale, style: @default_style]
@@ -22,7 +22,7 @@ defmodule Cldr.Territory do
       [:short, :standard, :variant]
   """
   @spec available_styles() :: list(atom)
-  def available_styles(), do: @territory_style
+  def available_styles(), do: @styles
 
   @doc """
   Returns the available territories for a given locale.
@@ -147,8 +147,9 @@ defmodule Cldr.Territory do
     |> validate_territory()
     |> validate_locale(locale)
     |> case do
-        {:error, reason}   -> {:error, reason}
-        {:ok, locale_name} -> from_territory_code(territory_code, locale_name, style)
+        {:error, reason}         -> {:error, reason}
+        
+        {:ok, code, locale_name} -> from_territory_code(code, locale_name, style)
        end
   end
 
@@ -190,7 +191,8 @@ defmodule Cldr.Territory do
   end
   def from_territory_code!(territory_code, options) do
     case from_territory_code(territory_code, options) do
-      {:ok, result}    -> result
+      {:ok, result}              -> result
+
       {:error, {exception, msg}} -> raise exception, msg
     end
   end
@@ -243,7 +245,8 @@ defmodule Cldr.Territory do
   end
   def translate_territory!(localized_string, locale_from, locale_name) do
     case translate_territory(localized_string, locale_from, locale_name) do
-      {:ok, result}    -> result
+      {:ok, result}              -> result
+
       {:error, {exception, msg}} -> raise exception, msg
     end
   end
@@ -276,6 +279,7 @@ defmodule Cldr.Territory do
     |> validate_territory()
     |> case do
          {:error, error} -> {:error, error}
+
          {:ok, code}     -> @children
                             |> Enum.member?(code)
                             |> case do
@@ -305,6 +309,7 @@ defmodule Cldr.Territory do
   def parent!(territory_code) do
     case parent(territory_code) do
       {:ok, result}              -> result
+
       {:error, {exception, msg}} -> raise exception, msg
     end
   end
@@ -337,10 +342,12 @@ defmodule Cldr.Territory do
     |> validate_territory()
     |> case do
          {:error, error} -> {:error, error}
+
          {:ok, code}     -> @parents
                             |> Enum.member?(code)
                             |> case do
                                  true  -> {:ok, Cldr.Config.territory_containment()[code]}
+
                                  false -> {:error, {Cldr.UnknownParentError, "The territory #{inspect code} has no children"}}
                                end
        end
@@ -362,6 +369,7 @@ defmodule Cldr.Territory do
   def children!(territory_code) do
     case children(territory_code) do
       {:ok, result}              -> result
+
       {:error, {exception, msg}} -> raise exception, msg
     end
   end
@@ -387,6 +395,7 @@ defmodule Cldr.Territory do
     |> Enum.member?(parent)
     |> case do
          true  -> Enum.member?(Cldr.Config.territory_containment()[parent], child)
+
          false -> false
        end
   end
@@ -427,6 +436,7 @@ defmodule Cldr.Territory do
     |> validate_territory
     |> case do
          {:error, reason} -> {:error, reason}
+
          {:ok, code}      -> {:ok, Cldr.Config.territory_info()[code]}
        end
   end
@@ -464,6 +474,7 @@ defmodule Cldr.Territory do
   def info!(territory_code) do
     case info(territory_code) do
       {:ok, result}              -> result
+
       {:error, {exception, msg}} -> raise exception, msg
     end
   end
@@ -485,6 +496,7 @@ defmodule Cldr.Territory do
       |> get_in([territory_code, style])
       |> case do
         nil    -> {:error, {Cldr.UnknownStyleError, "The style #{inspect style} is unknown"}}
+
         string -> {:ok, string}
       end
     end
@@ -521,16 +533,21 @@ defmodule Cldr.Territory do
     |> Cldr.validate_territory()
     |> case do
          {:error, reason} -> {:error, reason}
-         {:ok, code}     -> {:ok, code}
+
+         {:ok, code}      -> {:ok, code}
        end
   end
-  @spec validate_locale({:error, {Exeption.t, String.t}} | {:ok, atom}, String.t) :: {:error, {Exeption.t, String.t}} | {:ok, String.t}
+
+  @spec validate_locale({:error, {Exeption.t, String.t}} | {:ok, atom}, String.t) :: {:error, {Exeption.t, String.t}} | {:ok, atom, String.t}
   defp validate_locale({:error, reason}, _locale), do: {:error, reason}
-  defp validate_locale({:ok, _code}, locale) do
-    case Cldr.validate_locale(locale) do
-      {:error, error} -> {:error, error}
-      {:ok, %LanguageTag{cldr_locale_name: locale_name}} -> {:ok, locale_name}
-    end
+  defp validate_locale({:ok, code}, locale) do
+    locale
+    |> Cldr.validate_locale()
+    |> case do
+         {:error, error}                                    -> {:error, error}
+
+         {:ok, %LanguageTag{cldr_locale_name: locale_name}} -> {:ok, code, locale_name}
+       end
   end
 
 end
