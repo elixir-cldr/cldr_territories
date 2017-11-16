@@ -33,3 +33,16 @@ defmodule Cldr.UnknownParentError do
   %__MODULE__{message: message}
   end
 end
+
+defmodule Cldr.UnknownLanguageTagError do
+  @moduledoc """
+  Exception raised when there is an invalid LanguageTag.t.
+  """
+
+  defexception [:message]
+
+  def exception(message) do
+  %__MODULE__{message: message}
+  end
+end
+
