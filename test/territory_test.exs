@@ -50,172 +50,313 @@ defmodule Cldr.TerritoryTest do
 
   @parants [:"154", :EU, :UN]
 
-  describe "available_styles/0" do
+  @us Cldr.Locale.new!("en")
+
+  @bs Cldr.Locale.new!("BS")
+
+  test "available_styles/0" do
     assert [:short, :standard, :variant] == Territory.available_styles
   end
 
   describe "available_territories/1" do
-    assert @available_territories == Territory.available_territories
-    assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.available_territories("zzz")
+    test "with valid params" do
+      assert @available_territories == Territory.available_territories
+    end
+
+    test "with invalid params" do      
+      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.available_territories("zzz")
+    end
   end
 
   describe "from_territory_code/1" do
-    assert {:ok, "United States"} == Territory.from_territory_code(:US)
-    assert {:ok, "United States"} == Territory.from_territory_code("us")
-    assert {:ok, "US"} == Territory.from_territory_code(:US, [style: :short])
-    assert {:ok, "US"} == Territory.from_territory_code("US", [style: :short])
-    assert {:ok, "Sjedinjene Američke Države"} == Territory.from_territory_code(:US, [locale: "bs"])
-    assert {:ok, "SAD"} == Territory.from_territory_code(:US, [locale: "bs", style: :short])
+    test "with valid params" do      
+      assert {:ok, "United States"} == Territory.from_territory_code(:US)
+      assert {:ok, "United States"} == Territory.from_territory_code("us")
+      assert {:ok, "US"} == Territory.from_territory_code(:US, [style: :short])
+      assert {:ok, "US"} == Territory.from_territory_code("US", [style: :short])
+      assert {:ok, "Sjedinjene Američke Države"} == Territory.from_territory_code(:US, [locale: "bs"])
+      assert {:ok, "SAD"} == Territory.from_territory_code(:US, [locale: "bs", style: :short])
+    end
 
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.from_territory_code(:ZZ)
-    assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.from_territory_code(:US, [locale: "zzz", style: :short])
-    assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.from_territory_code(:US, [locale: :zzz, style: :short])
-    assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.from_territory_code(:US, [locale: "en", style: "zzz"])
-    assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.from_territory_code(:US, [locale: "en", style: :zzz])
+    test "with invalid params" do            
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.from_territory_code(:ZZ)
+      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.from_territory_code(:US, [locale: "zzz", style: :short])
+      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.from_territory_code(:US, [locale: :zzz, style: :short])
+      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.from_territory_code(:US, [locale: "en", style: "zzz"])
+      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.from_territory_code(:US, [locale: "en", style: :zzz])
+    end
   end
 
   describe "from_territory_code!/1" do
-    assert "United States" == Territory.from_territory_code!(:US)
-    assert "United States" == Territory.from_territory_code!("US")
-    assert "US" == Territory.from_territory_code!(:US, [style: :short])
-    assert "US" == Territory.from_territory_code!("us", [style: :short])
-    assert "Sjedinjene Američke Države" == Territory.from_territory_code!(:US, [locale: "bs"])
-    assert "SAD" == Territory.from_territory_code!(:US, [locale: "bs", style: :short])
+    test "with valid params" do            
+      assert "United States" == Territory.from_territory_code!(:US)
+      assert "United States" == Territory.from_territory_code!("US")
+      assert "US" == Territory.from_territory_code!(:US, [style: :short])
+      assert "US" == Territory.from_territory_code!("us", [style: :short])
+      assert "Sjedinjene Američke Države" == Territory.from_territory_code!(:US, [locale: "bs"])
+      assert "SAD" == Territory.from_territory_code!(:US, [locale: "bs", style: :short])
+    end
 
-    assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
-      Territory.from_territory_code!(:ZZ)
+    test "with invalid params" do                  
+      assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
+        Territory.from_territory_code!(:ZZ)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory \"yy\" is unknown", fn ->
+        Territory.from_territory_code!("yy")
+      end
+      assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
+        Territory.from_territory_code!(:US, [locale: "zzz", style: :short])
+      end
+      assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
+        Territory.from_territory_code!(:US, [locale: :zzz, style: :short])
+      end
+      assert_raise Cldr.UnknownStyleError, "The style \"zzz\" is unknown", fn ->
+        Territory.from_territory_code!(:US, [locale: "en", style: "zzz"])
+      end
+      assert_raise Cldr.UnknownStyleError, "The style :zzz is unknown", fn ->
+        Territory.from_territory_code!(:US, [locale: "en", style: :zzz])
+      end
     end
-    assert_raise Cldr.UnknownTerritoryError, "The territory \"yy\" is unknown", fn ->
-      Territory.from_territory_code!("yy")
+  end
+
+  describe "from_language_tag/1" do
+    test "with valid params" do
+      assert {:ok, "United States"} == Territory.from_language_tag(@us)
+      assert {:ok, "US"} == Territory.from_language_tag(@us, [style: :short])
+      assert {:ok, "Bosna i Hercegovina"} == Territory.from_language_tag(@bs)
     end
-    assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
-      Territory.from_territory_code!(:US, [locale: "zzz", style: :short])
+
+    test "with invalid params" do      
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag :ZZ is not a valid `LanguageTag.t`"}} == Territory.from_language_tag(:ZZ)
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.from_language_tag("zzz", [style: :short])
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag :zzz is not a valid `LanguageTag.t`"}} == Territory.from_language_tag(:zzz, [style: :short])
+      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.from_territory_code(@bs, [style: "zzz"])
+      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.from_territory_code(@us, [style: :zzz])
     end
-    assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
-      Territory.from_territory_code!(:US, [locale: :zzz, style: :short])
+  end
+
+  describe "from_language_tag!/1" do
+    test "with valid params" do      
+      assert "United States" == Territory.from_language_tag!(@us)
+      assert "US" == Territory.from_language_tag!(@us, [style: :short])
+      assert "Bosna i Hercegovina" == Territory.from_language_tag!(@bs)
     end
-    assert_raise Cldr.UnknownStyleError, "The style \"zzz\" is unknown", fn ->
-      Territory.from_territory_code!(:US, [locale: "en", style: "zzz"])
-    end
-    assert_raise Cldr.UnknownStyleError, "The style :zzz is unknown", fn ->
-      Territory.from_territory_code!(:US, [locale: "en", style: :zzz])
+
+    test "with invalid params" do            
+      assert_raise Cldr.UnknownLanguageTagError, "The tag :ZZ is not a valid `LanguageTag.t`", fn ->
+        Territory.from_language_tag!(:ZZ)
+      end
+      assert_raise Cldr.UnknownLanguageTagError, "The tag \"yy\" is not a valid `LanguageTag.t`", fn ->
+        Territory.from_language_tag!("yy", [style: :short])
+      end
+      assert_raise Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`", fn ->
+        Territory.from_language_tag!("zzz", [style: :short])
+      end
+      assert_raise Cldr.UnknownLanguageTagError, "The tag :zzz is not a valid `LanguageTag.t`", fn ->
+        Territory.from_language_tag!(:zzz, [style: :short])
+      end
+      assert_raise Cldr.UnknownStyleError, "The style \"zzz\" is unknown", fn ->
+        Territory.from_territory_code!(@bs, [style: "zzz"])
+      end
+      assert_raise Cldr.UnknownStyleError, "The style :zzz is unknown", fn ->
+        Territory.from_territory_code!(@us, [style: :zzz])
+      end
     end
   end
 
   describe "translate_territory/3" do
-    assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_territory("United States", "en-001", "bs")
-    assert {:ok, "SAD"} == Territory.translate_territory("US", "en-001", "bs")
-    assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Američke Države", "bs", "en-001")
-    assert {:ok, "US"} == Territory.translate_territory("SAD", "bs", "en-001")
+    test "with valid params" do            
+      assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_territory("United States", "en-001", "bs")
+      assert {:ok, "SAD"} == Territory.translate_territory("US", "en-001", "bs")
+      assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Američke Države", "bs", "en-001")
+      assert {:ok, "US"} == Territory.translate_territory("SAD", "bs", "en-001")
+    end
 
-    assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "zzz", "bs")
-    assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "en-001", "zzz")
-    assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", :zzz, "bs")
-    assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", "en-001", :zzz)
+    test "with invalid params" do                  
+      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "zzz", "bs")
+      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "en-001", "zzz")
+      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", :zzz, "bs")
+      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", "en-001", :zzz)
+    end
   end
 
   describe "translate_territory!/3" do
-    assert "Sjedinjene Američke Države" == Territory.translate_territory!("United States", "en-001", "bs")
-    assert "SAD" == Territory.translate_territory!("US", "en-001", "bs")
-    assert "United States" == Territory.translate_territory!("Sjedinjene Američke Države", "bs", "en-001")
-    assert "US" == Territory.translate_territory!("SAD", "bs", "en-001")
+    test "with valid params" do                  
+      assert "Sjedinjene Američke Države" == Territory.translate_territory!("United States", "en-001", "bs")
+      assert "SAD" == Territory.translate_territory!("US", "en-001", "bs")
+      assert "United States" == Territory.translate_territory!("Sjedinjene Američke Države", "bs", "en-001")
+      assert "US" == Territory.translate_territory!("SAD", "bs", "en-001")
+    end
 
-    assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
-      Territory.translate_territory!("US", "zzz", "bs")
+    test "with invalid params" do                        
+      assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
+        Territory.translate_territory!("US", "zzz", "bs")
+      end
+      assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
+        Territory.translate_territory!("US", "en-001", "zzz")
+      end
+      assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
+        Territory.translate_territory!("US", :zzz, "bs")
+      end
+      assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
+        Territory.translate_territory!("US", "en-001", :zzz)
+      end
     end
-    assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
-      Territory.translate_territory!("US", "en-001", "zzz")
+  end
+
+  describe "translate_language_tag/2" do
+    test "with valid params" do                        
+      assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_language_tag(@us, locale: @bs)
+      assert {:ok, "SAD"} == Territory.translate_language_tag(@us, [locale: @bs, style: :short])
+      assert {:ok, "United States"} == Territory.translate_language_tag(@us)
+      assert {:ok, "US"} == Territory.translate_language_tag(@us, [style: :short])
     end
-    assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
-      Territory.translate_territory!("US", :zzz, "bs")
+
+    test "with invalid params" do                              
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag(@us, locale: "zzz")
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"US\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag("US", locale: @bs)
+      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.translate_language_tag(@bs, [locale: @us, style: "zzz"])
+      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.translate_language_tag(@us, [locale: @bs, style: :zzz])
     end
-    assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
-      Territory.translate_territory!("US", "en-001", :zzz)
+  end
+
+  describe "translate_language_tag!/2" do
+    test "with valid params" do                              
+      assert "Sjedinjene Američke Države" == Territory.translate_language_tag!(@us, locale: @bs)
+      assert "SAD" == Territory.translate_language_tag!(@us, [locale: @bs, style: :short])
+      assert "United States" == Territory.translate_language_tag!(@us)
+      assert "US" == Territory.translate_language_tag!(@us, [style: :short])
+    end
+
+    test "with invalid params" do                                    
+      assert_raise Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`", fn ->
+        Territory.translate_language_tag!(@us, locale: "zzz")
+      end
+      assert_raise Cldr.UnknownLanguageTagError,"The tag \"US\" is not a valid `LanguageTag.t`", fn ->
+        Territory.translate_language_tag!("US", locale: @bs)
+      end
+      assert_raise Cldr.UnknownStyleError, "The style \"zzz\" is unknown", fn ->
+        Territory.translate_language_tag!(@bs, [locale: @us, style: "zzz"])
+      end
+      assert_raise Cldr.UnknownStyleError, "The style :zzz is unknown", fn ->
+        Territory.translate_language_tag!(@us, [locale: @bs, style: :zzz])
+      end
     end
   end
 
   describe "parent/2" do
-    assert {:ok, [:"155", :EU, :EZ, :UN]} == Territory.parent(:FR)
-    assert {:ok, @parants} == Territory.parent("dk")
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.parent(:ZZ)
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :dk is unknown"}} == Territory.parent(:dk)
-    assert {:error, {Cldr.UnknownChildrenError, "The territory :\"001\" has no parent(s)"}} == Territory.parent(:"001")
+    test "with valid params" do                                    
+      assert {:ok, [:"155", :EU, :EZ, :UN]} == Territory.parent(:FR)
+      assert {:ok, @parants} == Territory.parent("dk")
+    end
+
+    test "with invalid params" do                                          
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.parent(:ZZ)
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :dk is unknown"}} == Territory.parent(:dk)
+      assert {:error, {Cldr.UnknownChildrenError, "The territory :\"001\" has no parent(s)"}} == Territory.parent(:"001")
+    end
   end
 
   describe "parent!/2" do
-    assert @parants == Territory.parent!(:DK)
-    assert @parants == Territory.parent!("gb")
+    test "with valid params" do                                          
+      assert @parants == Territory.parent!(:DK)
+      assert @parants == Territory.parent!("gb")
+    end
 
-    assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
-      Territory.parent!(:ZZ)
-    end
-    assert_raise Cldr.UnknownTerritoryError, "The territory :dk is unknown", fn ->
-      Territory.parent!(:dk)
-    end
-    assert_raise Cldr.UnknownChildrenError,  "The territory :\"001\" has no parent(s)", fn ->
-      Territory.parent!(:"001")
+    test "with invalid params" do                                                
+      assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
+        Territory.parent!(:ZZ)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :dk is unknown", fn ->
+        Territory.parent!(:dk)
+      end
+      assert_raise Cldr.UnknownChildrenError,  "The territory :\"001\" has no parent(s)", fn ->
+        Territory.parent!(:"001")
+      end
     end
   end
 
   describe "children/2" do
-    assert {:ok, @eu} == Territory.children(:EU)
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.children(:ZZ)
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :eu is unknown"}} == Territory.children(:eu)
-    assert {:error, {Cldr.UnknownParentError, "The territory :DK has no children"}} == Territory.children("dk")
+    test "with valid params" do                                                
+      assert {:ok, @eu} == Territory.children(:EU)
+    end
+
+    test "with invalid params" do                                                        
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.children(:ZZ)
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :eu is unknown"}} == Territory.children(:eu)
+      assert {:error, {Cldr.UnknownParentError, "The territory :DK has no children"}} == Territory.children("dk")
+    end
   end
 
   describe "children!/2" do
-    assert @eu == Territory.children!(:EU)
+    test "with valid params" do                                                      
+      assert @eu == Territory.children!(:EU)
+    end
 
-    assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
-      Territory.children!(:ZZ)
-    end
-    assert_raise Cldr.UnknownTerritoryError, "The territory :eu is unknown", fn ->
-      Territory.children!(:eu)
-    end
-    assert_raise Cldr.UnknownParentError, "The territory :DK has no children", fn ->
-      Territory.children!("dk")
+    test "with invalid params" do                                                              
+      assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
+        Territory.children!(:ZZ)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :eu is unknown", fn ->
+        Territory.children!(:eu)
+      end
+      assert_raise Cldr.UnknownParentError, "The territory :DK has no children", fn ->
+        Territory.children!("dk")
+      end
     end
   end
 
   describe "contains?/2" do
-    assert true == Cldr.Territory.contains?(:EU, :DK)
-    assert false == Cldr.Territory.contains?(:DK, :EU)
-    assert false == Cldr.Territory.contains?(:dk, :EU)
-    assert false == Cldr.Territory.contains?(:DK, :eu)
+    test "with valid params" do                                                            
+      assert true == Cldr.Territory.contains?(:EU, :DK)
+    end
+
+    test "with invalid params" do                                                                    
+      assert false == Cldr.Territory.contains?(:DK, :EU)
+      assert false == Cldr.Territory.contains?(:dk, :EU)
+      assert false == Cldr.Territory.contains?(:DK, :eu)
+    end
   end
 
   describe "info/1" do
-    assert {:ok, @info} == Territory.info(:US)
-    assert {:ok, @info} == Territory.info("us")
-    assert {:ok, @info} == Territory.info("US")
+    test "with valid params" do                                                                  
+      assert {:ok, @info} == Territory.info(:US)
+      assert {:ok, @info} == Territory.info("us")
+      assert {:ok, @info} == Territory.info("US")
+    end
 
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.info("ZZ")
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.info("zz")
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :us is unknown"}} == Territory.info(:us)
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.info(:ZZ)
-    assert {:error, {Cldr.UnknownTerritoryError, "The territory :zz is unknown"}} == Territory.info(:zz)
+    test "with invalid params" do                                                                          
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.info("ZZ")
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.info("zz")
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :us is unknown"}} == Territory.info(:us)
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.info(:ZZ)
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :zz is unknown"}} == Territory.info(:zz)
+    end
   end
 
   describe "info!/1" do
-    assert @info == Cldr.Territory.info!(:US)
-    assert @info == Cldr.Territory.info!("us")
-    assert @info == Cldr.Territory.info!("US")
+    test "with valid params" do                                                                        
+      assert @info == Cldr.Territory.info!(:US)
+      assert @info == Cldr.Territory.info!("us")
+      assert @info == Cldr.Territory.info!("US")
+    end
 
-    assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
-      Territory.info!("ZZ")
-    end
-    assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
-      Territory.info!("zz")
-    end
-    assert_raise Cldr.UnknownTerritoryError, "The territory :us is unknown", fn ->
-      Territory.info!(:us)
-    end
-    assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
-      Territory.info!(:ZZ)
-    end
-    assert_raise Cldr.UnknownTerritoryError, "The territory :zz is unknown", fn ->
-      Territory.info!(:zz)
+    test "with invalid params" do                                                                                
+      assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
+        Territory.info!("ZZ")
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
+        Territory.info!("zz")
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :us is unknown", fn ->
+        Territory.info!(:us)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
+        Territory.info!(:ZZ)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :zz is unknown", fn ->
+        Territory.info!(:zz)
+      end
     end
   end
 end
