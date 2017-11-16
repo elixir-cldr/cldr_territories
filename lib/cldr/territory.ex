@@ -26,8 +26,8 @@ defmodule Cldr.Territory do
   @doc """
   Returns the available territories for a given locale.
 
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `Cldr.get_current_locale()`
+  * `locale` is any configured locale. See `Cldr.known_locale_names/0`. 
+    The default is `Cldr.get_current_locale/0`
 
   ## Example
 
@@ -50,8 +50,8 @@ defmodule Cldr.Territory do
   @doc """
   Returns a map of all known territories in a given locale.
 
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `Cldr.get_currenct_locale()`
+  * `locale` is any configured locale. See `Cldr.known_locale_names/0`.
+    The default is `Cldr.get_currenct_locale/0`
 
   ## Example
 
@@ -92,17 +92,17 @@ defmodule Cldr.Territory do
     known_territories(cldr_locale_name)
   end
 
-
   @doc """
   Localized string for the given territory code.
   Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
   * `options` are:
-    * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-      is `locale: Cldr.get_currenct_locale()`
+    * `locale` is any configured locale. See `Cldr.known_locale_names/0`.
+      The default is `Cldr.get_current_locale/0`
 
-    * `style` is one of those returned by `Cldr.Territory.available_styles`.
-      The current styles are `:short`, `:standard` and `:variant`.  The default is `style: :standard`
+    * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
+      The current styles are `:short`, `:standard` and `:variant`.  
+      The default is `:standard`
 
   ## Example
 
@@ -157,11 +157,12 @@ defmodule Cldr.Territory do
   The same as `from_territory_code/2`, but raises an exception if it fails.
 
   * `options` are:
-    * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-      is `locale: Cldr.get_currenct_locale()`
+    * `locale` is any configured locale. See `Cldr.known_locale_names/0`. 
+      The default is `Cldr.get_current_locale/0`
 
-    * `style` is one of those returned by `Cldr.Territory.available_styles`.
-      The current styles are `:short`, `:standard` and `:variant`.  The default is `style: :standard`
+    * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
+      The current styles are `:short`, `:standard` and `:variant`.
+      The default is `:standard`
 
   ## Example
 
@@ -246,11 +247,12 @@ defmodule Cldr.Territory do
   end
   def from_language_tag!(tag, _options), do: raise Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"
 
+  @doc """
   Translate a localized string from one locale to another.
   Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
-  * `to_locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_current_locale()`
+  * `to_locale` is any configured locale. See `Cldr.known_locale_names/0`. 
+    The default is `Cldr.get_current_locale/0`
 
   ## Example
 
@@ -278,8 +280,8 @@ defmodule Cldr.Territory do
   @doc """
   The same as `translate_territory/3`, but raises an exception if it fails.
 
-  * `locale` is any configured locale. See `Cldr.known_locales()`. The default
-    is `locale: Cldr.get_current_locale()`
+  * `locale` is any configured locale. See `Cldr.known_locale_names/0`. 
+    The default is `Cldr.get_current_locale/0`
 
   ## Example
 
@@ -438,7 +440,6 @@ defmodule Cldr.Territory do
       {:error, {exception, msg}} -> raise exception, msg
     end
   end
-
 
   @parents (for {k, _v} <- Cldr.Config.territory_containment(), do: k)
   @doc """
@@ -613,6 +614,7 @@ defmodule Cldr.Territory do
       unquote(Macro.escape(territories))
     end
 
+    @doc false
     def from_territory_code(territory_code, unquote(locale_name), style) do
       unquote(Macro.escape(territories))
       |> get_in([territory_code, style])
