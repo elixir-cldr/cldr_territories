@@ -43,6 +43,9 @@ iex> Cldr.Territory.info(:GB)
      "zh-Hant" => %{population_percent: 0.54}}, literacy_percent: 99,
    measurement_system: "UK", paper_size: "A4", population: 64769500,
    telephone_country_code: 44, temperature_measurement: "metric"}}
+
+iex> Cldr.Territory.to_unicode_flag(:US)
+{:ok, "🇺🇸"}
 ```
 
 For help in `iex`:

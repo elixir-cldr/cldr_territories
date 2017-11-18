@@ -359,4 +359,46 @@ defmodule Cldr.TerritoryTest do
       end
     end
   end
+
+  describe "to_unicode_flag/1" do
+    test "with valid params" do                                                                  
+      assert {:ok, "🇺🇸"} == Territory.to_unicode_flag(:US)
+      assert {:ok, "🇪🇺"} == Territory.to_unicode_flag(:EU)
+    end
+
+    test "with invalid params" do                                                                          
+      assert {:error, {Cldr.UnknownFlagError, "The territory :EZ has no flag"}} == Territory.to_unicode_flag(:EZ)
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.to_unicode_flag("zz")
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :us is unknown"}} == Territory.to_unicode_flag(:us)
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.to_unicode_flag(:ZZ)
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :zz is unknown"}} == Territory.to_unicode_flag(:zz)
+    end
+  end
+
+  describe "to_unicode_flag!/1" do
+    test "with valid params" do                                                                        
+      assert "🇺🇸" == Cldr.Territory.to_unicode_flag!(:US)
+      assert "🇩🇰" == Cldr.Territory.to_unicode_flag!(:DK)
+      assert "🇪🇺" == Cldr.Territory.to_unicode_flag!(:EU)
+    end
+
+    test "with invalid params" do                                                                                
+      assert_raise Cldr.UnknownFlagError, "The territory :EZ has no flag", fn ->
+        Territory.to_unicode_flag!(:EZ)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory \"zzzzz\" is unknown", fn ->
+        Territory.to_unicode_flag!("zzzzz")
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :us is unknown", fn ->
+        Territory.to_unicode_flag!(:us)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
+        Territory.to_unicode_flag!(:ZZ)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory :zz is unknown", fn ->
+        Territory.to_unicode_flag!(:zz)
+      end
+    end
+  end
+
 end

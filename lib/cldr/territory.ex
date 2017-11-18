@@ -674,4 +674,95 @@ defmodule Cldr.Territory do
        end
   end
 
+  @doc """
+  Unicode flag for the given territory code.
+  Returns `{:ok, flag}` if successful, otherwise `{:error, reason}`.
+
+  ## Example
+  
+      iex> Cldr.Territory.to_unicode_flag(:US)
+      {:ok, "🇺🇸"}
+
+      iex> Cldr.Territory.to_unicode_flag(:EZ)
+      {:error, {Cldr.UnknownFlagError, "The territory :EZ has no flag"}}
+  """
+  @spec to_unicode_flag(LanguageTag.t | atom) :: {:ok, String.t} | {:error, {Exception.t, String.t}}
+  def to_unicode_flag(%LanguageTag{territory: territory_code}), do: to_unicode_flag(territory_code)
+  def to_unicode_flag({:ok, territory_code}) do
+    case flag_exists?(territory_code) do
+      false -> {:error, {Cldr.UnknownFlagError, "The territory #{inspect territory_code} has no flag"}}
+
+      true  -> {:ok, territory_code
+                     |> Atom.to_charlist()
+                     |> Enum.map(&to_codepoint/1)
+                     |> List.to_string()}
+    end
+  end
+  def to_unicode_flag({:error, reason}), do: {:error, reason} 
+  def to_unicode_flag(territory_code), do: territory_code |> Cldr.validate_territory |> to_unicode_flag
+
+
+  @doc """
+  The same as `to_unicode_flag/1`, but raises an exception if it fails.
+
+  ## Example
+  
+      iex> Cldr.Territory.to_unicode_flag!(:US)
+      "🇺🇸"
+  """
+  @spec to_unicode_flag!(LanguageTag.t | atom) :: String.t | Exception.t
+  def to_unicode_flag!(%LanguageTag{territory: territory_code}), do: to_unicode_flag!(territory_code)
+  def to_unicode_flag!(territory_code) do
+    case to_unicode_flag(territory_code) do
+      {:ok, result}           -> result      
+      {:error, {reason, msg}} -> raise reason, msg
+    end      
+  end
+
+  # https://en.wikipedia.org/wiki/Regional_Indicator_Symbol
+  # This seams a bit hacky.
+  @territory_codes Cldr.get_current_locale.cldr_locale_name
+                   |> Cldr.Config.get_locale() 
+                   |> Map.get(:territories) 
+                   |> Map.keys 
+                   |> Enum.map(&Atom.to_string/1) 
+                   |> Enum.filter(fn x -> String.length(x) == 2 end)
+                   |> Enum.map(&String.to_existing_atom/1)
+                   |> List.delete(:EZ) 
+                   |> List.delete(:QO) 
+                   |> List.delete(:ZZ)
+  @spec flag_exists?(atom) :: true | false
+  defp flag_exists?(territory_code) do
+    @territory_codes
+    |> Enum.member?(territory_code)
+  end
+  
+  @spec to_codepoint(non_neg_integer) :: list(non_neg_integer)
+  defp to_codepoint(65), do: [127462]
+  defp to_codepoint(66), do: [127463]
+  defp to_codepoint(67), do: [127464]
+  defp to_codepoint(68), do: [127465]
+  defp to_codepoint(69), do: [127466]
+  defp to_codepoint(70), do: [127467]
+  defp to_codepoint(71), do: [127468]
+  defp to_codepoint(72), do: [127469]
+  defp to_codepoint(73), do: [127470]
+  defp to_codepoint(74), do: [127471]
+  defp to_codepoint(75), do: [127472]
+  defp to_codepoint(76), do: [127473]
+  defp to_codepoint(77), do: [127474]
+  defp to_codepoint(78), do: [127475]
+  defp to_codepoint(79), do: [127476]
+  defp to_codepoint(80), do: [127477]
+  defp to_codepoint(81), do: [127478]
+  defp to_codepoint(82), do: [127479]
+  defp to_codepoint(83), do: [127480]
+  defp to_codepoint(84), do: [127481]
+  defp to_codepoint(85), do: [127482]
+  defp to_codepoint(86), do: [127483]
+  defp to_codepoint(87), do: [127484]
+  defp to_codepoint(88), do: [127485]
+  defp to_codepoint(89), do: [127486]
+  defp to_codepoint(90), do: [127487]  
+
 end
