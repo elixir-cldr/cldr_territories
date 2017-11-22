@@ -731,13 +731,11 @@ defmodule Cldr.Territory do
                    |> List.delete(:EZ) 
                    |> List.delete(:QO) 
                    |> List.delete(:ZZ)
-  @spec flag_exists?(atom) :: true | false
   defp flag_exists?(territory_code) do
     @territory_codes
     |> Enum.member?(territory_code)
   end
   
-  @spec to_codepoint(non_neg_integer) :: list(non_neg_integer)
   defp to_codepoint(65), do: [127462]
   defp to_codepoint(66), do: [127463]
   defp to_codepoint(67), do: [127464]
