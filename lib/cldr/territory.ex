@@ -694,7 +694,7 @@ defmodule Cldr.Territory do
 
       true  -> {:ok, territory_code
                      |> Atom.to_charlist()
-                     |> Enum.map(&to_codepoint/1)
+                     |> Enum.map(&to_unicode_font/1)
                      |> List.to_string()}
     end
   end
@@ -730,31 +730,9 @@ defmodule Cldr.Territory do
     |> Enum.member?(territory_code)
   end
   
-  defp to_codepoint(65), do: [127462]
-  defp to_codepoint(66), do: [127463]
-  defp to_codepoint(67), do: [127464]
-  defp to_codepoint(68), do: [127465]
-  defp to_codepoint(69), do: [127466]
-  defp to_codepoint(70), do: [127467]
-  defp to_codepoint(71), do: [127468]
-  defp to_codepoint(72), do: [127469]
-  defp to_codepoint(73), do: [127470]
-  defp to_codepoint(74), do: [127471]
-  defp to_codepoint(75), do: [127472]
-  defp to_codepoint(76), do: [127473]
-  defp to_codepoint(77), do: [127474]
-  defp to_codepoint(78), do: [127475]
-  defp to_codepoint(79), do: [127476]
-  defp to_codepoint(80), do: [127477]
-  defp to_codepoint(81), do: [127478]
-  defp to_codepoint(82), do: [127479]
-  defp to_codepoint(83), do: [127480]
-  defp to_codepoint(84), do: [127481]
-  defp to_codepoint(85), do: [127482]
-  defp to_codepoint(86), do: [127483]
-  defp to_codepoint(87), do: [127484]
-  defp to_codepoint(88), do: [127485]
-  defp to_codepoint(89), do: [127486]
-  defp to_codepoint(90), do: [127487]  
+  # Generates functions that returns the unicode font for A-Z
+  for number <- ?A..?Z do 
+    defp to_unicode_font(unquote(number)), do: [127400 + unquote(number) - 3]
+  end
 
 end
