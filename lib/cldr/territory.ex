@@ -127,7 +127,7 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.from_territory_code(:GB, [locale: "zzz"])
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
   """
-  @spec from_territory_code(atom, String.t | LanguageTag.t) :: {:ok, String.t} | {:error, {Exeption.t, String.t}}
+  @spec from_territory_code(atom | String.t | LanguageTag.t, Keyword.t) :: {:ok, String.t} | {:error, {Exeption.t, String.t}}
   def from_territory_code(territory_code, options \\ [locale: Cldr.get_current_locale(), style: :standard])
   def from_territory_code(territory_code, [locale: %LanguageTag{cldr_locale_name: cldr_locale_name}]) do
     from_territory_code(territory_code, [locale: cldr_locale_name] ++ @default_style)
@@ -175,7 +175,7 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.from_territory_code!(:GB, [locale: "pt"])
       "Reino Unido"
   """
-  @spec from_territory_code!(atom, String.t | LanguageTag.t) :: String.t | Exeption.t
+  @spec from_territory_code!(atom | String.t | LanguageTag.t, Keyword.t) :: String.t | Exeption.t
   def from_territory_code!(territory_code, options \\ [locale: Cldr.get_current_locale(), style: :standard])
   def from_territory_code!(territory_code, [locale: %LanguageTag{cldr_locale_name: cldr_locale_name}]) do
     from_territory_code!(territory_code, [locale: cldr_locale_name] ++ @default_style)
@@ -686,7 +686,7 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_unicode_flag(:EZ)
       {:error, {Cldr.UnknownFlagError, "The territory :EZ has no flag"}}
   """
-  @spec to_unicode_flag(LanguageTag.t | atom) :: {:ok, String.t} | {:error, {Exception.t, String.t}}
+  @spec to_unicode_flag(LanguageTag.t | atom | String.t | {:ok, atom} | {:error, {Exception.t, String.t}}) :: {:ok, String.t} | {:error, {Exception.t, String.t}}
   def to_unicode_flag(%LanguageTag{territory: territory_code}), do: to_unicode_flag(territory_code)
   def to_unicode_flag({:ok, territory_code}) do
     case flag_exists?(territory_code) do
@@ -710,12 +710,13 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_unicode_flag!(:US)
       "🇺🇸"
   """
-  @spec to_unicode_flag!(LanguageTag.t | atom) :: String.t | Exception.t
+  @spec to_unicode_flag!(LanguageTag.t | atom | String.t) :: String.t | Exception.t
   def to_unicode_flag!(%LanguageTag{territory: territory_code}), do: to_unicode_flag!(territory_code)
   def to_unicode_flag!(territory_code) do
     case to_unicode_flag(territory_code) do
-      {:ok, result}           -> result      
-      {:error, {reason, msg}} -> raise reason, msg
+      {:ok, result}              -> result    
+
+      {:error, {exception, msg}} -> raise exception, msg
     end      
   end
 
