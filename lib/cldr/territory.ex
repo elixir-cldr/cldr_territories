@@ -721,19 +721,12 @@ defmodule Cldr.Territory do
   end
 
   # https://en.wikipedia.org/wiki/Regional_Indicator_Symbol
-  # This seams a bit hacky.
-  @territory_codes Cldr.get_current_locale.cldr_locale_name
-                   |> Cldr.Config.get_locale() 
-                   |> Map.get(:territories) 
-                   |> Map.keys 
-                   |> Enum.map(&Atom.to_string/1) 
-                   |> Enum.filter(fn x -> String.length(x) == 2 end)
-                   |> Enum.map(&String.to_existing_atom/1)
-                   |> List.delete(:EZ) 
-                   |> List.delete(:QO) 
-                   |> List.delete(:ZZ)
   defp flag_exists?(territory_code) do
-    @territory_codes
+    :"001" 
+    |> children!() 
+    |> Enum.map(fn c -> c |> children!() |> Enum.map(&children!/1) end) 
+    |> List.flatten
+    |> Enum.concat([:EU])
     |> Enum.member?(territory_code)
   end
   
