@@ -710,4 +710,95 @@ defmodule Cldr.Territory do
     defp to_unicode_font(unquote(number)), do: [127400 + unquote(number) - 3]
   end
 
+  @doc """
+  A helper method to get a territory's currency code
+  if a territory has multiply currencies then the oldest active currency is returned.
+  Returns `{:ok, code}` if successful, otherwise `{:error, reason}`.
+
+  ## Example
+  
+      iex> Cldr.Territory.to_currency_code(:US)
+      {:ok, :USD}
+
+      iex> Cldr.Territory.to_currency_code("cu")
+      {:ok, :CUP}
+  """
+  @spec to_currency_code(LanguageTag.t | String.t | atom) :: {:ok, atom} | {:error, {Exception.t, String.t}}
+  def to_currency_code(%LanguageTag{territory: territory_code}), do: to_currency_code(territory_code)
+  def to_currency_code(territory_code) do
+    case info(territory_code) do
+      {:error, reason} -> {:error, reason}
+
+      {:ok, territory} -> {:ok, territory |> sort_currency |> Kernel.hd}
+    end
+  end
+
+  @doc """
+  The same as `to_currency_code/1`, but raises an exception if it fails.
+
+  ## Example
+  
+      iex> Cldr.Territory.to_currency_code!(:US)
+      :USD
+
+      iex> Cldr.Territory.to_currency_code!("PS")
+      :ILS
+  """
+  @spec to_currency_code!(LanguageTag.t | String.t | atom) :: atom | Exception.t
+  def to_currency_code!(%LanguageTag{territory: territory_code}), do: to_currency_code(territory_code)
+  def to_currency_code!(territory_code) do
+    case to_currency_code(territory_code) do
+      {:ok, result}              -> result
+
+      {:error, {exception, msg}} -> raise exception, msg
+    end
+  end
+
+  @doc """
+  A helper method to get a territory's currency code.
+  Returns `{:ok, list}` if successful, otherwise `{:error, reason}`.
+
+  ## Example
+  
+      iex> Cldr.Territory.to_currency_codes(:US)
+      {:ok, [:USD]}
+
+      iex> Cldr.Territory.to_currency_codes("cu")
+      {:ok, [:CUP, :CUC]}
+  """
+  @spec to_currency_codes(LanguageTag.t | String.t | atom) :: {:ok, list(atom)} | {:error, {Exception.t, String.t}}
+  def to_currency_codes(territory_code) do
+    case info(territory_code) do
+      {:error, reason} -> {:error, reason}
+
+      {:ok, territory} -> {:ok, sort_currency(territory)}
+    end
+  end
+
+  @doc """
+  The same as `to_currency_codes/1`, but raises an exception if it fails.
+
+  ## Example
+  
+      iex> Cldr.Territory.to_currency_codes!(:US)
+      [:USD]
+
+      iex> Cldr.Territory.to_currency_codes!("PS")
+      [:ILS, :JOD]
+  """
+  @spec to_currency_codes!(LanguageTag.t | String.t | atom) :: list(atom) | Exception.t
+  def to_currency_codes!(territory_code) do
+    case to_currency_codes(territory_code) do
+      {:ok, result}              -> result
+
+      {:error, {exception, msg}} -> raise exception, msg
+    end
+  end
+
+  defp sort_currency(%{currency: currency}) do
+    currency
+    |> Enum.filter(fn {_key, meta} -> !Map.has_key?(meta, :tender) and !Map.has_key?(meta, :to) end)
+    |> Enum.sort(&(elem(&1, 1).from < elem(&2, 1).from))
+    |> Keyword.keys()
+  end
 end
