@@ -48,6 +48,9 @@ iex> Cldr.Territory.info(:GB)
 
 iex> Cldr.Territory.to_unicode_flag(:US)
 {:ok, "🇺🇸"}
+
+iex> Cldr.Territory.to_currency_code(:US)
+{:ok, :USD}
 ```
 
 For help in `iex`:

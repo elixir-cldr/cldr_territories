@@ -716,7 +716,7 @@ defmodule Cldr.Territory do
   Returns `{:ok, code}` if successful, otherwise `{:error, reason}`.
 
   ## Example
-  
+
       iex> Cldr.Territory.to_currency_code(:US)
       {:ok, :USD}
 
@@ -737,7 +737,7 @@ defmodule Cldr.Territory do
   The same as `to_currency_code/1`, but raises an exception if it fails.
 
   ## Example
-  
+
       iex> Cldr.Territory.to_currency_code!(:US)
       :USD
 
@@ -759,7 +759,7 @@ defmodule Cldr.Territory do
   Returns `{:ok, list}` if successful, otherwise `{:error, reason}`.
 
   ## Example
-  
+
       iex> Cldr.Territory.to_currency_codes(:US)
       {:ok, [:USD]}
 
@@ -779,7 +779,7 @@ defmodule Cldr.Territory do
   The same as `to_currency_codes/1`, but raises an exception if it fails.
 
   ## Example
-  
+
       iex> Cldr.Territory.to_currency_codes!(:US)
       [:USD]
 
@@ -800,5 +800,42 @@ defmodule Cldr.Territory do
     |> Enum.filter(fn {_key, meta} -> !Map.has_key?(meta, :tender) and !Map.has_key?(meta, :to) end)
     |> Enum.sort(&(elem(&1, 1).from < elem(&2, 1).from))
     |> Keyword.keys()
+  end
+
+  @regions ["005", "011", "013", "014", "015", "017",
+            "018", "021", "029", "030", "034", "035",
+            "039", "053", "054", "057", "061", "143",
+            "145", "151", "154", "155"]
+
+  @doc """
+  Returns a list of country codes.
+
+  ## Example
+
+      iex> Cldr.Territory.country_codes()
+      [:AD, :AE, :AF, :AG, :AI, :AL, :AM, :AO, :AR, :AS, :AT, :AU, :AW, :AX, :AZ,
+        :BA, :BB, :BD, :BE, :BF, :BG, :BH, :BI, :BJ, :BL, :BM, :BN, :BO, :BQ, :BR,
+        :BS, :BT, :BW, :BY, :BZ, :CA, :CD, :CF, :CG, :CH, :CI, :CK, :CL, :CM, :CN,
+        :CO, :CR, :CU, :CV, :CW, :CY, :CZ, :DE, :DJ, :DK, :DM, :DO, :DZ, :EA, :EC,
+        :EE, :EG, :EH, :ER, :ES, :ET, :FI, :FJ, :FK, :FM, :FO, :FR, :GA, :GB, :GD,
+        :GE, :GF, :GG, :GH, :GI, :GL, :GM, :GN, :GP, :GQ, :GR, :GT, :GU, :GW, :GY,
+        :HK, :HN, :HR, :HT, :HU, :IC, :ID, :IE, :IL, :IM, :IN, :IQ, :IR, :IS, :IT,
+        :JE, :JM, :JO, :JP, :KE, :KG, :KH, :KI, :KM, :KN, :KP, :KR, :KW, :KY, :KZ,
+        :LA, :LB, :LC, :LI, :LK, :LR, :LS, :LT, :LU, :LV, :LY, :MA, :MC, :MD, :ME,
+        :MF, :MG, :MH, :MK, :ML, :MM, :MN, :MO, :MP, :MQ, :MR, :MS, :MT, :MU, :MV,
+        :MW, :MX, :MY, :MZ, :NA, :NC, :NE, :NF, :NG, :NI, :NL, :NO, :NP, :NR, :NU,
+        :NZ, :OM, :PA, :PE, :PF, :PG, :PH, :PK, :PL, :PM, :PN, :PR, :PS, :PT, :PW,
+        :PY, :QA, :RE, :RO, :RS, :RU, :RW, :SA, :SB, :SC, :SD, :SE, :SG, :SH, :SI,
+        :SJ, :SK, :SL, :SM, :SN, :SO, :SR, :SS, :ST, :SV, :SX, :SY, :SZ, :TC, :TD,
+        :TG, :TH, :TJ, :TK, :TL, :TM, :TN, :TO, :TR, :TT, :TV, :TW, :TZ, :UA, :UG,
+        :US, :UY, :UZ, :VA, :VC, :VE, :VG, :VI, :VN, :VU, :WF, :WS, :XK, :YE, :YT,
+        :ZA, :ZM, :ZW]
+  """
+  @spec country_codes() :: list(atom)
+  def country_codes() do
+    @regions
+    |> Enum.map(&children!/1)
+    |> List.flatten
+    |> Enum.sort
   end
 end
