@@ -1,5 +1,7 @@
 # Cldr for Territories
 
+[![CircleCI](https://circleci.com/gh/Schultzer/cldr_territories.svg?style=svg)](https://circleci.com/gh/Schultzer/cldr_territories)
+
 ## Introduction and Getting Started
 
 `ex_cldr_territories` is an add-on library for [ex_cldr](https://hex.pm/packages/ex_cldr) that provides localization for territories.
