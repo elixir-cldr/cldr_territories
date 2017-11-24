@@ -29,7 +29,7 @@ iex> Cldr.Territory.children(:EU)
 
 iex> Cldr.Territory.info(:GB)
 {:ok,
- %{currency: %{GBP: %{from: ~D[1694-07-27]}}, gdp: 2788000000000,
+ %{currency: [GBP: %{from: ~D[1694-07-27]}], gdp: 2788000000000,
    language_population: %{"bn" => %{population_percent: 0.67},
      "cy" => %{official_status: "official_regional", population_percent: 0.77},
      "de" => %{population_percent: 6}, "el" => %{population_percent: 0.34},
@@ -71,7 +71,7 @@ Add `ex_cldr_territories` as a dependency to your `mix` project:
 ```elixir
     defp deps do
       [
-        {:ex_cldr_territories, "~> 1.0}
+        {:ex_cldr_territories, "~> 1.0"}
       ]
     end
 ```
