@@ -726,7 +726,7 @@ defmodule Cldr.Territory do
     |> children!() 
     |> Enum.map(fn c -> c |> children!() |> Enum.map(&children!/1) end) 
     |> List.flatten
-    |> Enum.concat([:EU])
+    |> Enum.concat([:EU, :UN])
     |> Enum.member?(territory_code)
   end
   
