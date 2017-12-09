@@ -528,7 +528,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.info(:GB)
-      {:ok, %{currency: %{GBP: %{from: ~D[1694-07-27]}}, gdp: 2788000000000,
+      {:ok, %{currency: [GBP: %{from: ~D[1694-07-27]}], gdp: 2788000000000,
              language_population: %{"bn" => %{population_percent: 0.67},
                "cy" => %{official_status: "official_regional",
                  population_percent: 0.77}, "de" => %{population_percent: 6},
@@ -569,7 +569,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.info!(:GB)
-      %{currency: %{GBP: %{from: ~D[1694-07-27]}}, gdp: 2788000000000,
+      %{currency: [GBP: %{from: ~D[1694-07-27]}], gdp: 2788000000000,
                    language_population: %{"bn" => %{population_percent: 0.67},
                      "cy" => %{official_status: "official_regional",
                        population_percent: 0.77}, "de" => %{population_percent: 6},

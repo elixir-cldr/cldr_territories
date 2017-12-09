@@ -34,7 +34,7 @@ defmodule CldrTerritories.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 1.0.0-rc.0"},
+      {:ex_cldr, "~> 1.0.0"},
       {:ex_doc, ">= 0.18.1", only: :dev}
     ]
   end

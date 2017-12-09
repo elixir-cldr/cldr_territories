@@ -19,7 +19,7 @@ defmodule Cldr.TerritoryTest do
                           :TH, :TJ, :TK, :TL, :TM, :TN, :TO, :TR, :TT, :TV, :TW, :TZ, :UA, :UG, :UM, :UN, :US, :UY, :UZ, :VA, :VC, :VE, :VG, :VI, :VN,
                           :VU, :WF, :WS, :XK, :YE, :YT, :ZA, :ZM, :ZW, :ZZ]
 
- @info %{currency: %{USD: %{from: ~D[1792-01-01]}, USN: %{tender: false}, USS: %{tender: false, to: ~D[2014-03-01]}},
+ @info %{currency: [USD: %{from: ~D[1792-01-01]}, USS: %{tender: false, to: ~D[2014-03-01]}, USN: %{tender: false}],
               gdp: 18560000000000, language_population: %{"cho" => %{population_percent: 0.0033},
                                                           "chr" => %{population_percent: 0.0077, writing_percent: 5},
                                                           "dak" => %{population_percent: 0.0059},
@@ -63,13 +63,13 @@ defmodule Cldr.TerritoryTest do
       assert @available_territories == Territory.available_territories
     end
 
-    test "with invalid params" do      
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.available_territories("zzz")
     end
   end
 
   describe "from_territory_code/1" do
-    test "with valid params" do      
+    test "with valid params" do
       assert {:ok, "United States"} == Territory.from_territory_code(:US)
       assert {:ok, "United States"} == Territory.from_territory_code("us")
       assert {:ok, "US"} == Territory.from_territory_code(:US, [style: :short])
@@ -78,7 +78,7 @@ defmodule Cldr.TerritoryTest do
       assert {:ok, "SAD"} == Territory.from_territory_code(:US, [locale: "bs", style: :short])
     end
 
-    test "with invalid params" do            
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.from_territory_code(:ZZ)
       assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.from_territory_code(:US, [locale: "zzz", style: :short])
       assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.from_territory_code(:US, [locale: :zzz, style: :short])
@@ -88,7 +88,7 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "from_territory_code!/1" do
-    test "with valid params" do            
+    test "with valid params" do
       assert "United States" == Territory.from_territory_code!(:US)
       assert "United States" == Territory.from_territory_code!("US")
       assert "US" == Territory.from_territory_code!(:US, [style: :short])
@@ -97,7 +97,7 @@ defmodule Cldr.TerritoryTest do
       assert "SAD" == Territory.from_territory_code!(:US, [locale: "bs", style: :short])
     end
 
-    test "with invalid params" do                  
+    test "with invalid params" do
       assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
         Territory.from_territory_code!(:ZZ)
       end
@@ -126,7 +126,7 @@ defmodule Cldr.TerritoryTest do
       assert {:ok, "Bosna i Hercegovina"} == Territory.from_language_tag(@bs)
     end
 
-    test "with invalid params" do      
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownLanguageTagError, "The tag :ZZ is not a valid `LanguageTag.t`"}} == Territory.from_language_tag(:ZZ)
       assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.from_language_tag("zzz", [style: :short])
       assert {:error, {Cldr.UnknownLanguageTagError, "The tag :zzz is not a valid `LanguageTag.t`"}} == Territory.from_language_tag(:zzz, [style: :short])
@@ -136,13 +136,13 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "from_language_tag!/1" do
-    test "with valid params" do      
+    test "with valid params" do
       assert "United States" == Territory.from_language_tag!(@us)
       assert "US" == Territory.from_language_tag!(@us, [style: :short])
       assert "Bosna i Hercegovina" == Territory.from_language_tag!(@bs)
     end
 
-    test "with invalid params" do            
+    test "with invalid params" do
       assert_raise Cldr.UnknownLanguageTagError, "The tag :ZZ is not a valid `LanguageTag.t`", fn ->
         Territory.from_language_tag!(:ZZ)
       end
@@ -165,14 +165,14 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "translate_territory/3" do
-    test "with valid params" do            
+    test "with valid params" do
       assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_territory("United States", "en-001", "bs")
       assert {:ok, "SAD"} == Territory.translate_territory("US", "en-001", "bs")
       assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Američke Države", "bs", "en-001")
       assert {:ok, "US"} == Territory.translate_territory("SAD", "bs", "en-001")
     end
 
-    test "with invalid params" do                  
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "zzz", "bs")
       assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "en-001", "zzz")
       assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", :zzz, "bs")
@@ -181,14 +181,14 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "translate_territory!/3" do
-    test "with valid params" do                  
+    test "with valid params" do
       assert "Sjedinjene Američke Države" == Territory.translate_territory!("United States", "en-001", "bs")
       assert "SAD" == Territory.translate_territory!("US", "en-001", "bs")
       assert "United States" == Territory.translate_territory!("Sjedinjene Američke Države", "bs", "en-001")
       assert "US" == Territory.translate_territory!("SAD", "bs", "en-001")
     end
 
-    test "with invalid params" do                        
+    test "with invalid params" do
       assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
         Territory.translate_territory!("US", "zzz", "bs")
       end
@@ -205,14 +205,14 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "translate_language_tag/2" do
-    test "with valid params" do                        
+    test "with valid params" do
       assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_language_tag(@us, locale: @bs)
       assert {:ok, "SAD"} == Territory.translate_language_tag(@us, [locale: @bs, style: :short])
       assert {:ok, "United States"} == Territory.translate_language_tag(@us)
       assert {:ok, "US"} == Territory.translate_language_tag(@us, [style: :short])
     end
 
-    test "with invalid params" do                              
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag(@us, locale: "zzz")
       assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"US\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag("US", locale: @bs)
       assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.translate_language_tag(@bs, [locale: @us, style: "zzz"])
@@ -221,14 +221,14 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "translate_language_tag!/2" do
-    test "with valid params" do                              
+    test "with valid params" do
       assert "Sjedinjene Američke Države" == Territory.translate_language_tag!(@us, locale: @bs)
       assert "SAD" == Territory.translate_language_tag!(@us, [locale: @bs, style: :short])
       assert "United States" == Territory.translate_language_tag!(@us)
       assert "US" == Territory.translate_language_tag!(@us, [style: :short])
     end
 
-    test "with invalid params" do                                    
+    test "with invalid params" do
       assert_raise Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`", fn ->
         Territory.translate_language_tag!(@us, locale: "zzz")
       end
@@ -245,12 +245,12 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "parent/2" do
-    test "with valid params" do                                    
+    test "with valid params" do
       assert {:ok, [:"155", :EU, :EZ, :UN]} == Territory.parent(:FR)
       assert {:ok, @parants} == Territory.parent("dk")
     end
 
-    test "with invalid params" do                                          
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.parent(:ZZ)
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :dk is unknown"}} == Territory.parent(:dk)
       assert {:error, {Cldr.UnknownChildrenError, "The territory :\"001\" has no parent(s)"}} == Territory.parent(:"001")
@@ -258,12 +258,12 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "parent!/2" do
-    test "with valid params" do                                          
+    test "with valid params" do
       assert @parants == Territory.parent!(:DK)
       assert @parants == Territory.parent!("gb")
     end
 
-    test "with invalid params" do                                                
+    test "with invalid params" do
       assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
         Territory.parent!(:ZZ)
       end
@@ -277,11 +277,11 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "children/2" do
-    test "with valid params" do                                                
+    test "with valid params" do
       assert {:ok, @eu} == Territory.children(:EU)
     end
 
-    test "with invalid params" do                                                        
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.children(:ZZ)
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :eu is unknown"}} == Territory.children(:eu)
       assert {:error, {Cldr.UnknownParentError, "The territory :DK has no children"}} == Territory.children("dk")
@@ -289,11 +289,11 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "children!/2" do
-    test "with valid params" do                                                      
+    test "with valid params" do
       assert @eu == Territory.children!(:EU)
     end
 
-    test "with invalid params" do                                                              
+    test "with invalid params" do
       assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
         Territory.children!(:ZZ)
       end
@@ -307,11 +307,11 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "contains?/2" do
-    test "with valid params" do                                                            
+    test "with valid params" do
       assert true == Cldr.Territory.contains?(:EU, :DK)
     end
 
-    test "with invalid params" do                                                                    
+    test "with invalid params" do
       assert false == Cldr.Territory.contains?(:DK, :EU)
       assert false == Cldr.Territory.contains?(:dk, :EU)
       assert false == Cldr.Territory.contains?(:DK, :eu)
@@ -319,13 +319,13 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "info/1" do
-    test "with valid params" do                                                                  
+    test "with valid params" do
       assert {:ok, @info} == Territory.info(:US)
       assert {:ok, @info} == Territory.info("us")
       assert {:ok, @info} == Territory.info("US")
     end
 
-    test "with invalid params" do                                                                          
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.info("ZZ")
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.info("zz")
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :us is unknown"}} == Territory.info(:us)
@@ -335,13 +335,13 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "info!/1" do
-    test "with valid params" do                                                                        
+    test "with valid params" do
       assert @info == Cldr.Territory.info!(:US)
       assert @info == Cldr.Territory.info!("us")
       assert @info == Cldr.Territory.info!("US")
     end
 
-    test "with invalid params" do                                                                                
+    test "with invalid params" do
       assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
         Territory.info!("ZZ")
       end
@@ -361,12 +361,12 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "to_unicode_flag/1" do
-    test "with valid params" do                                                                  
+    test "with valid params" do
       assert {:ok, "🇺🇸"} == Territory.to_unicode_flag(:US)
       assert {:ok, "🇪🇺"} == Territory.to_unicode_flag(:EU)
     end
 
-    test "with invalid params" do                                                                          
+    test "with invalid params" do
       assert {:error, {Cldr.UnknownFlagError, "The territory :EZ has no flag"}} == Territory.to_unicode_flag(:EZ)
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.to_unicode_flag("zz")
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :us is unknown"}} == Territory.to_unicode_flag(:us)
@@ -376,13 +376,13 @@ defmodule Cldr.TerritoryTest do
   end
 
   describe "to_unicode_flag!/1" do
-    test "with valid params" do                                                                        
+    test "with valid params" do
       assert "🇺🇸" == Cldr.Territory.to_unicode_flag!(:US)
       assert "🇩🇰" == Cldr.Territory.to_unicode_flag!(:DK)
       assert "🇪🇺" == Cldr.Territory.to_unicode_flag!(:EU)
     end
 
-    test "with invalid params" do                                                                                
+    test "with invalid params" do
       assert_raise Cldr.UnknownFlagError, "The territory :EZ has no flag", fn ->
         Territory.to_unicode_flag!(:EZ)
       end
