@@ -9,7 +9,7 @@ defmodule Cldr.Territory do
   alias Cldr.Locale
 
   @styles [:short, :standard, :variant]
-  @default_style [style: :standard]  
+  @default_style [style: :standard]
   @default_locale [locale: Cldr.get_current_locale()]
 
   @doc """
@@ -26,7 +26,7 @@ defmodule Cldr.Territory do
   @doc """
   Returns the available territories for a given locale.
 
-  * `locale` is any configured locale. See `Cldr.known_locale_names/0`. 
+  * `locale` is any configured locale. See `Cldr.known_locale_names/0`.
     The default is `Cldr.get_current_locale/0`
 
   ## Example
@@ -101,7 +101,7 @@ defmodule Cldr.Territory do
       The default is `Cldr.get_current_locale/0`
 
     * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
-      The current styles are `:short`, `:standard` and `:variant`.  
+      The current styles are `:short`, `:standard` and `:variant`.
       The default is `:standard`
 
   ## Example
@@ -147,22 +147,13 @@ defmodule Cldr.Territory do
     |> validate_locale(locale)
     |> case do
         {:error, reason}         -> {:error, reason}
-        
+
         {:ok, code, locale_name} -> from_territory_code(code, locale_name, style)
        end
   end
 
   @doc """
-  Localized string for the given territory code.
   The same as `from_territory_code/2`, but raises an exception if it fails.
-
-  * `options` are:
-    * `locale` is any configured locale. See `Cldr.known_locale_names/0`. 
-      The default is `Cldr.get_current_locale/0`
-
-    * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
-      The current styles are `:short`, `:standard` and `:variant`.
-      The default is `:standard`
 
   ## Example
 
@@ -203,7 +194,7 @@ defmodule Cldr.Territory do
 
   * `options` are:
     * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
-      The current styles are `:short`, `:standard` and `:variant`.  
+      The current styles are `:short`, `:standard` and `:variant`.
       The default is `:standard`
 
   ## Example
@@ -225,15 +216,10 @@ defmodule Cldr.Territory do
   def from_language_tag(%LanguageTag{cldr_locale_name: cldr_locale_name, territory: territory}, [style: style]) do
     from_territory_code(territory, [locale: cldr_locale_name] ++ [style: style])
   end
-  def from_language_tag(tag, _options), do: {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}  
+  def from_language_tag(tag, _options), do: {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}
 
   @doc """
   The same as `from_language_tag/2`, but raises an exception if it fails.
-
-  * `options` are:
-    * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
-      The current styles are `:short`, `:standard` and `:variant`.  
-      The default is `:standard`
 
   ## Example
 
@@ -251,7 +237,7 @@ defmodule Cldr.Territory do
   Translate a localized string from one locale to another.
   Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
-  * `to_locale` is any configured locale. See `Cldr.known_locale_names/0`. 
+  * `to_locale` is any configured locale. See `Cldr.known_locale_names/0`.
     The default is `Cldr.get_current_locale/0`
 
   ## Example
@@ -271,17 +257,14 @@ defmodule Cldr.Territory do
   @spec translate_territory(String.t, String.t | LanguageTag.t, String.t | LanguageTag.t) :: {:ok, String.t} | {:error, {Exeption.t, String.t}}
   def translate_territory(localized_string, from_locale, to_locale \\ Cldr.get_current_locale())
   def translate_territory(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale) do
-    translate_territory(localized_string, from_locale, to_locale)    
-  end 
+    translate_territory(localized_string, from_locale, to_locale)
+  end
   def translate_territory(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}) do
     translate_territory(localized_string, from_locale, to_locale)
   end
 
   @doc """
   The same as `translate_territory/3`, but raises an exception if it fails.
-
-  * `locale` is any configured locale. See `Cldr.known_locale_names/0`. 
-    The default is `Cldr.get_current_locale/0`
 
   ## Example
 
@@ -294,8 +277,8 @@ defmodule Cldr.Territory do
   @spec translate_territory!(String.t, String.t | LanguageTag.t, String.t | LanguageTag.t) :: String.t | Exeption.t
   def translate_territory!(localized_string, from_locale, to_locale \\ Cldr.get_current_locale())
   def translate_territory!(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale) do
-    translate_territory(localized_string, from_locale, to_locale)    
-  end 
+    translate_territory(localized_string, from_locale, to_locale)
+  end
   def translate_territory!(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}) do
     translate_territory!(localized_string, from_locale, to_locale)
   end
@@ -312,11 +295,11 @@ defmodule Cldr.Territory do
   Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
   * `options` are:
-    * `locale` is any configured locale. See `Cldr.known_locale_names/0`. 
+    * `locale` is any configured locale. See `Cldr.known_locale_names/0`.
       The default is `Cldr.get_current_locale/0`
 
     * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
-      The current styles are `:short`, `:standard` and `:variant`.  
+      The current styles are `:short`, `:standard` and `:variant`.
       The default is `:standard`
 
   ## Example
@@ -343,26 +326,18 @@ defmodule Cldr.Territory do
     end
   end
 
-  def translate_language_tag(%LanguageTag{}, [locale: tag, style: _style]) do 
+  def translate_language_tag(%LanguageTag{}, [locale: tag, style: _style]) do
     {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}
   end
-  def translate_language_tag(%LanguageTag{}, [locale: tag]) do 
+  def translate_language_tag(%LanguageTag{}, [locale: tag]) do
     {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}
   end
-  def translate_language_tag(tag, _options) do 
+  def translate_language_tag(tag, _options) do
     {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}
   end
 
   @doc """
   The same as `translate_language_tag/2`, but raises an exception if it fails.
-
-  * `options` are:
-    * `locale` is any configured locale. See `Cldr.known_locale_names/0`. 
-      The default is `Cldr.get_current_locale/0`
-
-    * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
-      The current styles are `:short`, `:standard` and `:variant`.  
-      The default is `:standard`
 
   ## Example
 
@@ -373,7 +348,7 @@ defmodule Cldr.Territory do
       "Mundo"
   """
   @spec translate_language_tag!(LanguageTag.t, [locale: LanguageTag.t | String.t, style: atom]) :: String.t | Exeption.t
-  def translate_language_tag!(locale_from, options \\ [locale: Cldr.get_current_locale(), style: :standard])    
+  def translate_language_tag!(locale_from, options \\ [locale: Cldr.get_current_locale(), style: :standard])
   def translate_language_tag!(locale_from, options) do
     case translate_language_tag(locale_from, options) do
       {:ok, result}              -> result
@@ -432,7 +407,7 @@ defmodule Cldr.Territory do
 
   """
   @spec parent!(LanguageTag.t | atom) :: list(atom) | Exception.t
-  def parent!(%LanguageTag{territory: territory_code}),  do: parent!(territory_code)  
+  def parent!(%LanguageTag{territory: territory_code}),  do: parent!(territory_code)
   def parent!(territory_code) do
     case parent(territory_code) do
       {:ok, result}              -> result
@@ -460,7 +435,7 @@ defmodule Cldr.Territory do
       {:error, {Cldr.UnknownParentError, "The territory :GB has no children"}}
   """
   @spec children(LanguageTag.t | atom) :: {:ok, list(atom)} | {:error, {Exeption.t, String.t}}
-  def children(%LanguageTag{territory: territory_code}),  do: children(territory_code)    
+  def children(%LanguageTag{territory: territory_code}),  do: children(territory_code)
   def children(territory_code) do
     territory_code
     |> validate_territory()
@@ -486,8 +461,8 @@ defmodule Cldr.Territory do
       [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE, :IT,
        :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]
   """
-  @spec children!(LanguageTag.t | atom) :: list(atom) | Exception.t  
-  def children!(%LanguageTag{territory: territory_code}),  do: children!(territory_code)      
+  @spec children!(LanguageTag.t | atom) :: list(atom) | Exception.t
+  def children!(%LanguageTag{territory: territory_code}),  do: children!(territory_code)
   def children!(territory_code) do
     case children(territory_code) do
       {:ok, result}              -> result
@@ -510,7 +485,7 @@ defmodule Cldr.Territory do
   """
   @spec contains?(LanguageTag.t | atom, LanguageTag.t | atom) :: true | false
   def contains?(%LanguageTag{territory: parent}, child), do: contains?(parent, child)
-  def contains?(parent, %LanguageTag{territory: child}), do: contains?(parent, child)  
+  def contains?(parent, %LanguageTag{territory: child}), do: contains?(parent, child)
   def contains?(parent, child) do
     @parents
     |> Enum.member?(parent)
@@ -552,7 +527,7 @@ defmodule Cldr.Territory do
              telephone_country_code: 44, temperature_measurement: "metric"}}
   """
   @spec info(LanguageTag.t | atom) :: {:ok, map} | {:error, {Exception.t, String.t}}
-  def info(%LanguageTag{territory: territory_code}), do: info(territory_code)    
+  def info(%LanguageTag{territory: territory_code}), do: info(territory_code)
   def info(territory_code) do
     territory_code
     |> validate_territory
@@ -593,7 +568,7 @@ defmodule Cldr.Territory do
                    telephone_country_code: 44, temperature_measurement: "metric"}
   """
   @spec info!(LanguageTag.t | atom) :: map | Exception.t
-  def info!(%LanguageTag{territory: territory_code}), do: info!(territory_code)      
+  def info!(%LanguageTag{territory: territory_code}), do: info!(territory_code)
   def info!(territory_code) do
     case info(territory_code) do
       {:ok, result}              -> result
@@ -679,7 +654,7 @@ defmodule Cldr.Territory do
   Returns `{:ok, flag}` if successful, otherwise `{:error, reason}`.
 
   ## Example
-  
+
       iex> Cldr.Territory.to_unicode_flag(:US)
       {:ok, "🇺🇸"}
 
@@ -698,7 +673,7 @@ defmodule Cldr.Territory do
                      |> List.to_string()}
     end
   end
-  def to_unicode_flag({:error, reason}), do: {:error, reason} 
+  def to_unicode_flag({:error, reason}), do: {:error, reason}
   def to_unicode_flag(territory_code), do: territory_code |> Cldr.validate_territory |> to_unicode_flag
 
 
@@ -706,7 +681,7 @@ defmodule Cldr.Territory do
   The same as `to_unicode_flag/1`, but raises an exception if it fails.
 
   ## Example
-  
+
       iex> Cldr.Territory.to_unicode_flag!(:US)
       "🇺🇸"
   """
@@ -714,24 +689,24 @@ defmodule Cldr.Territory do
   def to_unicode_flag!(%LanguageTag{territory: territory_code}), do: to_unicode_flag!(territory_code)
   def to_unicode_flag!(territory_code) do
     case to_unicode_flag(territory_code) do
-      {:ok, result}              -> result    
+      {:ok, result}              -> result
 
       {:error, {exception, msg}} -> raise exception, msg
-    end      
+    end
   end
 
   # https://en.wikipedia.org/wiki/Regional_Indicator_Symbol
   defp flag_exists?(territory_code) do
-    :"001" 
-    |> children!() 
-    |> Enum.map(fn c -> c |> children!() |> Enum.map(&children!/1) end) 
+    :"001"
+    |> children!()
+    |> Enum.map(fn c -> c |> children!() |> Enum.map(&children!/1) end)
     |> List.flatten
     |> Enum.concat([:EU, :UN])
     |> Enum.member?(territory_code)
   end
-  
+
   # Generates functions that returns the unicode font for A-Z
-  for number <- ?A..?Z do 
+  for number <- ?A..?Z do
     defp to_unicode_font(unquote(number)), do: [127400 + unquote(number) - 3]
   end
 
