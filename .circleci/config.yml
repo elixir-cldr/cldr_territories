@@ -24,5 +24,4 @@ jobs:
       - save_cache:
           key: deps-build
           paths:
-            - ~/repo/_build
             - ~/repo/deps
