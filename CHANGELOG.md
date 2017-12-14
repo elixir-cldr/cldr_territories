@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr_Territories v1.1.1 December 13, 2017
+
+### Bug fix
+
+* Load data on compile
+
 ## Cldr_Territories v1.1.0 December 8, 2017
 
 Following helper method has been added
