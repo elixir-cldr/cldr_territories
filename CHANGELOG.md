@@ -1,12 +1,12 @@
 # Changelog
 
-## Cldr_Territories v1.1.1 December 13, 2017
+## Cldr Territories v1.1.1 December 13, 2017
 
 ### Bug fix
 
 * Load data on compile
 
-## Cldr_Territories v1.1.0 December 8, 2017
+## Cldr Territories v1.1.0 December 8, 2017
 
 Following helper method has been added
 
@@ -17,14 +17,14 @@ Following helper method has been added
 * `country_codes/0`
 
 
-## Cldr_Territories v1.0.0 December 8, 2017
+## Cldr Territories v1.0.0 December 8, 2017
 
 ### Enhancements
 
 * Release
 
 
-## Cldr_Territories v1.0.0-rc.0 November 17, 2017
+## Cldr Territories v1.0.0-rc.0 November 17, 2017
 
 ### Enhancements
 

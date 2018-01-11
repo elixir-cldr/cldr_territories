@@ -8,7 +8,7 @@ defmodule CldrTerritories.Mixfile do
       app: :ex_cldr_territories,
       version: @version,
       elixir: "~> 1.5",
-      name: "Cldr_Territories",
+      name: "Cldr Territories",
       source_url: "https://github.com/schultzer/cldr_territories",
       description: description(),
       package: package(),

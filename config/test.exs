@@ -1,4 +1,3 @@
-# In test mode we compile and test all locales
 use Mix.Config
 
 config :ex_cldr,
