@@ -1,5 +1,12 @@
 # Changelog
 
+## Cldr Territories v1.1.2 January 11, 2018
+
+### Enhancements
+
+* Relax `ex_cldr` requirement
+
+
 ## Cldr Territories v1.1.1 December 13, 2017
 
 ### Bug fix
