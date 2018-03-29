@@ -1,5 +1,12 @@
 # Changelog
 
+## Cldr Territories v1.2.0 Marts 28, 2018
+
+### Enhancements
+
+* Update `ex_cldr` dependency to version 1.5 which uses CLDR data version 33
+
+
 ## Cldr Territories v1.1.2 January 11, 2018
 
 ### Enhancements
