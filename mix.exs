@@ -1,7 +1,7 @@
 defmodule CldrTerritories.Mixfile do
   use Mix.Project
 
-  @version "1.2.0"
+  @version "1.3.0"
 
   def project do
     [
@@ -36,8 +36,8 @@ defmodule CldrTerritories.Mixfile do
     [
       {:ex_cldr, "~> 1.5"},
       {:ex_doc, ">= 0.18.1", only: :dev},
-      {:poison, "~> 2.1 or ~> 3.0", optional: true},
-      {:jason, "~> 1.0", optional: true}
+      {:poison, ">= 0.0.0", optional: true},
+      {:jason, ">= 0.0.0", optional: true}
     ]
   end
 
