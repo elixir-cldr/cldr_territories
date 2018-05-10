@@ -827,8 +827,14 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_code!(:US)
       :USD
 
+      iex> Cldr.Territory.to_currency_code!(:US, as: :charlist)
+      'USD'
+
       iex> Cldr.Territory.to_currency_code!("PS")
       :ILS
+
+      iex> Cldr.Territory.to_currency_code!("PS", as: :binary)
+      "ILS"
   """
   @spec to_currency_code!(atom_binary_tag(), as_options()) :: atom_binary_charlist() | no_return()
   def to_currency_code!(territory_code, opts \\ [as: :atom])
@@ -903,8 +909,14 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_codes!(:US)
       [:USD]
 
+      iex> Cldr.Territory.to_currency_codes!(:US, as: :charlist)
+      ['USD']
+
       iex> Cldr.Territory.to_currency_codes!("PS")
       [:ILS, :JOD]
+
+      iex> Cldr.Territory.to_currency_codes!("PS", as: :binary)
+      ["ILS", "JOD"]
   """
   @spec to_currency_codes!(atom_binary_tag(), as_options()) :: [atom_binary_charlist()] | no_return()
   def to_currency_codes!(territory_code, opts \\ [as: :atom])
@@ -972,7 +984,7 @@ defmodule Cldr.Territory do
   defp map_binary(result) when is_atom(result), do: to_string(result)
 
   defp map_binary!({:error, {exception, reason}}), do: raise exception, reason
-  defp map_binary!(result), do: map_binary(result)
+  defp map_binary!({:ok, result}), do: map_binary(result)
 
   defp map_charlist({:error, reason}), do: {:error, reason}
   defp map_charlist({:ok, result}), do: {:ok, map_charlist(result)}
@@ -982,5 +994,5 @@ defmodule Cldr.Territory do
   defp map_charlist(result) when is_atom(result), do: to_charlist(result)
 
   defp map_charlist!({:error, {exception, reason}}), do: raise exception, reason
-  defp map_charlist!(result), do: map_charlist(result)
+  defp map_charlist!({:ok, result}), do: map_charlist(result)
 end

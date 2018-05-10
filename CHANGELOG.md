@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr Territories v1.3.1 May 10, 2018
+
+### Bug fix
+
+* Fixed a bug intrudeced in 1.3.0 where function with `!` and `as_option` resulted in `{:ok, result}` instead of `result`
+
 ## Cldr Territories v1.3.0 May 8, 2018
 
 ### Enhancements
@@ -9,7 +15,7 @@
   * `children/2` and `children!/2`
   * `to_currency_code/2` and `to_currency_code!/2`
   * `to_currency_codes/2` and `to_currency_codes!/2`
-  * `country_codes/2`
+  * `country_codes/1`
 * Improved specs
 * Relaxed posion and jason dependency
 
