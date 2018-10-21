@@ -17,7 +17,7 @@ defmodule Cldr.TerritoryTest do
                           :NU, :NZ, :OM, :PA, :PE, :PF, :PG, :PH, :PK, :PL, :PM, :PN, :PR, :PS, :PT, :PW, :PY, :QA, :QO, :RE, :RO, :RS, :RU, :RW, :SA,
                           :SB, :SC, :SD, :SE, :SG, :SH, :SI, :SJ, :SK, :SL, :SM, :SN, :SO, :SR, :SS, :ST, :SV, :SX, :SY, :SZ, :TA, :TC, :TD, :TF, :TG,
                           :TH, :TJ, :TK, :TL, :TM, :TN, :TO, :TR, :TT, :TV, :TW, :TZ, :UA, :UG, :UM, :UN, :US, :UY, :UZ, :VA, :VC, :VE, :VG, :VI, :VN,
-                          :VU, :WF, :WS, :XK, :YE, :YT, :ZA, :ZM, :ZW, :ZZ]
+                          :VU, :WF, :WS, :XA, :XB, :XK, :YE, :YT, :ZA, :ZM, :ZW, :ZZ]
 
  @info %{currency: [USD: %{from: ~D[1792-01-01]}, USS: %{tender: false, to: ~D[2014-03-01]}, USN: %{tender: false}],
               gdp: 18560000000000, language_population: %{"cho" => %{population_percent: 0.0033},

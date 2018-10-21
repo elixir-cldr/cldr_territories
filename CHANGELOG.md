@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr Territories v1.4.0 October 21st, 2018
+
+### Enhancements
+
+* Updates [ex_cldr](https://hex,pm/packages/ex_cldr) to version 1.8.0 which uses CLDR data release 34.0.0
+
 ## Cldr Territories v1.3.1 May 10, 2018
 
 ### Bug fix
