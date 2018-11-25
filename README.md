@@ -10,24 +10,24 @@
 ## Examples
 
 ```elixir
-iex> Cldr.Territory.from_territory_code(:GB)
+iex> MyCldr.Territory.from_territory_code(:GB)
 {:ok, "United Kingdom"}
 
-iex> Cldr.Territory.translate_territory("Reino Unido", "pt", "en")
+iex> MyCldr.Territory.translate_territory("Reino Unido", "pt", "en")
 {:ok, "UK"}
 
-iex> Cldr.Territory.contains?(:EU, :GB)
+iex> MyCldr.Territory.contains?(:EU, :GB)
 true
 
-iex> Cldr.Territory.parent(:GB)
+iex> MyCldr.Territory.parent(:GB)
 {:ok, [:"154", :EU, :UN]}
 
-iex> Cldr.Territory.children(:EU)
+iex> MyCldr.Territory.children(:EU)
 {:ok,
  [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE,
   :IT, :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]}
 
-iex> Cldr.Territory.info(:GB)
+iex> MyCldr.Territory.info(:GB)
 {:ok,
  %{currency: [GBP: %{from: ~D[1694-07-27]}], gdp: 2788000000000,
    language_population: %{"bn" => %{population_percent: 0.67},
@@ -46,17 +46,17 @@ iex> Cldr.Territory.info(:GB)
    measurement_system: "UK", paper_size: "A4", population: 64769500,
    telephone_country_code: 44, temperature_measurement: "metric"}}
 
-iex> Cldr.Territory.to_unicode_flag(:US)
+iex> MyCldr.Territory.to_unicode_flag(:US)
 {:ok, "🇺🇸"}
 
-iex> Cldr.Territory.to_currency_code(:US)
+iex> MyCldr.Territory.to_currency_code(:US)
 {:ok, :USD}
 ```
 
 For help in `iex`:
 
 ```elixir
-iex> h Cldr.Territory.from_territory_code
+iex> h MyCldr.Territory.from_territory_code
 ```
 
 ## Documentation
@@ -74,7 +74,7 @@ Add `ex_cldr_territories` as a dependency to your `mix` project:
 ```elixir
     defp deps do
       [
-        {:ex_cldr_territories, "~> 1.1"}
+        {:ex_cldr_territories, "~> 2.0"}
       ]
     end
 ```

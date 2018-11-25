@@ -4,8 +4,7 @@ defmodule Cldr.Territory do
   territories.
   """
 
-  require Cldr
-  alias Cldr.{LanguageTag, Locale}
+  alias Cldr.LanguageTag
 
   @type as_options                 :: [as: :atom | :binary | :charlist]
   @type atom_binary_charlist       :: atom() | binary() | charlist()
@@ -18,8 +17,6 @@ defmodule Cldr.Territory do
   @type options                    :: [{:locale, binary_tag()} | {:style, styles()}]
 
   @styles [:short, :standard, :variant]
-  @default_style [style: :standard]
-  @default_locale [locale: Cldr.get_current_locale()]
   @territory_containment Cldr.Config.territory_containment()
   @territory_info Cldr.Config.territory_info()
 
@@ -28,7 +25,7 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.available_styles
+      iex> Cldr.Territory.available_styles()
       [:short, :standard, :variant]
   """
   @spec available_styles() :: [styles()]
@@ -37,36 +34,33 @@ defmodule Cldr.Territory do
   @doc """
   Returns the available territories for a given locale.
 
-  * `locale` is any configured locale. See `Cldr.known_locale_names/0`.
-    The default is `Cldr.get_current_locale/0`
+  * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
+    The default is `Cldr.get_locale/1`
 
   ## Example
 
-      => Cldr.Territory.available_territories()
+      => Cldr.Territory.available_territories(TestBackend.Cldr)
       [:"001", :"002", :"003", :"005", :"009", :"011", :"013", :"014", :"015", :"017",
-       :"018", :"019", :"021", :"029", :"030", :"034", :"035", :"039", :"053", :"054",
-       :"057", :"061", :"142", :"143", :"145", :"150", :"151", :"154", :"155", :"202",
-       :"419", :AC, :AD, :AE, :AF, :AG, :AI, :AL, :AM, :AO, :AQ, :AR, :AS, :AT, :AU,
-       :AW, :AX, :AZ, :BA, :BB, ...]
-
-      => Cldr.Territory.available_territories("zzz")
-      {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
+      :"018", :"019", :"021", :"029", :"030", :"034", :"035", :"039", :"053", :"054",
+      :"057", :"061", :"142", :"143", :"145", :"150", :"151", :"154", :"155", :"202",
+      :"419", :AC, :AD, :AE, :AF, :AG, :AI, :AL, :AM, :AO, :AQ, :AR, :AS, :AT, :AU,
+      :AW, :AX, :AZ, :BA, :BB, ...]
   """
-  @spec available_territories(binary_tag()) :: [atom()] | {:error, error()}
-  def available_territories(locale \\ Cldr.get_current_locale())
-  def available_territories(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
-    available_territories(cldr_locale_name)
+  @spec available_territories(Cldr.backend()) :: [atom()]
+  def available_territories(backend) do
+    module = Module.concat(backend, Territory)
+    module.available_territories()
   end
 
   @doc """
   Returns a map of all known territories in a given locale.
 
-  * `locale` is any configured locale. See `Cldr.known_locale_names/0`.
-    The default is `Cldr.get_currenct_locale/0`
+  * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
+    The default is `Cldr.get_locale/1`
 
   ## Example
 
-      => Cldr.Territory.known_territories()
+      => Cldr.Territory.known_territories(TestBackend.Cldr)
       %{SN: %{standard: "Senegal"}, "061": %{standard: "Polynesia"},
       BH: %{standard: "Bahrain"}, TM: %{standard: "Turkmenistan"},
       "009": %{standard: "Oceania"}, CW: %{standard: "Curaçao"},
@@ -93,14 +87,11 @@ defmodule Cldr.Territory do
       PE: %{standard: "Peru"}, HU: %{standard: "Hungary"},
       HN: %{standard: "Honduras"}, GI: %{standard: "Gibraltar"},
       "142": %{standard: "Asia"}, "029": %{...}, ...}
-
-      => Cldr.Territory.known_territories("zzz")
-      {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
   """
-  @spec known_territories(binary_tag()) :: map() | {:error, error()}
-  def known_territories(locale \\ Cldr.get_current_locale())
-  def known_territories(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
-    known_territories(cldr_locale_name)
+  @spec known_territories(Cldr.backend()) :: map()
+  def known_territories(backend) do
+    module = Module.concat(backend, Territory)
+    module.known_territories()
   end
 
   @doc """
@@ -108,8 +99,8 @@ defmodule Cldr.Territory do
   Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
   * `options` are:
-    * `locale` is any configured locale. See `Cldr.known_locale_names/0`.
-      The default is `Cldr.get_current_locale/0`
+    * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
+      The default is `Cldr.get_locale/1`
 
     * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
       The current styles are `:short`, `:standard` and `:variant`.
@@ -117,50 +108,31 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.from_territory_code(:GB)
+      iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr)
       {:ok, "United Kingdom"}
 
-      iex> Cldr.Territory.from_territory_code(:GB, [style: :short])
+      iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [style: :short])
       {:ok, "UK"}
 
-      iex> Cldr.Territory.from_territory_code(:GB, [style: :ZZZ])
+      iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [style: :ZZZ])
       {:error, {Cldr.UnknownStyleError, "The style :ZZZ is unknown"}}
 
-      iex> Cldr.Territory.from_territory_code(:GB, [style: "ZZZ"])
+      iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [style: "ZZZ"])
       {:error, {Cldr.UnknownStyleError, "The style \\"ZZZ\\" is unknown"}}
 
-      iex> Cldr.Territory.from_territory_code(:GB, [locale: "pt"])
+      iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [locale: "pt"])
       {:ok, "Reino Unido"}
 
-      iex> Cldr.Territory.from_territory_code(:GB, [locale: :zzz])
+      iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [locale: :zzz])
       {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
 
-      iex> Cldr.Territory.from_territory_code(:GB, [locale: "zzz"])
+      iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [locale: "zzz"])
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
   """
-  @spec from_territory_code(atom_binary_tag(), options()) :: {:ok, binary()} | {:error, error()}
-  def from_territory_code(territory_code, options \\ [locale: Cldr.get_current_locale(), style: :standard])
-  def from_territory_code(territory_code, [locale: %LanguageTag{cldr_locale_name: cldr_locale_name}]) do
-    from_territory_code(territory_code, [locale: cldr_locale_name] ++ @default_style)
-  end
-  def from_territory_code(territory_code, [locale: %LanguageTag{cldr_locale_name: cldr_locale_name}, style: style]) do
-    from_territory_code(territory_code, [locale: cldr_locale_name, style: style])
-  end
-  def from_territory_code(territory_code, [locale: locale]) do
-    from_territory_code(territory_code, [locale: locale] ++ @default_style)
-  end
-  def from_territory_code(territory_code, [style: style]) do
-    from_territory_code(territory_code, @default_locale ++ [style: style])
-  end
-  def from_territory_code(territory_code, [locale: locale, style: style]) do
-    territory_code
-    |> Cldr.validate_territory()
-    |> validate_locale(locale)
-    |> case do
-        {:error, reason}         -> {:error, reason}
-
-        {:ok, code, locale_name} -> from_territory_code(code, locale_name, style)
-       end
+  @spec from_territory_code(atom_binary_tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
+  def from_territory_code(territory_code, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
+    module = Module.concat(backend, Territory)
+    module.from_territory_code(territory_code, options)
   end
 
   @doc """
@@ -168,35 +140,19 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.from_territory_code!(:GB)
+      iex> Cldr.Territory.from_territory_code!(:GB, TestBackend.Cldr)
       "United Kingdom"
 
-      iex> Cldr.Territory.from_territory_code!(:GB, [style: :short])
+      iex> Cldr.Territory.from_territory_code!(:GB, TestBackend.Cldr, [style: :short])
       "UK"
 
-      iex> Cldr.Territory.from_territory_code!(:GB, [locale: "pt"])
+      iex> Cldr.Territory.from_territory_code!(:GB, TestBackend.Cldr, [locale: "pt"])
       "Reino Unido"
   """
-  @spec from_territory_code!(atom_binary_tag(), options()) :: binary() | no_return()
-  def from_territory_code!(territory_code, options \\ [locale: Cldr.get_current_locale(), style: :standard])
-  def from_territory_code!(territory_code, [locale: %LanguageTag{cldr_locale_name: cldr_locale_name}]) do
-    from_territory_code!(territory_code, [locale: cldr_locale_name] ++ @default_style)
-  end
-  def from_territory_code!(territory_code, [locale: %LanguageTag{cldr_locale_name: cldr_locale_name}, style: style]) do
-    from_territory_code!(territory_code, [locale: cldr_locale_name, style: style])
-  end
-  def from_territory_code!(territory_code, [locale: locale]) do
-    from_territory_code!(territory_code, [locale: locale] ++ @default_style)
-  end
-  def from_territory_code!(territory_code, [style: style]) do
-    from_territory_code!(territory_code, @default_locale ++ [style: style])
-  end
-  def from_territory_code!(territory_code, options) do
-    case from_territory_code(territory_code, options) do
-      {:error, {exception, msg}} -> raise exception, msg
-
-      {:ok, result}              -> result
-    end
+  @spec from_territory_code!(atom_binary_tag(), Cldr.backend(), options()) :: binary() | no_return()
+  def from_territory_code!(territory_code, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
+    module = Module.concat(backend, Territory)
+    module.from_territory_code!(territory_code, options)
   end
 
   @doc """
@@ -210,68 +166,63 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.from_language_tag(Cldr.get_current_locale())
+      iex> Cldr.Territory.from_language_tag(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr)
       {:ok, "World"}
 
-      iex> Cldr.Territory.from_language_tag(Cldr.get_current_locale(), [style: :short])
+      iex> Cldr.Territory.from_language_tag(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr, [style: :short])
       {:error, {Cldr.UnknownStyleError, "The style :short is unknown"}}
 
-      iex> Cldr.Territory.from_language_tag(Cldr.get_current_locale(), [style: :ZZZ])
+      iex> Cldr.Territory.from_language_tag(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr, [style: :ZZZ])
       {:error, {Cldr.UnknownStyleError, "The style :ZZZ is unknown"}}
 
-      iex> Cldr.Territory.from_language_tag(Cldr.get_current_locale(), [style: "ZZZ"])
+      iex> Cldr.Territory.from_language_tag(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr, [style: "ZZZ"])
       {:error, {Cldr.UnknownStyleError, "The style \\"ZZZ\\" is unknown"}}
   """
-  @spec from_language_tag(tag(), options()) :: {:ok, binary()} | {:error, error()}
-  def from_language_tag(tag, options \\ @default_style)
-  def from_language_tag(%LanguageTag{cldr_locale_name: cldr_locale_name, territory: territory}, [style: style]) do
-    from_territory_code(territory, [locale: cldr_locale_name] ++ [style: style])
+  @spec from_language_tag(tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
+  def from_language_tag(tag, backend, options \\ [style: :standard]) do
+    module = Module.concat(backend, Territory)
+    module.from_language_tag(tag, options)
   end
-  def from_language_tag(tag, _options), do: {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}
 
   @doc """
   The same as `from_language_tag/2`, but raises an exception if it fails.
 
   ## Example
 
-      iex> Cldr.Territory.from_language_tag!(Cldr.get_current_locale())
+      iex> Cldr.Territory.from_language_tag!(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr)
       "World"
   """
-  @spec from_language_tag!(tag(), options()) :: binary() | no_return()
-  def from_language_tag!(tag, options \\ @default_style)
-  def from_language_tag!(%LanguageTag{cldr_locale_name: cldr_locale_name, territory: territory}, [style: style]) do
-    from_territory_code!(territory, [locale: cldr_locale_name] ++ [style: style])
+  @spec from_language_tag!(tag(), Cldr.backend(), options()) :: binary() | no_return()
+  def from_language_tag!(tag, backend, options \\ [style: :standard]) do
+    module = Module.concat(backend, Territory)
+    module.from_language_tag!(tag, options)
   end
-  def from_language_tag!(tag, _options), do: raise Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"
 
   @doc """
   Translate a localized string from one locale to another.
   Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
-  * `to_locale` is any configured locale. See `Cldr.known_locale_names/0`.
-    The default is `Cldr.get_current_locale/0`
+  * `to_locale` is any configured locale. See `Cldr.known_locale_names/1`.
+    The default is `Cldr.get_locale/0`
 
   ## Example
 
-      iex> Cldr.Territory.translate_territory("Reino Unido", "pt")
+      iex> Cldr.Territory.translate_territory("Reino Unido", "pt", TestBackend.Cldr)
       {:ok, "UK"}
 
-      iex> Cldr.Territory.translate_territory("United Kingdom", "en", "pt")
+      iex> Cldr.Territory.translate_territory("United Kingdom", "en", TestBackend.Cldr, "pt")
       {:ok, "Reino Unido"}
 
-      iex> Cldr.Territory.translate_territory("Reino Unido", :zzz)
+      iex> Cldr.Territory.translate_territory("Reino Unido", :zzz, TestBackend.Cldr)
       {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
 
-      iex> Cldr.Territory.translate_territory("United Kingdom", "en", "zzz")
+      iex> Cldr.Territory.translate_territory("United Kingdom", "en", TestBackend.Cldr, "zzz")
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
   """
-  @spec translate_territory(binary(), binary_tag(), binary_tag()) :: {:ok, binary()} | {:error, error()}
-  def translate_territory(localized_string, from_locale, to_locale \\ Cldr.get_current_locale())
-  def translate_territory(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale) do
-    translate_territory(localized_string, from_locale, to_locale)
-  end
-  def translate_territory(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}) do
-    translate_territory(localized_string, from_locale, to_locale)
+  @spec translate_territory(binary(), binary_tag(), Cldr.backend(), binary_tag()) :: {:ok, binary()} | {:error, error()}
+  def translate_territory(localized_string, from_locale, backend, to_locale \\ Cldr.get_locale()) do
+    module = Module.concat(backend, Territory)
+    module.translate_territory(localized_string, from_locale, to_locale)
   end
 
   @doc """
@@ -279,35 +230,26 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.translate_territory!("Reino Unido", "pt")
+      iex> Cldr.Territory.translate_territory!("Reino Unido", "pt", TestBackend.Cldr)
       "UK"
 
-      iex> Cldr.Territory.translate_territory!("United Kingdom", "en", "pt")
+      iex> Cldr.Territory.translate_territory!("United Kingdom", "en", TestBackend.Cldr, "pt")
       "Reino Unido"
   """
-  @spec translate_territory!(binary(), binary_tag(), binary_tag()) :: binary() | no_return()
-  def translate_territory!(localized_string, from_locale, to_locale \\ Cldr.get_current_locale())
-  def translate_territory!(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale) do
-    translate_territory(localized_string, from_locale, to_locale)
+  @spec translate_territory!(binary(), binary_tag(), Cldr.backend(), binary_tag()) :: binary() | no_return()
+  def translate_territory!(localized_string, from_locale, backend, to_locale \\ Cldr.get_locale()) do
+    module = Module.concat(backend, Territory)
+    module.translate_territory!(localized_string, from_locale, to_locale)
   end
-  def translate_territory!(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}) do
-    translate_territory!(localized_string, from_locale, to_locale)
-  end
-  def translate_territory!(localized_string, locale_from, locale_name) do
-    case translate_territory(localized_string, locale_from, locale_name) do
-      {:error, {exception, msg}} -> raise exception, msg
 
-      {:ok, result}              -> result
-    end
-  end
 
   @doc """
   Translate a LanguageTag.t into a localized string from one locale to another.
   Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
   * `options` are:
-    * `locale` is any configured locale. See `Cldr.known_locale_names/0`.
-      The default is `Cldr.get_current_locale/0`
+    * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
+      The default is `Cldr.get_locale/0`
 
     * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
       The current styles are `:short`, `:standard` and `:variant`.
@@ -315,36 +257,16 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.translate_language_tag(Cldr.get_current_locale())
+      iex> Cldr.Territory.translate_language_tag(Cldr.get_locale(), TestBackend.Cldr)
       {:ok, "World"}
 
-      iex> Cldr.Territory.translate_language_tag(Cldr.get_current_locale(), [locale: Cldr.Locale.new!("pt")])
+      iex> Cldr.Territory.translate_language_tag(Cldr.get_locale(), TestBackend.Cldr, [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
       {:ok, "Mundo"}
   """
-  @spec translate_language_tag(tag(), options()) :: {:ok, binary()} | {:error, error()}
-  def translate_language_tag(from_locale, options \\ [locale: Cldr.get_current_locale(), style: :standard])
-  def translate_language_tag(%LanguageTag{} = from_locale, [locale: %LanguageTag{} = to_locale]) do
-    translate_language_tag(from_locale, [locale: to_locale] ++ @default_style)
-  end
-  def translate_language_tag(%LanguageTag{} = from_locale, [style: style]) do
-    translate_language_tag(from_locale, @default_locale ++ [style: style])
-  end
-  def translate_language_tag(%LanguageTag{} = from_locale,  [locale: %LanguageTag{} = to_locale, style: style]) do
-    case from_language_tag(from_locale, [style: style]) do
-      {:error, reason} -> {:error, reason}
-
-      {:ok, result}    -> translate_territory(result, from_locale, to_locale)
-    end
-  end
-
-  def translate_language_tag(%LanguageTag{}, [locale: tag, style: _style]) do
-    {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}
-  end
-  def translate_language_tag(%LanguageTag{}, [locale: tag]) do
-    {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}
-  end
-  def translate_language_tag(tag, _options) do
-    {:error, {Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"}}
+  @spec translate_language_tag(tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
+  def translate_language_tag(from_locale, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
+    module = Module.concat(backend, Territory)
+    module.translate_language_tag(from_locale, options)
   end
 
   @doc """
@@ -352,20 +274,16 @@ defmodule Cldr.Territory do
 
   ## Example
 
-      iex> Cldr.Territory.translate_language_tag!(Cldr.get_current_locale())
+      iex> Cldr.Territory.translate_language_tag!(Cldr.get_locale(), TestBackend.Cldr)
       "World"
 
-      iex> Cldr.Territory.translate_language_tag!(Cldr.get_current_locale(), [locale: Cldr.Locale.new!("pt")])
+      iex> Cldr.Territory.translate_language_tag!(Cldr.get_locale(), TestBackend.Cldr, [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
       "Mundo"
   """
-  @spec translate_language_tag!(tag(), options()) :: binary() | no_return()
-  def translate_language_tag!(locale_from, options \\ [locale: Cldr.get_current_locale(), style: :standard])
-  def translate_language_tag!(locale_from, options) do
-    case translate_language_tag(locale_from, options) do
-      {:error, {exception, msg}} -> raise exception, msg
-
-      {:ok, result}              -> result
-    end
+  @spec translate_language_tag!(tag(), Cldr.backend(), options()) :: binary() | no_return()
+  def translate_language_tag!(from_locale, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
+    module = Module.concat(backend, Territory)
+    module.translate_language_tag!(from_locale, options)
   end
 
   @children Enum.flat_map(@territory_containment, fn {_, v} -> v end)
@@ -386,7 +304,7 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.parent(:ZZZ)
       {:error, {Cldr.UnknownTerritoryError, "The territory :ZZZ is unknown"}}
 
-      iex> Cldr.Territory.parent(Cldr.get_current_locale())
+      iex> Cldr.Territory.parent(Cldr.get_locale())
       {:error, {Cldr.UnknownChildrenError, "The territory :\\"001\\" has no parent(s)"}}
   """
   @spec parent(atom_binary_tag(), as_options()) :: {:ok, atom_binary_charlist()} | {:error, error()}
@@ -653,65 +571,6 @@ defmodule Cldr.Territory do
 
       {:ok, result}              -> result
     end
-  end
-
-  # Generate the functions that encapsulate the territory data from CDLR
-  for locale_name <- Cldr.Config.known_locale_names() do
-    territories = locale_name |> Cldr.Config.get_locale() |> Map.get(:territories)
-
-    def available_territories(unquote(locale_name)) do
-      unquote(Map.keys(territories)) |> Enum.sort()
-    end
-
-    def known_territories(unquote(locale_name)) do
-      unquote(Macro.escape(territories))
-    end
-
-    @doc false
-    def from_territory_code(territory_code, unquote(locale_name), style) do
-      unquote(Macro.escape(territories))
-      |> get_in([territory_code, style])
-      |> case do
-           nil    -> {:error, {Cldr.UnknownStyleError, "The style #{inspect style} is unknown"}}
-
-           string -> {:ok, string}
-         end
-    end
-
-    def translate_territory(localized_string, locale_from, unquote(locale_name)) do
-      locale_from
-      |> Cldr.validate_locale()
-      |> case do
-           {:error, reason} -> {:error, reason}
-
-           {:ok, %LanguageTag{cldr_locale_name: locale}} ->
-             {code, style} = locale
-                             |> Cldr.Config.get_locale()
-                             |> Map.get(:territories)
-                             |> Enum.flat_map(fn {code, map} -> for {style, string} when string == localized_string <- map, do: {code, style} end)
-                             |> Kernel.hd()
-
-
-             {:ok, (unquote(Macro.escape(territories))[code][style])}
-         end
-    end
-  end
-
-  def available_territories(locale), do: {:error, Locale.locale_error(locale)}
-
-  def known_territories(locale), do: {:error, Locale.locale_error(locale)}
-
-  def translate_territory(_localized_string, _from, locale), do: {:error, Locale.locale_error(locale)}
-
-  defp validate_locale({:error, reason}, _locale), do: {:error, reason}
-  defp validate_locale({:ok, code}, locale) do
-    locale
-    |> Cldr.validate_locale()
-    |> case do
-         {:error, error}                                    -> {:error, error}
-
-         {:ok, %LanguageTag{cldr_locale_name: locale_name}} -> {:ok, code, locale_name}
-       end
   end
 
   @doc """

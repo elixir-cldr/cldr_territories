@@ -1,7 +1,7 @@
 defmodule CldrTerritories.Mixfile do
   use Mix.Project
 
-  @version "1.4.0"
+  @version "2.0.0"
 
   def project do
     [
@@ -14,7 +14,9 @@ defmodule CldrTerritories.Mixfile do
       package: package(),
       docs: docs(),
       start_permanent: Mix.env == :prod,
-      deps: deps()
+      deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env()),
+      cldr_provider: {Cldr.Territory.Backend, :define_territory_module, []}
     ]
   end
 
@@ -34,21 +36,18 @@ defmodule CldrTerritories.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 1.8"},
-      {:ex_doc, "~> 0.18", only: :dev},
-      {:poison, ">= 0.0.0", optional: true},
-      {:jason, ">= 0.0.0", optional: true}
+      {:ex_cldr, "~> 2.0"},
+      {:ex_doc, "~> 0.18", only: [:release, :dev]},
+      {:jason, "~> 1.0", optional: true}
     ]
   end
 
   defp package do
     [
       maintainers: ["Benjamin Schultzer"],
-      licenses: ["MIT"],
+      licenses: ~w(MIT),
       links: links(),
-      files: [
-        "lib", "config", "mix.exs", "README*", "CHANGELOG*", "LICENSE*"
-      ]
+      files: ~w(lib config mix.exs README* CHANGELOG* LICENSE*)
     ]
   end
 
@@ -68,4 +67,7 @@ defmodule CldrTerritories.Mixfile do
     }
   end
 
+  defp elixirc_paths(:test), do: ~w(lib mix test)
+  defp elixirc_paths(:dev), do: ~w(lib mix)
+  defp elixirc_paths(_), do: ~w(lib)
 end

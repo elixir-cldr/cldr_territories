@@ -1,9 +1,9 @@
 defmodule Cldr.TerritoryTest do
   use ExUnit.Case
-  require Cldr
   alias Cldr.Territory
 
   doctest Cldr.Territory
+  doctest TestBackend.Cldr.Territory
 
   @available_territories [:"001", :"002", :"003", :"005", :"009", :"011", :"013", :"014", :"015", :"017", :"018", :"019", :"021", :"029", :"030", :"034",
                           :"035", :"039", :"053", :"054", :"057", :"061", :"142", :"143", :"145", :"150", :"151", :"154", :"155", :"202", :"419", :AC,
@@ -50,196 +50,192 @@ defmodule Cldr.TerritoryTest do
 
   @parants [:"154", :EU, :UN]
 
-  @us Cldr.Locale.new!("en")
+  @us Cldr.Locale.new!("en", TestBackend.Cldr)
 
-  @bs Cldr.Locale.new!("BS")
+  @bs Cldr.Locale.new!("BS", TestBackend.Cldr)
 
   test "available_styles/0" do
-    assert [:short, :standard, :variant] == Territory.available_styles
+    assert [:short, :standard, :variant] == Territory.available_styles()
   end
 
-  describe "available_territories/1" do
+  describe "available_territories/2" do
     test "with valid params" do
-      assert @available_territories == Territory.available_territories
-    end
-
-    test "with invalid params" do
-      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.available_territories("zzz")
+      assert @available_territories == Territory.available_territories(TestBackend.Cldr)
     end
   end
 
   describe "from_territory_code/1" do
     test "with valid params" do
-      assert {:ok, "United States"} == Territory.from_territory_code(:US)
-      assert {:ok, "United States"} == Territory.from_territory_code("us")
-      assert {:ok, "US"} == Territory.from_territory_code(:US, [style: :short])
-      assert {:ok, "US"} == Territory.from_territory_code("US", [style: :short])
-      assert {:ok, "Sjedinjene Američke Države"} == Territory.from_territory_code(:US, [locale: "bs"])
-      assert {:ok, "SAD"} == Territory.from_territory_code(:US, [locale: "bs", style: :short])
+      assert {:ok, "United States"} == Territory.from_territory_code(:US, TestBackend.Cldr)
+      assert {:ok, "United States"} == Territory.from_territory_code("us", TestBackend.Cldr)
+      assert {:ok, "US"} == Territory.from_territory_code(:US, TestBackend.Cldr, [style: :short])
+      assert {:ok, "US"} == Territory.from_territory_code("US", TestBackend.Cldr, [style: :short])
+      assert {:ok, "Sjedinjene Američke Države"} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "bs"])
+      assert {:ok, "SAD"} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "bs", style: :short])
     end
 
     test "with invalid params" do
-      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.from_territory_code(:ZZ)
-      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.from_territory_code(:US, [locale: "zzz", style: :short])
-      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.from_territory_code(:US, [locale: :zzz, style: :short])
-      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.from_territory_code(:US, [locale: "en", style: "zzz"])
-      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.from_territory_code(:US, [locale: "en", style: :zzz])
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.from_territory_code(:ZZ, TestBackend.Cldr)
+      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "zzz", style: :short])
+      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: :zzz, style: :short])
+      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "en", style: "zzz"])
+      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "en", style: :zzz])
     end
   end
 
   describe "from_territory_code!/1" do
     test "with valid params" do
-      assert "United States" == Territory.from_territory_code!(:US)
-      assert "United States" == Territory.from_territory_code!("US")
-      assert "US" == Territory.from_territory_code!(:US, [style: :short])
-      assert "US" == Territory.from_territory_code!("us", [style: :short])
-      assert "Sjedinjene Američke Države" == Territory.from_territory_code!(:US, [locale: "bs"])
-      assert "SAD" == Territory.from_territory_code!(:US, [locale: "bs", style: :short])
+      assert "United States" == Territory.from_territory_code!(:US, TestBackend.Cldr)
+      assert "United States" == Territory.from_territory_code!("US", TestBackend.Cldr)
+      assert "US" == Territory.from_territory_code!(:US, TestBackend.Cldr, [style: :short])
+      assert "US" == Territory.from_territory_code!("us", TestBackend.Cldr, [style: :short])
+      assert "Sjedinjene Američke Države" == Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "bs"])
+      assert "SAD" == Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "bs", style: :short])
     end
 
     test "with invalid params" do
       assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
-        Territory.from_territory_code!(:ZZ)
+        Territory.from_territory_code!(:ZZ, TestBackend.Cldr)
       end
       assert_raise Cldr.UnknownTerritoryError, "The territory \"yy\" is unknown", fn ->
-        Territory.from_territory_code!("yy")
+        Territory.from_territory_code!("yy", TestBackend.Cldr)
       end
       assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
-        Territory.from_territory_code!(:US, [locale: "zzz", style: :short])
+        Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "zzz", style: :short])
       end
       assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
-        Territory.from_territory_code!(:US, [locale: :zzz, style: :short])
+        Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: :zzz, style: :short])
       end
       assert_raise Cldr.UnknownStyleError, "The style \"zzz\" is unknown", fn ->
-        Territory.from_territory_code!(:US, [locale: "en", style: "zzz"])
+        Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "en", style: "zzz"])
       end
       assert_raise Cldr.UnknownStyleError, "The style :zzz is unknown", fn ->
-        Territory.from_territory_code!(:US, [locale: "en", style: :zzz])
+        Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "en", style: :zzz])
       end
     end
   end
 
   describe "from_language_tag/1" do
     test "with valid params" do
-      assert {:ok, "United States"} == Territory.from_language_tag(@us)
-      assert {:ok, "US"} == Territory.from_language_tag(@us, [style: :short])
-      assert {:ok, "Bosna i Hercegovina"} == Territory.from_language_tag(@bs)
+      assert {:ok, "United States"} == Territory.from_language_tag(@us, TestBackend.Cldr)
+      assert {:ok, "US"} == Territory.from_language_tag(@us, TestBackend.Cldr, [style: :short])
+      assert {:ok, "Bosna i Hercegovina"} == Territory.from_language_tag(@bs, TestBackend.Cldr)
     end
 
     test "with invalid params" do
-      assert {:error, {Cldr.UnknownLanguageTagError, "The tag :ZZ is not a valid `LanguageTag.t`"}} == Territory.from_language_tag(:ZZ)
-      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.from_language_tag("zzz", [style: :short])
-      assert {:error, {Cldr.UnknownLanguageTagError, "The tag :zzz is not a valid `LanguageTag.t`"}} == Territory.from_language_tag(:zzz, [style: :short])
-      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.from_territory_code(@bs, [style: "zzz"])
-      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.from_territory_code(@us, [style: :zzz])
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag :ZZ is not a valid `LanguageTag.t`"}} == Territory.from_language_tag(:ZZ, TestBackend.Cldr)
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.from_language_tag("zzz", TestBackend.Cldr, [style: :short])
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag :zzz is not a valid `LanguageTag.t`"}} == Territory.from_language_tag(:zzz, TestBackend.Cldr, [style: :short])
+      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.from_territory_code(@bs, TestBackend.Cldr, [style: "zzz"])
+      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.from_territory_code(@us, TestBackend.Cldr, [style: :zzz])
     end
   end
 
   describe "from_language_tag!/1" do
     test "with valid params" do
-      assert "United States" == Territory.from_language_tag!(@us)
-      assert "US" == Territory.from_language_tag!(@us, [style: :short])
-      assert "Bosna i Hercegovina" == Territory.from_language_tag!(@bs)
+      assert "United States" == Territory.from_language_tag!(@us, TestBackend.Cldr)
+      assert "US" == Territory.from_language_tag!(@us, TestBackend.Cldr, [style: :short])
+      assert "Bosna i Hercegovina" == Territory.from_language_tag!(@bs, TestBackend.Cldr)
     end
 
     test "with invalid params" do
       assert_raise Cldr.UnknownLanguageTagError, "The tag :ZZ is not a valid `LanguageTag.t`", fn ->
-        Territory.from_language_tag!(:ZZ)
+        Territory.from_language_tag!(:ZZ, TestBackend.Cldr)
       end
       assert_raise Cldr.UnknownLanguageTagError, "The tag \"yy\" is not a valid `LanguageTag.t`", fn ->
-        Territory.from_language_tag!("yy", [style: :short])
+        Territory.from_language_tag!("yy", TestBackend.Cldr, [style: :short])
       end
       assert_raise Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`", fn ->
-        Territory.from_language_tag!("zzz", [style: :short])
+        Territory.from_language_tag!("zzz", TestBackend.Cldr, [style: :short])
       end
       assert_raise Cldr.UnknownLanguageTagError, "The tag :zzz is not a valid `LanguageTag.t`", fn ->
-        Territory.from_language_tag!(:zzz, [style: :short])
+        Territory.from_language_tag!(:zzz, TestBackend.Cldr, [style: :short])
       end
       assert_raise Cldr.UnknownStyleError, "The style \"zzz\" is unknown", fn ->
-        Territory.from_territory_code!(@bs, [style: "zzz"])
+        Territory.from_territory_code!(@bs, TestBackend.Cldr, [style: "zzz"])
       end
       assert_raise Cldr.UnknownStyleError, "The style :zzz is unknown", fn ->
-        Territory.from_territory_code!(@us, [style: :zzz])
+        Territory.from_territory_code!(@us, TestBackend.Cldr, [style: :zzz])
       end
     end
   end
 
   describe "translate_territory/3" do
     test "with valid params" do
-      assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_territory("United States", "en-001", "bs")
-      assert {:ok, "SAD"} == Territory.translate_territory("US", "en-001", "bs")
-      assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Američke Države", "bs", "en-001")
-      assert {:ok, "US"} == Territory.translate_territory("SAD", "bs", "en-001")
+      assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_territory("United States", "en", TestBackend.Cldr, "bs")
+      assert {:ok, "SAD"} == Territory.translate_territory("US", "en", TestBackend.Cldr, "bs")
+      assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Američke Države", "bs", TestBackend.Cldr, "en")
+      assert {:ok, "US"} == Territory.translate_territory("SAD", "bs", TestBackend.Cldr, "en")
     end
 
     test "with invalid params" do
-      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "zzz", "bs")
-      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "en-001", "zzz")
-      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", :zzz, "bs")
-      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", "en-001", :zzz)
+      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "zzz", TestBackend.Cldr, "bs")
+      assert {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}} == Territory.translate_territory("US", "en", TestBackend.Cldr, "zzz")
+      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", :zzz, TestBackend.Cldr, "bs")
+      assert {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}} == Territory.translate_territory("US", "en", TestBackend.Cldr, :zzz)
     end
   end
 
   describe "translate_territory!/3" do
     test "with valid params" do
-      assert "Sjedinjene Američke Države" == Territory.translate_territory!("United States", "en-001", "bs")
-      assert "SAD" == Territory.translate_territory!("US", "en-001", "bs")
-      assert "United States" == Territory.translate_territory!("Sjedinjene Američke Države", "bs", "en-001")
-      assert "US" == Territory.translate_territory!("SAD", "bs", "en-001")
+      assert "Sjedinjene Američke Države" == Territory.translate_territory!("United States", "en", TestBackend.Cldr, "bs")
+      assert "SAD" == Territory.translate_territory!("US", "en", TestBackend.Cldr, "bs")
+      assert "United States" == Territory.translate_territory!("Sjedinjene Američke Države", "bs", TestBackend.Cldr, "en")
+      assert "US" == Territory.translate_territory!("SAD", "bs", TestBackend.Cldr, "en")
     end
 
     test "with invalid params" do
       assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
-        Territory.translate_territory!("US", "zzz", "bs")
+        Territory.translate_territory!("US", "zzz", TestBackend.Cldr, "bs")
       end
       assert_raise Cldr.UnknownLocaleError, "The locale \"zzz\" is not known.", fn ->
-        Territory.translate_territory!("US", "en-001", "zzz")
+        Territory.translate_territory!("US", "en", TestBackend.Cldr, "zzz")
       end
       assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
-        Territory.translate_territory!("US", :zzz, "bs")
+        Territory.translate_territory!("US", :zzz, TestBackend.Cldr, "bs")
       end
       assert_raise Cldr.UnknownLocaleError, "The locale :zzz is not known.", fn ->
-        Territory.translate_territory!("US", "en-001", :zzz)
+        Territory.translate_territory!("US", "en", TestBackend.Cldr, :zzz)
       end
     end
   end
 
   describe "translate_language_tag/2" do
     test "with valid params" do
-      assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_language_tag(@us, locale: @bs)
-      assert {:ok, "SAD"} == Territory.translate_language_tag(@us, [locale: @bs, style: :short])
-      assert {:ok, "United States"} == Territory.translate_language_tag(@us)
-      assert {:ok, "US"} == Territory.translate_language_tag(@us, [style: :short])
+      assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_language_tag(@us, TestBackend.Cldr, locale: @bs)
+      assert {:ok, "SAD"} == Territory.translate_language_tag(@us, TestBackend.Cldr, [locale: @bs, style: :short])
+      assert {:ok, "United States"} == Territory.translate_language_tag(@us, TestBackend.Cldr)
+      assert {:ok, "US"} == Territory.translate_language_tag(@us, TestBackend.Cldr, [style: :short])
     end
 
     test "with invalid params" do
-      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag(@us, locale: "zzz")
-      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"US\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag("US", locale: @bs)
-      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.translate_language_tag(@bs, [locale: @us, style: "zzz"])
-      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.translate_language_tag(@us, [locale: @bs, style: :zzz])
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag(@us, TestBackend.Cldr, locale: "zzz")
+      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"US\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag("US", TestBackend.Cldr, locale: @bs)
+      assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.translate_language_tag(@bs, TestBackend.Cldr, [locale: @us, style: "zzz"])
+      assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.translate_language_tag(@us, TestBackend.Cldr, [locale: @bs, style: :zzz])
     end
   end
 
   describe "translate_language_tag!/2" do
     test "with valid params" do
-      assert "Sjedinjene Američke Države" == Territory.translate_language_tag!(@us, locale: @bs)
-      assert "SAD" == Territory.translate_language_tag!(@us, [locale: @bs, style: :short])
-      assert "United States" == Territory.translate_language_tag!(@us)
-      assert "US" == Territory.translate_language_tag!(@us, [style: :short])
+      assert "Sjedinjene Američke Države" == Territory.translate_language_tag!(@us, TestBackend.Cldr, locale: @bs)
+      assert "SAD" == Territory.translate_language_tag!(@us, TestBackend.Cldr, [locale: @bs, style: :short])
+      assert "United States" == Territory.translate_language_tag!(@us, TestBackend.Cldr)
+      assert "US" == Territory.translate_language_tag!(@us, TestBackend.Cldr, [style: :short])
     end
 
     test "with invalid params" do
       assert_raise Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`", fn ->
-        Territory.translate_language_tag!(@us, locale: "zzz")
+        Territory.translate_language_tag!(@us, TestBackend.Cldr, locale: "zzz")
       end
       assert_raise Cldr.UnknownLanguageTagError,"The tag \"US\" is not a valid `LanguageTag.t`", fn ->
-        Territory.translate_language_tag!("US", locale: @bs)
+        Territory.translate_language_tag!("US", TestBackend.Cldr, locale: @bs)
       end
       assert_raise Cldr.UnknownStyleError, "The style \"zzz\" is unknown", fn ->
-        Territory.translate_language_tag!(@bs, [locale: @us, style: "zzz"])
+        Territory.translate_language_tag!(@bs, TestBackend.Cldr, [locale: @us, style: "zzz"])
       end
       assert_raise Cldr.UnknownStyleError, "The style :zzz is unknown", fn ->
-        Territory.translate_language_tag!(@us, [locale: @bs, style: :zzz])
+        Territory.translate_language_tag!(@us, TestBackend.Cldr, [locale: @bs, style: :zzz])
       end
     end
   end
