@@ -11,7 +11,7 @@ defmodule Cldr.Territory do
   @type atom_binary_tag            :: atom() | binary() | LanguageTag.t()
   @type atom_tag                   :: atom() | LanguageTag.t()
   @type binary_tag                 :: binary() | LanguageTag.t()
-  @type error                      :: {Exeption.t(), binary()}
+  @type error                      :: {Exception.t(), binary()}
   @type styles                     :: :short | :standard | :variant
   @type tag                        :: LanguageTag.t()
   @type options                    :: [{:locale, binary_tag()} | {:style, styles()}]
