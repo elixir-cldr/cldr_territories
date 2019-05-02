@@ -8,7 +8,7 @@
 
 ## Cldr Territories v2.0.0 November 25st, 2018
 
-This is the changelog for Cldr Territories v2.0.0 released on November 25th, 2018. For older changelogs please consult the release tag on [GitHub](https://github.com/kipcole9/cldr_territories/tags)
+This is the changelog for Cldr Territories v2.0.0 released on November 25th, 2018. For older changelogs please consult the release tag on [GitHub](https://github.com/schultzer/cldr_territories/tags)
 
 ### Enhancements
 
