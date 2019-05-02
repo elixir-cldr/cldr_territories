@@ -7,11 +7,6 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
-
-      - restore_cache:
-          keys:
-            - deps-build
-
       - run: mix local.hex --force
       - run: mix deps.get
 
@@ -20,8 +15,3 @@ jobs:
       - run: rm _build/test/lib/ex_cldr/priv/cldr/territory_containment.json
 
       - run: mix test
-
-      - save_cache:
-          key: deps-build
-          paths:
-            - ~/repo/deps
