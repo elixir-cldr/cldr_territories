@@ -1,5 +1,21 @@
 # Changelog
 
+## Cldr Territories v2.1.0 June 8th, 2020
+
+### Enhancements
+
+* Requires `ex_cldr` version `2.14` or later to use CLDR data version 37. As with all CLDR releases, underlying data can change and tests are updated to reflect those changes.
+
+* Updated readme to reflect changes in EU composition and the updated data returned territories
+
+* CLDR 37 also reflects that the UK is no longer part of the EU.
+
+* Minimum version of Elixir required is 1.8 to align with the baseline `ex_cldr` library
+
+* Fix typespec leading to dialyzer errors
+
+* Update dependencies in development
+
 ## Cldr Territories v2.0.1 May 1st, 2019
 
 ### Enhancements

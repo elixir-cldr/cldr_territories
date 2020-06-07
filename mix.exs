@@ -1,13 +1,13 @@
 defmodule CldrTerritories.Mixfile do
   use Mix.Project
 
-  @version "2.0.1"
+  @version "2.1.0"
 
   def project do
     [
       app: :ex_cldr_territories,
       version: @version,
-      elixir: "~> 1.5",
+      elixir: "~> 1.8",
       name: "Cldr Territories",
       source_url: "https://github.com/schultzer/cldr_territories",
       description: description(),
@@ -36,9 +36,10 @@ defmodule CldrTerritories.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.0"},
+      {:ex_cldr, "~> 2.14"},
       {:ex_doc, "~> 0.18", only: [:release, :dev]},
-      {:jason, "~> 1.0", optional: true}
+      {:jason, "~> 1.0", optional: true},
+      {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true},
     ]
   end
 

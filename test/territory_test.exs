@@ -19,33 +19,50 @@ defmodule Cldr.TerritoryTest do
                           :TH, :TJ, :TK, :TL, :TM, :TN, :TO, :TR, :TT, :TV, :TW, :TZ, :UA, :UG, :UM, :UN, :US, :UY, :UZ, :VA, :VC, :VE, :VG, :VI, :VN,
                           :VU, :WF, :WS, :XA, :XB, :XK, :YE, :YT, :ZA, :ZM, :ZW, :ZZ]
 
- @info %{currency: [USD: %{from: ~D[1792-01-01]}, USS: %{tender: false, to: ~D[2014-03-01]}, USN: %{tender: false}],
-              gdp: 18560000000000, language_population: %{"cho" => %{population_percent: 0.0033},
-                                                          "chr" => %{population_percent: 0.0077, writing_percent: 5},
-                                                          "dak" => %{population_percent: 0.0059},
-                                                          "de" => %{population_percent: 0.47},
-                                                          "en" => %{official_status: "de_facto_official", population_percent: 96},
-                                                          "es" => %{official_status: "official_regional", population_percent: 9.6},
-                                                          "esu" => %{population_percent: 0.0062},
-                                                          "fil" => %{population_percent: 0.42},
-                                                          "fr" => %{population_percent: 0.56},
-                                                          "frc" => %{population_percent: 0.0084},
-                                                          "haw" => %{official_status: "official_regional", population_percent: 0.0089},
-                                                          "ik" => %{population_percent: 0.0024, writing_percent: 5},
-                                                          "it" => %{population_percent: 0.34},
-                                                          "ko" => %{population_percent: 0.3},
-                                                          "lkt" => %{population_percent: 0.0025},
-                                                          "mus" => %{population_percent: 0.0012},
-                                                          "nv" => %{population_percent: 0.05},
-                                                          "pdc" => %{population_percent: 0.039},
-                                                          "ru" => %{population_percent: 0.24},
-                                                          "vi" => %{population_percent: 0.34},
-                                                          "yi" => %{population_percent: 0.049},
-                                                          "zh-Hant" => %{population_percent: 0.69}}, literacy_percent: 99,
-               measurement_system: "US", paper_size: "US-Letter", population: 326626000,
-               telephone_country_code: 1, temperature_measurement: "metric"}
+ @info %{
+    currency: [
+      USD: %{from: ~D[1792-01-01]},
+      USS: %{tender: false, to: ~D[2014-03-01]},
+      USN: %{tender: false}
+    ],
+    gdp: 19490000000000,
+    language_population: %{
+      "cad" => %{population_percent: 0},
+      "cho" => %{population_percent: 0.0033},
+      "chr" => %{population_percent: 0.0077, writing_percent: 5},
+      "cic" => %{population_percent: 0},
+      "dak" => %{population_percent: 0.0059},
+      "de" => %{population_percent: 0.47},
+      "en" => %{official_status: "de_facto_official", population_percent: 96},
+      "es" => %{official_status: "official_regional", population_percent: 9.6},
+      "esu" => %{population_percent: 0.0063},
+      "fil" => %{population_percent: 0.42},
+      "fr" => %{population_percent: 0.56},
+      "frc" => %{population_percent: 0.0084},
+      "haw" => %{official_status: "official_regional", population_percent: 0.0089},
+      "ik" => %{population_percent: 0.0024, writing_percent: 5},
+      "it" => %{population_percent: 0.34},
+      "ko" => %{population_percent: 0.3},
+      "lkt" => %{population_percent: 0.0025},
+      "mus" => %{population_percent: 0.0012},
+      "nv" => %{population_percent: 0.05},
+      "osa" => %{population_percent: 0},
+      "pdc" => %{population_percent: 0.039},
+      "ru" => %{population_percent: 0.24},
+      "vi" => %{population_percent: 0.34},
+      "yi" => %{population_percent: 0.049},
+      "zh-Hant" => %{population_percent: 0.69}
+    },
+    literacy_percent: 99,
+    measurement_system: %{
+      default: :ussystem,
+      paper_size: :us_letter,
+      temperature: :ussystem
+    },
+    population: 329256000
+  }
 
-  @eu [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE, :IT,
+  @eu [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GR, :HR, :HU, :IE, :IT,
        :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]
 
   @parants [:"154", :EU, :UN]
@@ -70,7 +87,7 @@ defmodule Cldr.TerritoryTest do
       assert {:ok, "United States"} == Territory.from_territory_code("us", TestBackend.Cldr)
       assert {:ok, "US"} == Territory.from_territory_code(:US, TestBackend.Cldr, [style: :short])
       assert {:ok, "US"} == Territory.from_territory_code("US", TestBackend.Cldr, [style: :short])
-      assert {:ok, "Sjedinjene Američke Države"} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "bs"])
+      assert {:ok, "Sjedinjene Države"} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "bs"])
       assert {:ok, "SAD"} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "bs", style: :short])
     end
 
@@ -89,7 +106,7 @@ defmodule Cldr.TerritoryTest do
       assert "United States" == Territory.from_territory_code!("US", TestBackend.Cldr)
       assert "US" == Territory.from_territory_code!(:US, TestBackend.Cldr, [style: :short])
       assert "US" == Territory.from_territory_code!("us", TestBackend.Cldr, [style: :short])
-      assert "Sjedinjene Američke Države" == Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "bs"])
+      assert "Sjedinjene Države" == Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "bs"])
       assert "SAD" == Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "bs", style: :short])
     end
 
@@ -162,9 +179,9 @@ defmodule Cldr.TerritoryTest do
 
   describe "translate_territory/3" do
     test "with valid params" do
-      assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_territory("United States", "en", TestBackend.Cldr, "bs")
+      assert {:ok, "Sjedinjene Države"} == Territory.translate_territory("United States", "en", TestBackend.Cldr, "bs")
       assert {:ok, "SAD"} == Territory.translate_territory("US", "en", TestBackend.Cldr, "bs")
-      assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Američke Države", "bs", TestBackend.Cldr, "en")
+      assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Države", "bs", TestBackend.Cldr, "en")
       assert {:ok, "US"} == Territory.translate_territory("SAD", "bs", TestBackend.Cldr, "en")
     end
 
@@ -178,9 +195,9 @@ defmodule Cldr.TerritoryTest do
 
   describe "translate_territory!/3" do
     test "with valid params" do
-      assert "Sjedinjene Američke Države" == Territory.translate_territory!("United States", "en", TestBackend.Cldr, "bs")
+      assert "Sjedinjene Države" == Territory.translate_territory!("United States", "en", TestBackend.Cldr, "bs")
       assert "SAD" == Territory.translate_territory!("US", "en", TestBackend.Cldr, "bs")
-      assert "United States" == Territory.translate_territory!("Sjedinjene Američke Države", "bs", TestBackend.Cldr, "en")
+      assert "United States" == Territory.translate_territory!("Sjedinjene Države", "bs", TestBackend.Cldr, "en")
       assert "US" == Territory.translate_territory!("SAD", "bs", TestBackend.Cldr, "en")
     end
 
@@ -202,7 +219,7 @@ defmodule Cldr.TerritoryTest do
 
   describe "translate_language_tag/2" do
     test "with valid params" do
-      assert {:ok, "Sjedinjene Američke Države"} == Territory.translate_language_tag(@us, TestBackend.Cldr, locale: @bs)
+      assert {:ok, "Sjedinjene Države"} == Territory.translate_language_tag(@us, TestBackend.Cldr, locale: @bs)
       assert {:ok, "SAD"} == Territory.translate_language_tag(@us, TestBackend.Cldr, [locale: @bs, style: :short])
       assert {:ok, "United States"} == Territory.translate_language_tag(@us, TestBackend.Cldr)
       assert {:ok, "US"} == Territory.translate_language_tag(@us, TestBackend.Cldr, [style: :short])
@@ -218,7 +235,7 @@ defmodule Cldr.TerritoryTest do
 
   describe "translate_language_tag!/2" do
     test "with valid params" do
-      assert "Sjedinjene Američke Države" == Territory.translate_language_tag!(@us, TestBackend.Cldr, locale: @bs)
+      assert "Sjedinjene Države" == Territory.translate_language_tag!(@us, TestBackend.Cldr, locale: @bs)
       assert "SAD" == Territory.translate_language_tag!(@us, TestBackend.Cldr, [locale: @bs, style: :short])
       assert "United States" == Territory.translate_language_tag!(@us, TestBackend.Cldr)
       assert "US" == Territory.translate_language_tag!(@us, TestBackend.Cldr, [style: :short])
@@ -256,7 +273,10 @@ defmodule Cldr.TerritoryTest do
   describe "parent!/2" do
     test "with valid params" do
       assert @parants == Territory.parent!(:DK)
-      assert @parants == Territory.parent!("gb")
+    end
+
+    test "parents for gb is no longer EU" do
+      assert [:"154", :UN] == Territory.parent!("gb")
     end
 
     test "with invalid params" do
