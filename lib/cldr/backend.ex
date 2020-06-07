@@ -36,6 +36,7 @@ defmodule Cldr.Territory.Backend do
 
             => #{inspect __MODULE__}.available_territories("zzz")
             {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
+
         """
         @spec available_territories(Cldr.Territory.binary_tag()) :: [atom()] | {:error, Cldr.Territory.error()}
         def available_territories(locale \\ unquote(backend).get_locale())
@@ -81,6 +82,7 @@ defmodule Cldr.Territory.Backend do
 
             => #{inspect __MODULE__}.known_territories("zzz")
             {:error, {Cldr.UnknownLocaleError, "The locale \"zzz\" is not known."}}
+
         """
         @spec known_territories(Cldr.Territory.binary_tag()) :: map() | {:error, Cldr.Territory.error()}
         def known_territories(locale \\ unquote(backend).get_locale())
@@ -122,6 +124,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.from_territory_code(:GB, [locale: "zzz"])
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+
         """
         @spec from_territory_code(Cldr.Territory.atom_binary_tag(), Cldr.Territory.options()) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
         def from_territory_code(territory_code, options \\ [locale: unquote(backend).get_locale(), style: :standard])
@@ -161,6 +164,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.from_territory_code!(:GB, [locale: "pt"])
             "Reino Unido"
+
         """
         @spec from_territory_code!(Cldr.Territory.atom_binary_tag(), Cldr.Territory.options()) :: binary() | no_return()
         def from_territory_code!(territory_code, options \\ [locale: unquote(backend).get_locale(), style: :standard])
@@ -206,6 +210,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.from_language_tag(Cldr.get_locale(), [style: "ZZZ"])
             {:error, {Cldr.UnknownStyleError, "The style \\"ZZZ\\" is unknown"}}
+
         """
         @spec from_language_tag(Cldr.Territory.tag(), Cldr.Territory.options()) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
         def from_language_tag(tag, options \\ [style: :standard])
@@ -221,6 +226,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.from_language_tag!(Cldr.get_locale())
             "World"
+
         """
         @spec from_language_tag!(Cldr.Territory.tag(), Cldr.Territory.options()) :: binary() | no_return()
         def from_language_tag!(tag, options \\ [style: :standard])
@@ -249,6 +255,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.translate_territory("United Kingdom", "en", "zzz")
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+
         """
         @spec translate_territory(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag()) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
         def translate_territory(localized_string, from_locale, to_locale \\ unquote(backend).get_locale())
@@ -269,6 +276,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.translate_territory!("United Kingdom", "en", "pt")
             "Reino Unido"
+
         """
         @spec translate_territory!(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag()) :: binary() | no_return()
         def translate_territory!(localized_string, from_locale, to_locale \\ unquote(backend).get_locale())
@@ -305,6 +313,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.translate_language_tag(Cldr.get_locale(), [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
             {:ok, "Mundo"}
+
         """
         @spec translate_language_tag(Cldr.Territory.tag(), Cldr.Territory.options()) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
         def translate_language_tag(from_locale, options \\ [locale: unquote(backend).get_locale(), style: :standard])
@@ -342,6 +351,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.translate_language_tag!(Cldr.get_locale(), [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
             "Mundo"
+
         """
         @spec translate_language_tag!(Cldr.Territory.tag(), Cldr.Territory.options()) :: binary() | no_return()
         def translate_language_tag!(locale_from, options \\ [locale: unquote(backend).get_locale(), style: :standard])
@@ -365,13 +375,14 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.parent(:GB)
-            {:ok, [:"154", :EU, :UN]}
+            {:ok, [:"154", :UN]}
 
             iex> #{inspect __MODULE__}.parent(:ZZZ)
             {:error, {Cldr.UnknownTerritoryError, "The territory :ZZZ is unknown"}}
 
             iex> #{inspect __MODULE__}.parent(Cldr.get_locale())
             {:error, {Cldr.UnknownChildrenError, "The territory :\\"001\\" has no parent(s)"}}
+
         """
         @spec parent(Cldr.Territory.atom_binary_tag(), Cldr.Territory.as_options()) :: {:ok, Cldr.Territory.atom_binary_charlist()} | {:error, Cldr.Territory.error()}
         def parent(territory_code, opts \\ [as: :atom]), do: Cldr.Territory.parent(territory_code, opts)
@@ -387,7 +398,7 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.parent!(:GB)
-            [:"154", :EU, :UN]
+            [:"154", :UN]
 
         """
         @spec parent!(Cldr.Territory.atom_binary_tag(), Cldr.Territory.as_options()) :: [Cldr.Territory.atom_binary_charlist()] | no_return()
@@ -406,7 +417,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.children(:EU)
             {:ok,
-            [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE,
+            [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GR, :HR, :HU, :IE,
               :IT, :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]}
 
             iex> #{inspect __MODULE__}.children(:ZZZ)
@@ -414,6 +425,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.children(:GB)
             {:error, {Cldr.UnknownParentError, "The territory :GB has no children"}}
+
         """
         @spec children(Cldr.Territory.atom_binary_tag(), Cldr.Territory.as_options()) :: {:ok, Cldr.Territory.atom_binary_charlist()} | {:error, Cldr.Territory.error()}
         def children(territory_code, opts \\ [as: :atom]), do: Cldr.Territory.children(territory_code, opts)
@@ -430,8 +442,9 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.children!(:EU)
-            [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE, :IT,
+            [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GR, :HR, :HU, :IE, :IT,
             :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]
+
         """
         @spec children!(Cldr.Territory.atom_binary_tag(), Cldr.Territory.as_options()) :: [Cldr.Territory.atom_binary_charlist()] | no_return()
         def children!(territory_code, opts \\ [as: :atom]), do: Cldr.Territory.children!(territory_code, opts)
@@ -447,6 +460,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.contains?(:DK, :EU)
             false
+
         """
         @spec contains?(Cldr.Territory.atom_tag(), Cldr.Territory.atom_tag()) :: boolean()
         def contains?(parent, child), do: Cldr.Territory.contains?(parent, child)
@@ -458,28 +472,42 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.info(:GB)
-            {:ok, %{currency: [GBP: %{from: ~D[1694-07-27]}], gdp: 2788000000000,
-                  language_population: %{"bn" => %{population_percent: 0.67},
-                    "cy" => %{official_status: "official_regional",
-                      population_percent: 0.77}, "de" => %{population_percent: 6},
-                    "el" => %{population_percent: 0.34},
-                    "en" => %{official_status: "official", population_percent: 99},
-                    "fr" => %{population_percent: 19},
-                    "ga" => %{official_status: "official_regional",
-                      population_percent: 0.026},
-                    "gd" => %{official_status: "official_regional",
-                      population_percent: 0.099, writing_percent: 5},
-                    "it" => %{population_percent: 0.34},
-                    "ks" => %{population_percent: 0.19},
-                    "kw" => %{population_percent: 0.0031},
-                    "ml" => %{population_percent: 0.035},
-                    "pa" => %{population_percent: 0.79},
-                    "sco" => %{population_percent: 2.7, writing_percent: 5},
-                    "syl" => %{population_percent: 0.51},
-                    "yi" => %{population_percent: 0.049},
-                    "zh-Hant" => %{population_percent: 0.54}}, literacy_percent: 99,
-                  measurement_system: "UK", paper_size: "A4", population: 64769500,
-                  telephone_country_code: 44, temperature_measurement: "metric"}}
+            {:ok,
+             %{
+               currency: [GBP: %{from: ~D[1694-07-27]}],
+               gdp: 2925000000000,
+               language_population: %{
+                 "bn" => %{population_percent: 0.67},
+                 "cy" => %{official_status: "official_regional", population_percent: 0.77},
+                 "de" => %{population_percent: 6},
+                 "el" => %{population_percent: 0.33},
+                 "en" => %{official_status: "official", population_percent: 99},
+                 "fr" => %{population_percent: 19},
+                 "ga" => %{official_status: "official_regional", population_percent: 0.026},
+                 "gd" => %{
+                   official_status: "official_regional",
+                   population_percent: 0.099,
+                   writing_percent: 5
+                 },
+                 "it" => %{population_percent: 0.33},
+                 "ks" => %{population_percent: 0.19},
+                 "kw" => %{population_percent: 0.0031},
+                 "ml" => %{population_percent: 0.035},
+                 "pa" => %{population_percent: 0.79},
+                 "sco" => %{population_percent: 2.7, writing_percent: 5},
+                 "syl" => %{population_percent: 0.51},
+                 "yi" => %{population_percent: 0.049},
+                 "zh-Hant" => %{population_percent: 0.54}
+               },
+               literacy_percent: 99,
+               measurement_system: %{
+                 default: :uksystem,
+                 paper_size: :a4,
+                 temperature: :uksystem
+               },
+               population: 65105200
+             }}
+
         """
         @spec info(Cldr.Territory.atom_tag()) :: {:ok, map()} | {:error, Cldr.Territory.error()}
         def info(territory_code), do: Cldr.Territory.info(territory_code)
@@ -491,28 +519,41 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.info!(:GB)
-            %{currency: [GBP: %{from: ~D[1694-07-27]}], gdp: 2788000000000,
-                        language_population: %{"bn" => %{population_percent: 0.67},
-                          "cy" => %{official_status: "official_regional",
-                            population_percent: 0.77}, "de" => %{population_percent: 6},
-                          "el" => %{population_percent: 0.34},
-                          "en" => %{official_status: "official", population_percent: 99},
-                          "fr" => %{population_percent: 19},
-                          "ga" => %{official_status: "official_regional",
-                            population_percent: 0.026},
-                          "gd" => %{official_status: "official_regional",
-                            population_percent: 0.099, writing_percent: 5},
-                          "it" => %{population_percent: 0.34},
-                          "ks" => %{population_percent: 0.19},
-                          "kw" => %{population_percent: 0.0031},
-                          "ml" => %{population_percent: 0.035},
-                          "pa" => %{population_percent: 0.79},
-                          "sco" => %{population_percent: 2.7, writing_percent: 5},
-                          "syl" => %{population_percent: 0.51},
-                          "yi" => %{population_percent: 0.049},
-                          "zh-Hant" => %{population_percent: 0.54}}, literacy_percent: 99,
-                        measurement_system: "UK", paper_size: "A4", population: 64769500,
-                        telephone_country_code: 44, temperature_measurement: "metric"}
+            %{
+              currency: [GBP: %{from: ~D[1694-07-27]}],
+              gdp: 2925000000000,
+              language_population: %{
+                "bn" => %{population_percent: 0.67},
+                "cy" => %{official_status: "official_regional", population_percent: 0.77},
+                "de" => %{population_percent: 6},
+                "el" => %{population_percent: 0.33},
+                "en" => %{official_status: "official", population_percent: 99},
+                "fr" => %{population_percent: 19},
+                "ga" => %{official_status: "official_regional", population_percent: 0.026},
+                "gd" => %{
+                  official_status: "official_regional",
+                  population_percent: 0.099,
+                  writing_percent: 5
+                },
+                "it" => %{population_percent: 0.33},
+                "ks" => %{population_percent: 0.19},
+                "kw" => %{population_percent: 0.0031},
+                "ml" => %{population_percent: 0.035},
+                "pa" => %{population_percent: 0.79},
+                "sco" => %{population_percent: 2.7, writing_percent: 5},
+                "syl" => %{population_percent: 0.51},
+                "yi" => %{population_percent: 0.049},
+                "zh-Hant" => %{population_percent: 0.54}
+              },
+              literacy_percent: 99,
+              measurement_system: %{
+                default: :uksystem,
+                paper_size: :a4,
+                temperature: :uksystem
+              },
+              population: 65105200
+            }
+
         """
         @spec info!(Cldr.Territory.atom_tag()) :: map() | no_return()
         def info!(territory_code), do: Cldr.Territory.info!(territory_code)
@@ -589,6 +630,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.to_unicode_flag(:EZ)
             {:error, {Cldr.UnknownFlagError, "The territory :EZ has no flag"}}
+
         """
         @spec to_unicode_flag(Cldr.Territory.atom_binary_tag() | {:ok, atom()} | {:error, Cldr.Territory.error()}) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
         def to_unicode_flag(territory_code), do: Cldr.Territory.to_unicode_flag(territory_code)
@@ -600,6 +642,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.to_unicode_flag!(:US)
             "🇺🇸"
+
         """
         @spec to_unicode_flag!(Cldr.Territory.atom_binary_tag()) :: binary() | no_return()
         def to_unicode_flag!(territory_code), do: Cldr.Territory.to_unicode_flag!(territory_code)
@@ -621,6 +664,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.to_currency_code("cu")
             {:ok, :CUP}
+
         """
         @spec to_currency_code(Cldr.Territory.atom_binary_tag(), Cldr.Territory.as_options()) :: {:ok, Cldr.Territory.atom_binary_charlist()} | {:error, Cldr.Territory.error()}
         def to_currency_code(territory_code, opts \\ [as: :atom]), do: Cldr.Territory.to_currency_code(territory_code, opts)
@@ -646,6 +690,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.to_currency_code!("PS", as: :binary)
             "ILS"
+
         """
         @spec to_currency_code!(Cldr.Territory.atom_binary_tag(), Cldr.Territory.as_options()) :: Cldr.Territory.atom_binary_charlist() | no_return()
         def to_currency_code!(territory_code, opts \\ [as: :atom]), do: Cldr.Territory.to_currency_code!(territory_code, opts)
@@ -667,6 +712,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.to_currency_codes("cu")
             {:ok, [:CUP, :CUC]}
+
         """
         @spec to_currency_codes(Cldr.Territory.atom_binary_tag(), Cldr.Territory.as_options()) :: {:ok, [Cldr.Territory.atom_binary_charlist()]} | {:error, Cldr.Territory.error()}
         def to_currency_codes(territory_code, opts \\ [as: :atom]), do: Cldr.Territory.to_currency_codes(territory_code, opts)
@@ -692,6 +738,7 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.to_currency_codes!("PS", as: :binary)
             ["ILS", "JOD"]
+
         """
         @spec to_currency_codes!(Cldr.Territory.atom_binary_tag(), Cldr.Territory.as_options()) :: [Cldr.Territory.atom_binary_charlist()] | no_return()
         def to_currency_codes!(territory_code, opts \\ [as: :atom]), do: Cldr.Territory.to_currency_codes!(territory_code, opts)
@@ -711,6 +758,7 @@ defmodule Cldr.Territory.Backend do
             :AX, :AZ, :BA, :BB, :BD, :BE, :BF, :BG, :BH, :BI, :BJ, :BL, :BM,
             :BN, :BO, :BQ, :BR, :BS, :BT, :BV, :BW, :BY, :BZ, :CA, :CC, :CD,
             :CF, :CG, :CH, :CI, :CK, :CL, :CM, :CN, :CO, :CR, :CU, ...]
+
         """
         @spec country_codes(Cldr.Territory.as_options()) :: [Cldr.Territory.atom_binary_charlist()]
         def country_codes(opts \\ [as: :atom]), do: Cldr.Territory.country_codes(opts)

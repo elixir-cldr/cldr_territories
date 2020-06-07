@@ -11,14 +11,14 @@ defmodule Cldr.Territory do
   @type atom_binary_tag            :: atom() | binary() | LanguageTag.t()
   @type atom_tag                   :: atom() | LanguageTag.t()
   @type binary_tag                 :: binary() | LanguageTag.t()
-  @type error                      :: {Exception.t(), binary()}
+  @type error                      :: {module, binary()}
   @type styles                     :: :short | :standard | :variant
   @type tag                        :: LanguageTag.t()
   @type options                    :: [{:locale, binary_tag()} | {:style, styles()}]
 
   @styles [:short, :standard, :variant]
-  @territory_containment Cldr.Config.territory_containment()
-  @territory_info Cldr.Config.territory_info()
+  @territory_containment Cldr.Config.territory_containers()
+  @territory_info Cldr.Config.territories()
 
   @doc """
   Returns a list of available styles.
@@ -299,13 +299,14 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.parent(:GB)
-      {:ok, [:"154", :EU, :UN]}
+      {:ok, [:"154", :UN]}
 
       iex> Cldr.Territory.parent(:ZZZ)
       {:error, {Cldr.UnknownTerritoryError, "The territory :ZZZ is unknown"}}
 
       iex> Cldr.Territory.parent(Cldr.get_locale())
       {:error, {Cldr.UnknownChildrenError, "The territory :\\"001\\" has no parent(s)"}}
+
   """
   @spec parent(atom_binary_tag(), as_options()) :: {:ok, atom_binary_charlist()} | {:error, error()}
   def parent(territory_code, opts \\ [as: :atom])
@@ -355,7 +356,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.parent!(:GB)
-      [:"154", :EU, :UN]
+      [:"154", :UN]
 
   """
   @spec parent!(atom_binary_tag(), as_options()) :: [atom_binary_charlist()] | no_return()
@@ -394,7 +395,7 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.children(:EU)
       {:ok,
-       [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE,
+       [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GR, :HR, :HU, :IE,
         :IT, :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]}
 
       iex> Cldr.Territory.children(:ZZZ)
@@ -402,6 +403,7 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.children(:GB)
       {:error, {Cldr.UnknownParentError, "The territory :GB has no children"}}
+
   """
   @spec children(atom_binary_tag(), as_options()) :: {:ok, atom_binary_charlist()} | {:error, error()}
   def children(territory_code, opts \\ [as: :atom])
@@ -443,8 +445,9 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.children!(:EU)
-      [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GB, :GR, :HR, :HU, :IE, :IT,
+      [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GR, :HR, :HU, :IE, :IT,
        :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]
+
   """
   @spec children!(atom_binary_tag(), as_options()) :: [atom_binary_charlist()] | no_return()
   def children!(territory_code, opts \\ [as: :atom])
@@ -499,28 +502,42 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.info(:GB)
-      {:ok, %{currency: [GBP: %{from: ~D[1694-07-27]}], gdp: 2788000000000,
-             language_population: %{"bn" => %{population_percent: 0.67},
-               "cy" => %{official_status: "official_regional",
-                 population_percent: 0.77}, "de" => %{population_percent: 6},
-               "el" => %{population_percent: 0.34},
-               "en" => %{official_status: "official", population_percent: 99},
-               "fr" => %{population_percent: 19},
-               "ga" => %{official_status: "official_regional",
-                 population_percent: 0.026},
-               "gd" => %{official_status: "official_regional",
-                 population_percent: 0.099, writing_percent: 5},
-               "it" => %{population_percent: 0.34},
-               "ks" => %{population_percent: 0.19},
-               "kw" => %{population_percent: 0.0031},
-               "ml" => %{population_percent: 0.035},
-               "pa" => %{population_percent: 0.79},
-               "sco" => %{population_percent: 2.7, writing_percent: 5},
-               "syl" => %{population_percent: 0.51},
-               "yi" => %{population_percent: 0.049},
-               "zh-Hant" => %{population_percent: 0.54}}, literacy_percent: 99,
-             measurement_system: "UK", paper_size: "A4", population: 64769500,
-             telephone_country_code: 44, temperature_measurement: "metric"}}
+      {:ok,
+       %{
+         currency: [GBP: %{from: ~D[1694-07-27]}],
+         gdp: 2925000000000,
+         language_population: %{
+           "bn" => %{population_percent: 0.67},
+           "cy" => %{official_status: "official_regional", population_percent: 0.77},
+           "de" => %{population_percent: 6},
+           "el" => %{population_percent: 0.33},
+           "en" => %{official_status: "official", population_percent: 99},
+           "fr" => %{population_percent: 19},
+           "ga" => %{official_status: "official_regional", population_percent: 0.026},
+           "gd" => %{
+             official_status: "official_regional",
+             population_percent: 0.099,
+             writing_percent: 5
+           },
+           "it" => %{population_percent: 0.33},
+           "ks" => %{population_percent: 0.19},
+           "kw" => %{population_percent: 0.0031},
+           "ml" => %{population_percent: 0.035},
+           "pa" => %{population_percent: 0.79},
+           "sco" => %{population_percent: 2.7, writing_percent: 5},
+           "syl" => %{population_percent: 0.51},
+           "yi" => %{population_percent: 0.049},
+           "zh-Hant" => %{population_percent: 0.54}
+         },
+         literacy_percent: 99,
+         measurement_system: %{
+           default: :uksystem,
+           paper_size: :a4,
+           temperature: :uksystem
+         },
+         population: 65105200
+       }}
+
   """
   @spec info(atom_tag()) :: {:ok, map()} | {:error, error()}
   def info(%LanguageTag{territory: territory_code}), do: info(territory_code)
@@ -540,28 +557,40 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.info!(:GB)
-      %{currency: [GBP: %{from: ~D[1694-07-27]}], gdp: 2788000000000,
-                   language_population: %{"bn" => %{population_percent: 0.67},
-                     "cy" => %{official_status: "official_regional",
-                       population_percent: 0.77}, "de" => %{population_percent: 6},
-                     "el" => %{population_percent: 0.34},
-                     "en" => %{official_status: "official", population_percent: 99},
-                     "fr" => %{population_percent: 19},
-                     "ga" => %{official_status: "official_regional",
-                       population_percent: 0.026},
-                     "gd" => %{official_status: "official_regional",
-                       population_percent: 0.099, writing_percent: 5},
-                     "it" => %{population_percent: 0.34},
-                     "ks" => %{population_percent: 0.19},
-                     "kw" => %{population_percent: 0.0031},
-                     "ml" => %{population_percent: 0.035},
-                     "pa" => %{population_percent: 0.79},
-                     "sco" => %{population_percent: 2.7, writing_percent: 5},
-                     "syl" => %{population_percent: 0.51},
-                     "yi" => %{population_percent: 0.049},
-                     "zh-Hant" => %{population_percent: 0.54}}, literacy_percent: 99,
-                   measurement_system: "UK", paper_size: "A4", population: 64769500,
-                   telephone_country_code: 44, temperature_measurement: "metric"}
+      %{
+        currency: [GBP: %{from: ~D[1694-07-27]}],
+        gdp: 2925000000000,
+        language_population: %{
+          "bn" => %{population_percent: 0.67},
+          "cy" => %{official_status: "official_regional", population_percent: 0.77},
+          "de" => %{population_percent: 6},
+          "el" => %{population_percent: 0.33},
+          "en" => %{official_status: "official", population_percent: 99},
+          "fr" => %{population_percent: 19},
+          "ga" => %{official_status: "official_regional", population_percent: 0.026},
+          "gd" => %{
+            official_status: "official_regional",
+            population_percent: 0.099,
+            writing_percent: 5
+          },
+          "it" => %{population_percent: 0.33},
+          "ks" => %{population_percent: 0.19},
+          "kw" => %{population_percent: 0.0031},
+          "ml" => %{population_percent: 0.035},
+          "pa" => %{population_percent: 0.79},
+          "sco" => %{population_percent: 2.7, writing_percent: 5},
+          "syl" => %{population_percent: 0.51},
+          "yi" => %{population_percent: 0.049},
+          "zh-Hant" => %{population_percent: 0.54}
+        },
+        literacy_percent: 99,
+        measurement_system: %{
+          default: :uksystem,
+          paper_size: :a4,
+          temperature: :uksystem
+        },
+        population: 65105200
+      }
   """
   @spec info!(atom_tag()) :: map() | no_return()
   def info!(%LanguageTag{territory: territory_code}), do: info!(territory_code)
