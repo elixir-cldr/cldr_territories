@@ -6,7 +6,6 @@
 
 `ex_cldr_territories` is an add-on library for [ex_cldr](https://hex.pm/packages/ex_cldr) that provides localization for territories.
 
-
 ## Examples
 
 ```elixir
@@ -50,7 +49,7 @@ iex> MyCldr.Territory.info(:GB)
      },
      "it" => %{population_percent: 0.33},
      "ks" => %{population_percent: 0.19},
-     "kw" => %{population_percent: 0.0031},
+     "kw" => %{population_percent: 0.003},
      "ml" => %{population_percent: 0.035},
      "pa" => %{population_percent: 0.79},
      "sco" => %{population_percent: 2.7, writing_percent: 5},
@@ -64,7 +63,7 @@ iex> MyCldr.Territory.info(:GB)
      paper_size: :a4,
      temperature: :uksystem
    },
-   population: 65105200
+   population: 65761100
  }}
 
 iex> MyCldr.Territory.to_unicode_flag(:US)
@@ -104,7 +103,6 @@ then retrieve `ex_cldr_territories` from [hex](https://hex.pm/packages/ex_cldr_t
 
     mix deps.get
     mix deps.compile
-
 
 ## LICENSE
 

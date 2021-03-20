@@ -353,7 +353,7 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.from_language_tag(Cldr.get_locale())
-            {:ok, "World"}
+            {:ok, "world"}
 
             iex> #{inspect __MODULE__}.from_language_tag(Cldr.get_locale(), [style: :short])
             {:error, {Cldr.UnknownStyleError, "The style :short is unknown"}}
@@ -378,7 +378,7 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.from_language_tag!(Cldr.get_locale())
-            "World"
+            "world"
 
         """
         @spec from_language_tag!(Cldr.Territory.tag(), Cldr.Territory.options()) :: binary() | no_return()
@@ -521,7 +521,7 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.translate_language_tag(Cldr.get_locale())
-            {:ok, "World"}
+            {:ok, "world"}
 
             iex> #{inspect __MODULE__}.translate_language_tag(Cldr.get_locale(), [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
             {:ok, "Mundo"}
@@ -559,7 +559,7 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.translate_language_tag!(Cldr.get_locale())
-            "World"
+            "world"
 
             iex> #{inspect __MODULE__}.translate_language_tag!(Cldr.get_locale(), [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
             "Mundo"
@@ -703,7 +703,7 @@ defmodule Cldr.Territory.Backend do
                  },
                  "it" => %{population_percent: 0.33},
                  "ks" => %{population_percent: 0.19},
-                 "kw" => %{population_percent: 0.0031},
+                 "kw" => %{population_percent: 0.003},
                  "ml" => %{population_percent: 0.035},
                  "pa" => %{population_percent: 0.79},
                  "sco" => %{population_percent: 2.7, writing_percent: 5},
@@ -717,7 +717,7 @@ defmodule Cldr.Territory.Backend do
                  paper_size: :a4,
                  temperature: :uksystem
                },
-               population: 65105200
+               population: 65761100
              }}
 
         """
@@ -749,7 +749,7 @@ defmodule Cldr.Territory.Backend do
                 },
                 "it" => %{population_percent: 0.33},
                 "ks" => %{population_percent: 0.19},
-                "kw" => %{population_percent: 0.0031},
+                "kw" => %{population_percent: 0.003},
                 "ml" => %{population_percent: 0.035},
                 "pa" => %{population_percent: 0.79},
                 "sco" => %{population_percent: 2.7, writing_percent: 5},
@@ -763,7 +763,7 @@ defmodule Cldr.Territory.Backend do
                 paper_size: :a4,
                 temperature: :uksystem
               },
-              population: 65105200
+              population: 65761100
             }
 
         """

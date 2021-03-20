@@ -36,8 +36,7 @@ defmodule CldrTerritories.Mixfile do
 
   defp deps do
     [
-      # TODO: bump to 2.20.0 once it's out
-      {:ex_cldr, path: "../ex_cldr"},
+      {:ex_cldr, "2.20.0-rc.0"},
       {:ex_doc, "~> 0.18", only: [:release, :dev]},
       {:jason, "~> 1.0", optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true},

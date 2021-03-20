@@ -293,7 +293,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.from_language_tag(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr)
-      {:ok, "World"}
+      {:ok, "world"}
 
       iex> Cldr.Territory.from_language_tag(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr, [style: :short])
       {:error, {Cldr.UnknownStyleError, "The style :short is unknown"}}
@@ -316,7 +316,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.from_language_tag!(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr)
-      "World"
+      "world"
   """
   @spec from_language_tag!(tag(), Cldr.backend(), options()) :: binary() | no_return()
   def from_language_tag!(tag, backend, options \\ [style: :standard]) do
@@ -429,7 +429,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.translate_language_tag(Cldr.get_locale(), TestBackend.Cldr)
-      {:ok, "World"}
+      {:ok, "world"}
 
       iex> Cldr.Territory.translate_language_tag(Cldr.get_locale(), TestBackend.Cldr, [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
       {:ok, "Mundo"}
@@ -446,7 +446,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.translate_language_tag!(Cldr.get_locale(), TestBackend.Cldr)
-      "World"
+      "world"
 
       iex> Cldr.Territory.translate_language_tag!(Cldr.get_locale(), TestBackend.Cldr, [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
       "Mundo"
@@ -692,7 +692,7 @@ defmodule Cldr.Territory do
            },
            "it" => %{population_percent: 0.33},
            "ks" => %{population_percent: 0.19},
-           "kw" => %{population_percent: 0.0031},
+           "kw" => %{population_percent: 0.003},
            "ml" => %{population_percent: 0.035},
            "pa" => %{population_percent: 0.79},
            "sco" => %{population_percent: 2.7, writing_percent: 5},
@@ -706,7 +706,7 @@ defmodule Cldr.Territory do
            paper_size: :a4,
            temperature: :uksystem
          },
-         population: 65105200
+         population: 65761100
        }}
 
   """
@@ -746,7 +746,7 @@ defmodule Cldr.Territory do
           },
           "it" => %{population_percent: 0.33},
           "ks" => %{population_percent: 0.19},
-          "kw" => %{population_percent: 0.0031},
+          "kw" => %{population_percent: 0.003},
           "ml" => %{population_percent: 0.035},
           "pa" => %{population_percent: 0.79},
           "sco" => %{population_percent: 2.7, writing_percent: 5},
@@ -760,7 +760,7 @@ defmodule Cldr.Territory do
           paper_size: :a4,
           temperature: :uksystem
         },
-        population: 65105200
+        population: 65761100
       }
   """
   @spec info!(atom_tag()) :: map() | no_return()

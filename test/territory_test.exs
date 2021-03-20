@@ -59,7 +59,7 @@ defmodule Cldr.TerritoryTest do
       paper_size: :us_letter,
       temperature: :ussystem
     },
-    population: 329256000
+    population: 332639000
   }
 
   @eu [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GR, :HR, :HU, :IE, :IT,
