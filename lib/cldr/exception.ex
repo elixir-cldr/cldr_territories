@@ -57,3 +57,15 @@ defmodule Cldr.UnknownFlagError do
   %__MODULE__{message: message}
   end
 end
+
+defmodule Cldr.UnknownSubdivisionError do
+  @moduledoc """
+  Exception raised when there is an invalid or missing subdivision.
+  """
+
+  defexception [:message]
+
+  def exception(message) do
+  %__MODULE__{message: message}
+  end
+end
