@@ -251,7 +251,7 @@ defmodule Cldr.Territory.Backend do
             {:ok, "Kumbria"}
 
             iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", locale: "bs")
-            {:ok, nil}
+            {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
 
             iex> #{inspect __MODULE__}.from_subdivision_code("invalid", locale: "en")
             {:error, {Cldr.UnknownTerritoryError, "The territory \\"invalid\\" is unknown"}}
@@ -326,8 +326,6 @@ defmodule Cldr.Territory.Backend do
             iex> #{inspect __MODULE__}.from_subdivision_code!("gbcma", locale: "pl")
             "Kumbria"
 
-            iex> #{inspect __MODULE__}.from_subdivision_code!("gbcma", locale: "bs")
-            nil
         """
         @spec from_subdivision_code!(Cldr.Territory.binary_tag(), [locale: Cldr.Territory.binary_tag()]) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
         def from_subdivision_code!(subdivision_code, options \\ [locale: unquote(backend).get_locale()])
@@ -486,8 +484,8 @@ defmodule Cldr.Territory.Backend do
             iex> #{inspect __MODULE__}.translate_subdivision!("Cumbria", "en", "pl")
             "Kumbria"
 
-            iex> #{inspect __MODULE__}.translate_subdivision!("Cumbria", "en", "bs")
-            nil
+            iex> #{inspect __MODULE__}.translate_subdivision!("Kumbria", "pl", "en")
+            "Cumbria"
 
         """
         @spec translate_subdivision!(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag()) :: binary() | no_return()
@@ -804,12 +802,11 @@ defmodule Cldr.Territory.Backend do
           end
 
           def from_subdivision_code(subdivision_code, unquote(locale_name)) do
-            subdivision_translation = Map.get(
-              unquote(Macro.escape(subdivisions)),
-              subdivision_code
-            )
-
-            {:ok, subdivision_translation}
+            case unquote(Macro.escape(subdivisions)) do
+              %{^subdivision_code => subdivision_translation} -> {:ok, subdivision_translation}
+              subdivisions when map_size(subdivisions) == 0 -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no subdivisions."}}
+              _subdivisions -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no translation for #{inspect subdivision_code}."}}
+            end
           end
 
           def translate_territory(localized_string, locale_from, unquote(locale_name)) do
@@ -837,12 +834,14 @@ defmodule Cldr.Territory.Backend do
                 {:error, reason} -> {:error, reason}
 
                 {:ok, %LanguageTag{cldr_locale_name: locale}} ->
-                  {code, _} = locale
-                              |> Cldr.Config.get_locale(unquote(backend))
-                              |> Map.get(:subdivisions)
-                              |> Enum.find(fn {_code, subdivision_translation} -> subdivision_translation == localized_string end)
-
-                  {:ok, (unquote(Macro.escape(subdivisions))[code])}
+                  locale
+                  |> Cldr.Config.get_locale(unquote(backend))
+                  |> Map.get(:subdivisions)
+                  |> Enum.find(fn {_code, subdivision_translation} -> subdivision_translation == localized_string end)
+                  |> case do
+                    {code, _} -> {:ok, (unquote(Macro.escape(subdivisions))[code])}
+                    nil -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect locale_from} has no subdivisions."}}
+                  end
               end
           end
         end

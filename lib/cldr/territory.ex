@@ -214,7 +214,7 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, locale: "bs")
-      {:ok, nil}
+      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("invalid", TestBackend.Cldr, locale: "en")
       {:error, {Cldr.UnknownTerritoryError, "The territory \\"invalid\\" is unknown"}}
@@ -267,8 +267,6 @@ defmodule Cldr.Territory do
       iex> #{inspect __MODULE__}.from_subdivision_code!("gbcma", TestBackend.Cldr, locale: "pl")
       "Kumbria"
 
-      iex> #{inspect __MODULE__}.from_subdivision_code!("gbcma", TestBackend.Cldr, locale: "bs")
-      nil
   """
   @spec from_subdivision_code!(atom_binary_tag(), Cldr.backend(), [locale: binary_tag()]) ::
           binary() | no_return()
