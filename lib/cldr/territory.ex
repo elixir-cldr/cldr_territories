@@ -190,6 +190,7 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [locale: "zzz"])
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+
   """
   @spec from_territory_code(atom_binary_tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
   def from_territory_code(territory_code, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
@@ -224,6 +225,7 @@ defmodule Cldr.Territory do
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, [locale: "zzz"])
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+
   """
   @spec from_subdivision_code(atom_binary_tag(), Cldr.backend(), [locale: binary_tag()]) ::
           {:ok, binary()} | {:error, error()}
@@ -249,6 +251,7 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.from_territory_code!(:GB, TestBackend.Cldr, [locale: "pt"])
       "Reino Unido"
+
   """
   @spec from_territory_code!(atom_binary_tag(), Cldr.backend(), options()) :: binary() | no_return()
   def from_territory_code!(territory_code, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
@@ -332,7 +335,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.translate_territory("Reino Unido", "pt", TestBackend.Cldr)
-      {:ok, "UK"}
+      {:ok, "United Kingdom"}
 
       iex> Cldr.Territory.translate_territory("United Kingdom", "en", TestBackend.Cldr, "pt")
       {:ok, "Reino Unido"}
@@ -378,7 +381,7 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", "en", TestBackend.Cldr, "bs")
-      {:ok, nil}
+      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", :zzz, TestBackend.Cldr)
       {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
@@ -399,7 +402,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.translate_territory!("Reino Unido", "pt", TestBackend.Cldr)
-      "UK"
+      "United Kingdom"
 
       iex> Cldr.Territory.translate_territory!("United Kingdom", "en", TestBackend.Cldr, "pt")
       "Reino Unido"
@@ -434,8 +437,9 @@ defmodule Cldr.Territory do
       iex> #{inspect __MODULE__}.translate_subdivision!("Cumbria", "en", TestBackend.Cldr, "pl")
       "Kumbria"
 
-      iex> #{inspect __MODULE__}.translate_subdivision!("Cumbria", "en", TestBackend.Cldr, "bs")
-      nil
+      #=> #{inspect __MODULE__}.translate_subdivision!("Cumbria", "en", TestBackend.Cldr, "bs")
+      ** (Cldr.UnknownSubdivisionError) The locale "bs" has no translation for "gbcma".
+
   """
   @spec translate_subdivision!(binary(), binary_tag(), Cldr.backend(), binary_tag()) ::
           binary() | no_return()

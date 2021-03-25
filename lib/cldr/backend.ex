@@ -396,7 +396,7 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.translate_territory("Reino Unido", "pt")
-            {:ok, "UK"}
+            {:ok, "United Kingdom"}
 
             iex> #{inspect __MODULE__}.translate_territory("United Kingdom", "en", "pt")
             {:ok, "Reino Unido"}
@@ -406,6 +406,9 @@ defmodule Cldr.Territory.Backend do
 
             iex> #{inspect __MODULE__}.translate_territory("United Kingdom", "en", "zzz")
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+
+            iex> #{inspect __MODULE__}.translate_territory("Westworld", "en", "pt")
+            {:error, {Cldr.UnknownTerritoryError, "No territory translation for \\"Westworld\\" could be found in locale \\"en\\""}}
 
         """
         @spec translate_territory(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag(), atom()) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
@@ -437,7 +440,7 @@ defmodule Cldr.Territory.Backend do
             {:ok, "Kumbria"}
 
             iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", "en", "bs")
-            {:ok, nil}
+            {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
 
             iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", :zzz)
             {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
@@ -461,10 +464,13 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             iex> #{inspect __MODULE__}.translate_territory!("Reino Unido", "pt")
-            "UK"
+            "United Kingdom"
 
             iex> #{inspect __MODULE__}.translate_territory!("United Kingdom", "en", "pt")
             "Reino Unido"
+
+            #=> #{inspect __MODULE__}.translate_territory!("Westworld", "en", "pt")
+            ** (Cldr.UnknownTerritoryError) No territory translation for "Westworld" could be found in locale "en"
 
         """
         @spec translate_territory!(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag(), atom()) :: binary() | no_return()
@@ -877,7 +883,7 @@ defmodule Cldr.Territory.Backend do
                {:ok, territory_code} ->
                  from_territory_code(territory_code, locale_to, style)
                :error ->
-                {:error, Cldr.unknown_territory_error(localized_string)}
+                {:error, unknown_territory_error(localized_string, locale_from, locale_to)}
              end
         end
 
@@ -1069,6 +1075,10 @@ defmodule Cldr.Territory.Backend do
         @spec country_codes(Cldr.Territory.as_options()) :: [Cldr.Territory.atom_binary_charlist()]
         def country_codes(opts \\ [as: :atom]), do: Cldr.Territory.country_codes(opts)
 
+        defp unknown_territory_error(string, from, _to) do
+          {Cldr.UnknownTerritoryError,
+           "No territory translation for #{inspect string} could be found in locale #{inspect from}"}
+        end
       end
     end
   end
