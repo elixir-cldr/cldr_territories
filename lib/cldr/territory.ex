@@ -190,6 +190,7 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [locale: "zzz"])
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+
   """
   @spec from_territory_code(atom_binary_tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
   def from_territory_code(territory_code, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
@@ -224,6 +225,7 @@ defmodule Cldr.Territory do
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, [locale: "zzz"])
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+
   """
   @spec from_subdivision_code(atom_binary_tag(), Cldr.backend(), [locale: binary_tag()]) ::
           {:ok, binary()} | {:error, error()}
@@ -249,6 +251,7 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.from_territory_code!(:GB, TestBackend.Cldr, [locale: "pt"])
       "Reino Unido"
+
   """
   @spec from_territory_code!(atom_binary_tag(), Cldr.backend(), options()) :: binary() | no_return()
   def from_territory_code!(territory_code, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
@@ -332,7 +335,7 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.translate_territory("Reino Unido", "pt", TestBackend.Cldr)
-      {:ok, "UK"}
+      {:ok, "United Kingdom"}
 
       iex> Cldr.Territory.translate_territory("United Kingdom", "en", TestBackend.Cldr, "pt")
       {:ok, "Reino Unido"}
@@ -343,10 +346,26 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.translate_territory("United Kingdom", "en", TestBackend.Cldr, "zzz")
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
   """
-  @spec translate_territory(binary(), binary_tag(), Cldr.backend(), binary_tag()) :: {:ok, binary()} | {:error, error()}
-  def translate_territory(localized_string, from_locale, backend, to_locale \\ Cldr.get_locale()) do
+  @spec translate_territory(binary(), binary_tag(), Cldr.backend(), binary_tag(), atom()) :: {:ok, binary()} | {:error, error()}
+  def translate_territory(localized_string, from_locale, backend, to_locale, style) do
     module = Module.concat(backend, Territory)
-    module.translate_territory(localized_string, from_locale, to_locale)
+    module.translate_territory(localized_string, from_locale, to_locale, style)
+  end
+
+  def translate_territory(localized_string, from_locale) do
+    backend = Cldr.default_backend!()
+    module = Module.concat(backend, Territory)
+    module.translate_territory(localized_string, from_locale, backend.get_locale(), :standard)
+  end
+
+  def translate_territory(localized_string, from_locale, backend) do
+    module = Module.concat(backend, Territory)
+    module.translate_territory(localized_string, from_locale, backend.get_locale(), :standard)
+  end
+
+  def translate_territory(localized_string, from_locale, backend, to_locale) do
+    module = Module.concat(backend, Territory)
+    module.translate_territory(localized_string, from_locale, to_locale, :standard)
   end
 
   @doc """
@@ -362,7 +381,7 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", "en", TestBackend.Cldr, "bs")
-      {:ok, nil}
+      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", :zzz, TestBackend.Cldr)
       {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
@@ -383,15 +402,31 @@ defmodule Cldr.Territory do
   ## Example
 
       iex> Cldr.Territory.translate_territory!("Reino Unido", "pt", TestBackend.Cldr)
-      "UK"
+      "United Kingdom"
 
       iex> Cldr.Territory.translate_territory!("United Kingdom", "en", TestBackend.Cldr, "pt")
       "Reino Unido"
   """
   @spec translate_territory!(binary(), binary_tag(), Cldr.backend(), binary_tag()) :: binary() | no_return()
-  def translate_territory!(localized_string, from_locale, backend, to_locale \\ Cldr.get_locale()) do
+  def translate_territory!(localized_string, from_locale, backend, to_locale, style) do
     module = Module.concat(backend, Territory)
-    module.translate_territory!(localized_string, from_locale, to_locale)
+    module.translate_territory!(localized_string, from_locale, to_locale, style)
+  end
+
+  def translate_territory!(localized_string, from_locale) do
+    backend = Cldr.default_backend!()
+    module = Module.concat(backend, Territory)
+    module.translate_territory!(localized_string, from_locale, backend.get_locale(), :standard)
+  end
+
+  def translate_territory!(localized_string, from_locale, backend) do
+    module = Module.concat(backend, Territory)
+    module.translate_territory!(localized_string, from_locale, backend.get_locale(), :standard)
+  end
+
+  def translate_territory!(localized_string, from_locale, backend, to_locale) do
+    module = Module.concat(backend, Territory)
+    module.translate_territory!(localized_string, from_locale, to_locale, :standard)
   end
 
   @doc """
@@ -402,8 +437,9 @@ defmodule Cldr.Territory do
       iex> #{inspect __MODULE__}.translate_subdivision!("Cumbria", "en", TestBackend.Cldr, "pl")
       "Kumbria"
 
-      iex> #{inspect __MODULE__}.translate_subdivision!("Cumbria", "en", TestBackend.Cldr, "bs")
-      nil
+      #=> #{inspect __MODULE__}.translate_subdivision!("Cumbria", "en", TestBackend.Cldr, "bs")
+      ** (Cldr.UnknownSubdivisionError) The locale "bs" has no translation for "gbcma".
+
   """
   @spec translate_subdivision!(binary(), binary_tag(), Cldr.backend(), binary_tag()) ::
           binary() | no_return()
@@ -1052,4 +1088,13 @@ defmodule Cldr.Territory do
 
   defp map_charlist!({:error, {exception, reason}}), do: raise exception, reason
   defp map_charlist!({:ok, result}), do: map_charlist(result)
+
+  @doc false
+  def normalize_name(string) do
+    string
+    |> String.downcase()
+    |> String.replace(" & ", "")
+    |> String.replace(".", "")
+    |> String.replace(~r/(\s)+/u, "\\1")
+  end
 end
