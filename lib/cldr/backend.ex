@@ -877,7 +877,7 @@ defmodule Cldr.Territory.Backend do
                {:ok, territory_code} ->
                  from_territory_code(territory_code, locale_to, style)
                :error ->
-                 Cldr.unknown_territory_error(localized_string)
+                {:error, Cldr.unknown_territory_error(localized_string)}
              end
         end
 
