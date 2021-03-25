@@ -408,13 +408,20 @@ defmodule Cldr.Territory.Backend do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
 
         """
-        @spec translate_territory(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag()) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
-        def translate_territory(localized_string, from_locale, to_locale \\ unquote(backend).get_locale())
-        def translate_territory(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale) do
-          translate_territory(localized_string, from_locale, to_locale)
+        @spec translate_territory(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag(), atom()) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
+        def translate_territory(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale, style) do
+          translate_territory(localized_string, from_locale, to_locale, style)
         end
-        def translate_territory(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}) do
-          translate_territory(localized_string, from_locale, to_locale)
+        def translate_territory(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}, style) do
+          translate_territory(localized_string, from_locale, to_locale, style)
+        end
+
+        def translate_territory(localized_string, from_locale, to_locale) do
+          translate_territory(localized_string, from_locale, to_locale, :standard)
+        end
+
+        def translate_territory(localized_string, from_locale) do
+          translate_territory(localized_string, from_locale, unquote(backend).get_locale(), :standard)
         end
 
         @doc """
@@ -460,20 +467,27 @@ defmodule Cldr.Territory.Backend do
             "Reino Unido"
 
         """
-        @spec translate_territory!(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag()) :: binary() | no_return()
-        def translate_territory!(localized_string, from_locale, to_locale \\ unquote(backend).get_locale())
-        def translate_territory!(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale) do
-          translate_territory(localized_string, from_locale, to_locale)
+        @spec translate_territory!(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag(), atom()) :: binary() | no_return()
+        def translate_territory!(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale, style) do
+          translate_territory(localized_string, from_locale, to_locale, style)
         end
-        def translate_territory!(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}) do
-          translate_territory!(localized_string, from_locale, to_locale)
+        def translate_territory!(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}, style) do
+          translate_territory!(localized_string, from_locale, to_locale, style)
         end
-        def translate_territory!(localized_string, locale_from, locale_name) do
-          case translate_territory(localized_string, locale_from, locale_name) do
+        def translate_territory!(localized_string, locale_from, locale_name, style) do
+          case translate_territory(localized_string, locale_from, locale_name, style) do
             {:error, {exception, msg}} -> raise exception, msg
 
             {:ok, result}              -> result
           end
+        end
+
+        def translate_territory!(localized_string, from_locale, to_locale) do
+          translate_territory!(localized_string, from_locale, to_locale, :standard)
+        end
+
+        def translate_territory!(localized_string, from_locale) do
+          translate_territory!(localized_string, from_locale, unquote(backend).get_locale(), :standard)
         end
 
         @doc """
@@ -537,7 +551,7 @@ defmodule Cldr.Territory.Backend do
           case from_language_tag(from_locale, [style: style]) do
             {:error, reason} -> {:error, reason}
 
-            {:ok, result}    -> translate_territory(result, from_locale, to_locale)
+            {:ok, result}    -> translate_territory(result, from_locale, to_locale, style)
           end
         end
 
@@ -768,18 +782,48 @@ defmodule Cldr.Territory.Backend do
         @spec info!(Cldr.Territory.atom_tag()) :: map() | no_return()
         def info!(territory_code), do: Cldr.Territory.info!(territory_code)
 
-
         # Generate the functions that encapsulate the territory data from CDLR
-        for locale_name <- Cldr.Config.known_locale_names(config) do
-          territories = locale_name |> Cldr.Config.get_locale(config) |> Map.get(:territories)
-          subdivisions = locale_name |> Cldr.Config.get_locale(config) |> Map.get(:subdivisions)
+        @known_locales Cldr.Config.known_locale_names(config)
+
+        for locale_name <- @known_locales do
+          locale = Config.get_locale(locale_name, config)
+          territories = Map.fetch!(locale, :territories)
+          subdivisions = Map.fetch!(locale, :subdivisions)
+          territory_codes = Map.keys(territories)
+
+          # Maps a territory name to a territory code
+          # Flattens all variations of the territory name
+          # to the same territory code. Note the normalization
+          # of the territory name both here and in `translate_territory/4`
+
+          inverted_territories =
+            territories
+            |> Enum.map(fn {territory_code, names} ->
+              {Map.values(names), territory_code}
+            end)
+            |> Enum.flat_map(fn {names, territory_code} ->
+              for name <- names, code <- [territory_code],
+                do: {Cldr.Territory.normalize_name(name), code}
+            end)
+            |> Map.new
+
+          # Maps a subdivision name to a subdivision code
+          # Note the normalization of the subdivision name
+          # both here and in `translate_subdivision/3`
+
+          inverted_subdivisions =
+            subdivisions
+            |> Enum.map(fn {subdivision_code, name} ->
+              {Cldr.Territory.normalize_name(name), subdivision_code}
+            end)
+            |> Map.new
 
           def available_territories(unquote(locale_name)) do
-            unquote(Map.keys(territories)) |> Enum.sort()
+            unquote(Map.keys(territories) |> Enum.sort())
           end
 
           def available_subdivisions(unquote(locale_name)) do
-            unquote(Map.keys(subdivisions)) |> Enum.sort()
+            unquote(Map.keys(subdivisions) |> Enum.sort())
           end
 
           def known_territories(unquote(locale_name)) do
@@ -790,10 +834,21 @@ defmodule Cldr.Territory.Backend do
             unquote(Macro.escape(subdivisions))
           end
 
+          def inverted_territories(unquote(locale_name)) do
+            unquote(Macro.escape(inverted_territories))
+          end
+
+          def inverted_subdivisions(unquote(locale_name)) do
+            unquote(Macro.escape(inverted_subdivisions))
+          end
+
           @doc false
-          def from_territory_code(territory_code, unquote(locale_name), style) do
-            unquote(Macro.escape(territories))
-            |> get_in([territory_code, style])
+          def from_territory_code(territory_code, unquote(locale_name) = locale_name, style)
+              when territory_code in unquote(territory_codes) do
+            locale_name
+            |> known_territories()
+            |> Map.fetch!(territory_code)
+            |> Map.get(style)
             |> case do
                 nil    -> {:error, {Cldr.UnknownStyleError, "The style #{inspect style} is unknown"}}
 
@@ -801,48 +856,42 @@ defmodule Cldr.Territory.Backend do
               end
           end
 
-          def from_subdivision_code(subdivision_code, unquote(locale_name)) do
-            case unquote(Macro.escape(subdivisions)) do
+          @doc false
+          def from_subdivision_code(subdivision_code, unquote(locale_name) = locale_name) do
+            case known_subdivisions(locale_name) do
               %{^subdivision_code => subdivision_translation} -> {:ok, subdivision_translation}
               subdivisions when map_size(subdivisions) == 0 -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no subdivisions."}}
               _subdivisions -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no translation for #{inspect subdivision_code}."}}
             end
           end
+        end
 
-          def translate_territory(localized_string, locale_from, unquote(locale_name)) do
-            locale_from
-            |> Cldr.validate_locale(unquote(backend))
-            |> case do
-                {:error, reason} -> {:error, reason}
+        def translate_territory(localized_string, locale_from, locale_to, style)
+            when locale_from in @known_locales and locale_to in @known_locales do
+          normalized_name = Cldr.Territory.normalize_name(localized_string)
 
-                {:ok, %LanguageTag{cldr_locale_name: locale}} ->
-                  {code, style} = locale
-                                  |> Cldr.Config.get_locale(unquote(backend))
-                                  |> Map.get(:territories)
-                                  |> Enum.flat_map(fn {code, map} -> for {style, string} when string == localized_string <- map, do: {code, style} end)
-                                  |> Kernel.hd()
+          locale_from
+          |> inverted_territories()
+          |> Map.fetch(normalized_name)
+          |> case do
+               {:ok, territory_code} ->
+                 from_territory_code(territory_code, locale_to, style)
+               :error ->
+                 Cldr.unknown_territory_error(localized_string)
+             end
+        end
 
+        def translate_subdivision(localized_string, locale_from, locale_to)
+            when locale_from in @known_locales and locale_to in @known_locales do
+          normalized_name = Cldr.Territory.normalize_name(localized_string)
 
-                  {:ok, (unquote(Macro.escape(territories))[code][style])}
-              end
-          end
-
-          def translate_subdivision(localized_string, locale_from, unquote(locale_name)) do
-            locale_from
-            |> Cldr.validate_locale(unquote(backend))
-            |> case do
-                {:error, reason} -> {:error, reason}
-
-                {:ok, %LanguageTag{cldr_locale_name: locale}} ->
-                  locale
-                  |> Cldr.Config.get_locale(unquote(backend))
-                  |> Map.get(:subdivisions)
-                  |> Enum.find(fn {_code, subdivision_translation} -> subdivision_translation == localized_string end)
-                  |> case do
-                    {code, _} -> {:ok, (unquote(Macro.escape(subdivisions))[code])}
-                    nil -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect locale_from} has no subdivisions."}}
-                  end
-              end
+          case inverted_subdivisions(locale_from) do
+            %{^normalized_name => subdivision_code} ->
+              from_subdivision_code(subdivision_code, locale_to)
+            subdivisions when map_size(subdivisions) == 0 ->
+              {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect locale_from} has no subdivisions."}}
+            _subdivisions ->
+              {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect locale_from} has no translation for #{inspect localized_string}."}}
           end
         end
 
@@ -854,9 +903,15 @@ defmodule Cldr.Territory.Backend do
 
         def known_subdivisions(locale), do: {:error, Locale.locale_error(locale)}
 
-        def translate_territory(_localized_string, _from, locale), do: {:error, Locale.locale_error(locale)}
+        def translate_territory(_localized_string, from, _locale, _style) when from not in @known_locales,
+          do: {:error, Locale.locale_error(from)}
+        def translate_territory(_localized_string, _from, locale, _style),
+          do: {:error, Locale.locale_error(locale)}
 
-        def translate_subdivision(_localized_string, _from, locale), do: {:error, Locale.locale_error(locale)}
+        def translate_subdivision(_localized_string, from, _locale) when from not in @known_locales,
+          do: {:error, Locale.locale_error(from)}
+        def translate_subdivision(_localized_string, _from, locale),
+          do: {:error, Locale.locale_error(locale)}
 
         defp validate_locale({:error, reason}, _locale), do: {:error, reason}
         defp validate_locale({:ok, code}, locale) do
