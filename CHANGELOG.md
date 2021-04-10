@@ -1,5 +1,15 @@
 # Changelog
 
+## Cldr Territories v2.2.0 TBD
+
+### Enhancements
+
+* Requires `ex_cldr` version `2.20` or later to use CLDR data version 39. As with all CLDR releases, underlying data can change and tests are updated to reflect those changes.
+
+* Added `known_subdivisions/1`, `known_territory_subdivisions/2`, `from_subdivision_code/3` and `translate_subdivision/4` to support subdivison, thansk to @mskv.
+  
+* Improved proformance for `from_territory_code/2`, `from_subdivision_code/2`, `translate_territory/4` and `translate_subdivision/4`, thanks to @kipcole9.
+
 ## Cldr Territories v2.1.0 June 8th, 2020
 
 ### Enhancements
