@@ -1,7 +1,7 @@
 defmodule CldrTerritories.Mixfile do
   use Mix.Project
 
-  @version "2.1.0"
+  @version "2.2.0-dev"
 
   def project do
     [
@@ -36,7 +36,7 @@ defmodule CldrTerritories.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.20 or ~> 2.20-rc"},
+      {:ex_cldr, "~> 2.20"},
       {:ex_doc, "~> 0.18", only: [:release, :dev]},
       {:jason, "~> 1.0", optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true},
