@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr Territories v2.2.1 May 10th, 2021
+
+### Enhancements
+
+* Fix specs for `known_territories/1`, `known_subdivisions/1`, `from_subdivision_code/2,3` and `from_subdivision_code!/2,3` [#14](https://github.com/Schultzer/cldr_territories/issues/14)
+
 ## Cldr Territories v2.2.0 April 19th, 2021
 
 ### Enhancements
