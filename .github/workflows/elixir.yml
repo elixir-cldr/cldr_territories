@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    name: Build and test
+    name: Build, test and dialyze
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,10 +25,15 @@ jobs:
     - name: Restore dependencies cache
       uses: actions/cache@v2
       with:
-        path: deps
+        path: | 
+              deps
+              dialyzer.plt
+              dialyzer.plt.hash
         key: ${{ runner.os }}-${{ matrix.otp }}-${{ matrix.elixir }}-mix-${{ hashFiles('**/mix.lock') }}
         restore-keys: ${{ runner.os }}-mix-
     - name: Install dependencies
       run: mix deps.get
-    - name: Run tests
+    - name: Run test
       run: mix test
+    - name: Run dialyzer
+      run: mix dialyzer
