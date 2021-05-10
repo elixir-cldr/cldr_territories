@@ -274,7 +274,7 @@ defmodule Cldr.Territory.Backend do
           |> validate_locale(locale)
           |> case do
               {:error, reason}         -> {:error, reason}
-              {:ok, code, locale_name} -> from_subdivision_code(code, locale_name)
+              {:ok, code, locale_name} -> __from_subdivision_code__(code, locale_name)
             end
         end
 
@@ -863,7 +863,7 @@ defmodule Cldr.Territory.Backend do
           end
 
           @doc false
-          def from_subdivision_code(subdivision_code, unquote(locale_name) = locale_name) do
+          def __from_subdivision_code__(subdivision_code, unquote(locale_name) = locale_name) do
             case known_subdivisions(locale_name) do
               %{^subdivision_code => subdivision_translation} -> {:ok, subdivision_translation}
               subdivisions when map_size(subdivisions) == 0 -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no subdivisions."}}
@@ -893,7 +893,7 @@ defmodule Cldr.Territory.Backend do
 
           case inverted_subdivisions(locale_from) do
             %{^normalized_name => subdivision_code} ->
-              from_subdivision_code(subdivision_code, locale_to)
+              __from_subdivision_code__(subdivision_code, locale_to)
             subdivisions when map_size(subdivisions) == 0 ->
               {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect locale_from} has no subdivisions."}}
             _subdivisions ->
