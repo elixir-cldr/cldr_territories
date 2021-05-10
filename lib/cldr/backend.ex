@@ -475,7 +475,7 @@ defmodule Cldr.Territory.Backend do
         """
         @spec translate_territory!(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag(), atom()) :: binary() | no_return()
         def translate_territory!(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale, style) do
-          translate_territory(localized_string, from_locale, to_locale, style)
+          translate_territory!(localized_string, from_locale, to_locale, style)
         end
         def translate_territory!(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}, style) do
           translate_territory!(localized_string, from_locale, to_locale, style)
