@@ -105,7 +105,7 @@ defmodule Cldr.Territory do
       HN: %{standard: "Honduras"}, GI: %{standard: "Gibraltar"},
       "142": %{standard: "Asia"}, "029": %{...}, ...}
   """
-  @spec known_territories(Cldr.backend()) :: map()
+  @spec known_territories(Cldr.backend()) :: map() | {:error, error()}
   def known_territories(backend) do
     module = Module.concat(backend, Territory)
     module.known_territories()
@@ -129,7 +129,7 @@ defmodule Cldr.Territory do
         "ad07" => "Andorra la Vella",
         ...
   """
-  @spec known_subdivisions(Cldr.backend()) :: map()
+  @spec known_subdivisions(Cldr.backend()) :: map() | {:error, error()}
   def known_subdivisions(backend) do
     module = Module.concat(backend, Territory)
     module.known_subdivisions()
@@ -227,7 +227,7 @@ defmodule Cldr.Territory do
       {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
 
   """
-  @spec from_subdivision_code(atom_binary_tag(), Cldr.backend(), [locale: binary_tag()]) ::
+  @spec from_subdivision_code(binary(), Cldr.backend(), [locale: binary_tag()]) ::
           {:ok, binary()} | {:error, error()}
   def from_subdivision_code(
         subdivision_code,
@@ -271,7 +271,7 @@ defmodule Cldr.Territory do
       "Kumbria"
 
   """
-  @spec from_subdivision_code!(atom_binary_tag(), Cldr.backend(), [locale: binary_tag()]) ::
+  @spec from_subdivision_code!(binary(), Cldr.backend(), [locale: binary_tag()]) ::
           binary() | no_return()
   def from_subdivision_code!(
         territory_code,
