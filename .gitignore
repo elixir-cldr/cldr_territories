@@ -16,3 +16,5 @@ erl_crash.dump
 # Ignore the generated json files
 /data
 
+# Dialyzer
+/priv/plts

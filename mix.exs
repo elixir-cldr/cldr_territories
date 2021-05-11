@@ -16,7 +16,10 @@ defmodule CldrTerritories.Mixfile do
       start_permanent: Mix.env == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
-      cldr_provider: {Cldr.Territory.Backend, :define_territory_module, []}
+      cldr_provider: {Cldr.Territory.Backend, :define_territory_module, []},
+      dialyzer: [
+        plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+      ]
     ]
   end
 
