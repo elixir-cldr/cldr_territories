@@ -511,7 +511,7 @@ defmodule Cldr.Territory.Backend do
         @spec translate_subdivision!(binary(), Cldr.Territory.binary_tag(), Cldr.Territory.binary_tag()) :: binary() | no_return()
         def translate_subdivision!(localized_string, from_locale, to_locale \\ unquote(backend).get_locale())
         def translate_subdivision!(localized_string, %LanguageTag{cldr_locale_name: from_locale}, to_locale) do
-          translate_subdivision(localized_string, from_locale, to_locale)
+          translate_subdivision!(localized_string, from_locale, to_locale)
         end
         def translate_subdivision!(localized_string, from_locale, %LanguageTag{cldr_locale_name: to_locale}) do
           translate_subdivision!(localized_string, from_locale, to_locale)

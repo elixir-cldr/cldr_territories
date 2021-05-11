@@ -663,6 +663,7 @@ defmodule Cldr.TerritoryTest do
     test "with valid params" do
       assert {:ok, "United States"} == Territory.from_territory_code(:US, TestBackend.Cldr)
       assert {:ok, "United States"} == Territory.from_territory_code("us", TestBackend.Cldr)
+      assert {:ok, "United States"} == Territory.from_territory_code(@us, TestBackend.Cldr)
       assert {:ok, "US"} == Territory.from_territory_code(:US, TestBackend.Cldr, [style: :short])
       assert {:ok, "US"} == Territory.from_territory_code("US", TestBackend.Cldr, [style: :short])
       assert {:ok, "Sjedinjene Države"} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "bs"])
@@ -682,6 +683,7 @@ defmodule Cldr.TerritoryTest do
     test "with valid params" do
       assert "United States" == Territory.from_territory_code!(:US, TestBackend.Cldr)
       assert "United States" == Territory.from_territory_code!("US", TestBackend.Cldr)
+      assert "United States" == Territory.from_territory_code!(@us, TestBackend.Cldr)
       assert "US" == Territory.from_territory_code!(:US, TestBackend.Cldr, [style: :short])
       assert "US" == Territory.from_territory_code!("us", TestBackend.Cldr, [style: :short])
       assert "Sjedinjene Države" == Territory.from_territory_code!(:US, TestBackend.Cldr, [locale: "bs"])
@@ -798,7 +800,9 @@ defmodule Cldr.TerritoryTest do
     test "with valid params" do
       assert {:ok, "Sjedinjene Države"} == Territory.translate_territory("United States", "en", TestBackend.Cldr, "bs")
       assert {:ok, "Sjedinjene Države"} == Territory.translate_territory("US", "en", TestBackend.Cldr, "bs")
+      assert {:ok, "Sjedinjene Države"} == Territory.translate_territory("US", @us, TestBackend.Cldr, "bs")
       assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Države", "bs", TestBackend.Cldr, "en")
+      assert {:ok, "United States"} == Territory.translate_territory("Sjedinjene Države", "bs", TestBackend.Cldr, @us)
       assert {:ok, "United States"} == Territory.translate_territory("SAD", "bs", TestBackend.Cldr, "en")
     end
 
@@ -814,7 +818,9 @@ defmodule Cldr.TerritoryTest do
     test "with valid params" do
       assert "Sjedinjene Države" == Territory.translate_territory!("United States", "en", TestBackend.Cldr, "bs")
       assert "Sjedinjene Države" == Territory.translate_territory!("US", "en", TestBackend.Cldr, "bs")
+      assert "Sjedinjene Države" == Territory.translate_territory!("US", @us, TestBackend.Cldr, "bs")
       assert "United States" == Territory.translate_territory!("Sjedinjene Države", "bs", TestBackend.Cldr, "en")
+      assert "United States" == Territory.translate_territory!("Sjedinjene Države", "bs", TestBackend.Cldr, @us)
       assert "United States" == Territory.translate_territory!("SAD", "bs", TestBackend.Cldr, "en")
     end
 
@@ -837,7 +843,9 @@ defmodule Cldr.TerritoryTest do
   describe "translate_subdivision/3" do
     test "with valid params" do
       assert {:ok, "אונטריו"} == Territory.translate_subdivision("Ontario", "en", TestBackend.Cldr, "he")
+      assert {:ok, "אונטריו"} == Territory.translate_subdivision("Ontario", @us, TestBackend.Cldr, "he")
       assert {:ok, "Ontario"} == Territory.translate_subdivision("אונטריו", "he", TestBackend.Cldr, "en")
+      assert {:ok, "Ontario"} == Territory.translate_subdivision("אונטריו", "he", TestBackend.Cldr, @us)
     end
 
     test "with invalid params" do
@@ -852,7 +860,9 @@ defmodule Cldr.TerritoryTest do
   describe "translate_subdivision!/3" do
     test "with valid params" do
       assert "אונטריו" == Territory.translate_subdivision!("Ontario", "en", TestBackend.Cldr, "he")
+      assert "אונטריו" == Territory.translate_subdivision!("Ontario", @us, TestBackend.Cldr, "he")
       assert "Ontario" == Territory.translate_subdivision!("אונטריו", "he", TestBackend.Cldr, "en")
+      assert "Ontario" == Territory.translate_subdivision!("אונטריו", "he", TestBackend.Cldr, @us)
     end
 
     test "with invalid params" do
