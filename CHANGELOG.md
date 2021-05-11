@@ -1,5 +1,13 @@
 # Changelog
 
+## Cldr Territories v2.2.2 May 11th, 2021
+
+### Enhancements
+
+* Fix bug in `translate_territory!/4` [#16](https://github.com/Schultzer/cldr_territories/pull/16), thanks to @leandrocp.
+ 
+* Fix bug in `translate_subdivision!/4`.
+
 ## Cldr Territories v2.2.1 May 10th, 2021
 
 ### Enhancements
