@@ -22,7 +22,7 @@ defmodule Cldr.Territory.Backend do
         @doc """
         Returns the available territories for a given locale.
 
-        * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -47,7 +47,7 @@ defmodule Cldr.Territory.Backend do
         @doc """
         Returns the available territory subdivisions for a given locale.
 
-        * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -71,7 +71,7 @@ defmodule Cldr.Territory.Backend do
         @doc """
         Returns a map of all known territories in a given locale.
 
-        * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -117,7 +117,7 @@ defmodule Cldr.Territory.Backend do
         @doc """
         Returns a map of all known territory subdivisions in a given locale.
 
-        * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -178,7 +178,7 @@ defmodule Cldr.Territory.Backend do
         Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
         * `options` are:
-          * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+          * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
             The default is `Cldr.get_locale/0`
 
           * `style` is one of those returned by `#{inspect __MODULE__}.available_styles/0`.
@@ -239,7 +239,7 @@ defmodule Cldr.Territory.Backend do
         Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
         * `options` are:
-          * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+          * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
             The default is `Cldr.get_locale/0`
 
         ## Example
@@ -390,7 +390,7 @@ defmodule Cldr.Territory.Backend do
         Translate a localized string from one locale to another.
         Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
-        * `to_locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `to_locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -431,7 +431,7 @@ defmodule Cldr.Territory.Backend do
         Translate a localized string from one locale to another.
         Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
-        * `to_locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `to_locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -529,7 +529,7 @@ defmodule Cldr.Territory.Backend do
         Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
         * `options` are:
-          * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+          * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
             The default is `Cldr.get_locale/0`
 
           * `style` is one of those returned by `#{inspect __MODULE__}.available_styles/0`.
