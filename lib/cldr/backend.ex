@@ -53,7 +53,7 @@ defmodule Cldr.Territory.Backend do
         ## Example
 
             => #{inspect __MODULE__}.available_subdivisions("en")
-            ["ad02", "ad03", "ad04", "ad05", "ad06", "ad07", "ad08", ...]
+            [:ad02, :ad03, :ad04, :ad05, :ad06, :ad07, :ad08, ...]
 
             iex> #{inspect __MODULE__}.available_subdivisions()
             []
@@ -62,7 +62,7 @@ defmodule Cldr.Territory.Backend do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
 
         """
-        @spec available_subdivisions(Cldr.Territory.binary_tag()) :: [String.t()] | {:error, Cldr.Territory.error()}
+        @spec available_subdivisions(Cldr.Territory.binary_tag()) :: [atom()] | {:error, Cldr.Territory.error()}
         def available_subdivisions(locale \\ unquote(backend).get_locale())
         def available_subdivisions(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
           available_subdivisions(cldr_locale_name)
