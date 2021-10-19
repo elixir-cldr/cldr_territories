@@ -189,7 +189,7 @@ defmodule Cldr.Territory do
       {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
 
       iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [locale: "zzz"])
-      {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
   """
   @spec from_territory_code(atom_binary_tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
@@ -215,7 +215,7 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, locale: "bs")
-      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
+      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for :gbcma."}}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("invalid", TestBackend.Cldr, locale: "en")
       {:error, {Cldr.UnknownTerritoryError, "The territory \\"invalid\\" is unknown"}}
@@ -224,7 +224,7 @@ defmodule Cldr.Territory do
       {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, [locale: "zzz"])
-      {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
   """
   @spec from_subdivision_code(binary(), Cldr.backend(), [locale: binary_tag()]) ::
@@ -381,7 +381,7 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", "en", TestBackend.Cldr, "bs")
-      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
+      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for :gbcma."}}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", :zzz, TestBackend.Cldr)
       {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}

@@ -1,11 +1,19 @@
 # Changelog
 
+## Cldr Territories v2.3.0-rc.0 October 19th, 2021
+
+### Enhancements
+
+* Updates to `ex_cldr` version `2.24` which uses [CLDR 40](https://cldr.unicode.org/index/downloads/cldr-40) data
+
+* Both territories and territory subdivisions are now represented as atoms in the canonical form rather than the previous binary representation.
+
 ## Cldr Territories v2.2.2 May 11th, 2021
 
 ### Enhancements
 
 * Fix bug in `translate_territory!/4` [#16](https://github.com/Schultzer/cldr_territories/pull/16), thanks to @leandrocp.
- 
+
 * Fix bug in `translate_subdivision!/4`.
 
 ## Cldr Territories v2.2.1 May 10th, 2021
@@ -21,7 +29,7 @@
 * Requires `ex_cldr` version `2.20` or later to use CLDR data version 39. As with all CLDR releases, underlying data can change and tests are updated to reflect those changes.
 
 * Added `known_subdivisions/1`, `known_territory_subdivisions/2`, `from_subdivision_code/3` and `translate_subdivision/4` to support subdivison, thansk to @mskv.
-  
+
 * Improved proformance for `from_territory_code/2`, `from_subdivision_code/2`, `translate_territory/4` and `translate_subdivision/4`, thanks to @kipcole9.
 
 ## Cldr Territories v2.1.0 June 8th, 2020

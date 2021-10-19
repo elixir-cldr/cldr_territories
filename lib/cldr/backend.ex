@@ -22,7 +22,7 @@ defmodule Cldr.Territory.Backend do
         @doc """
         Returns the available territories for a given locale.
 
-        * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -47,13 +47,13 @@ defmodule Cldr.Territory.Backend do
         @doc """
         Returns the available territory subdivisions for a given locale.
 
-        * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
 
             => #{inspect __MODULE__}.available_subdivisions("en")
-            ["ad02", "ad03", "ad04", "ad05", "ad06", "ad07", "ad08", ...]
+            [:ad02, :ad03, :ad04, :ad05, :ad06, :ad07, :ad08, ...]
 
             iex> #{inspect __MODULE__}.available_subdivisions()
             []
@@ -62,7 +62,7 @@ defmodule Cldr.Territory.Backend do
             {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
 
         """
-        @spec available_subdivisions(Cldr.Territory.binary_tag()) :: [String.t()] | {:error, Cldr.Territory.error()}
+        @spec available_subdivisions(Cldr.Territory.binary_tag()) :: [atom()] | {:error, Cldr.Territory.error()}
         def available_subdivisions(locale \\ unquote(backend).get_locale())
         def available_subdivisions(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
           available_subdivisions(cldr_locale_name)
@@ -71,7 +71,7 @@ defmodule Cldr.Territory.Backend do
         @doc """
         Returns a map of all known territories in a given locale.
 
-        * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -117,7 +117,7 @@ defmodule Cldr.Territory.Backend do
         @doc """
         Returns a map of all known territory subdivisions in a given locale.
 
-        * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -178,7 +178,7 @@ defmodule Cldr.Territory.Backend do
         Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
         * `options` are:
-          * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+          * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
             The default is `Cldr.get_locale/0`
 
           * `style` is one of those returned by `#{inspect __MODULE__}.available_styles/0`.
@@ -206,7 +206,7 @@ defmodule Cldr.Territory.Backend do
             {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
 
             iex> #{inspect __MODULE__}.from_territory_code(:GB, [locale: "zzz"])
-            {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+            {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
         """
         @spec from_territory_code(Cldr.Territory.atom_binary_tag(), Cldr.Territory.options()) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
@@ -239,7 +239,7 @@ defmodule Cldr.Territory.Backend do
         Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
         * `options` are:
-          * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+          * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
             The default is `Cldr.get_locale/0`
 
         ## Example
@@ -251,7 +251,7 @@ defmodule Cldr.Territory.Backend do
             {:ok, "Kumbria"}
 
             iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", locale: "bs")
-            {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
+            {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for :gbcma."}}
 
             iex> #{inspect __MODULE__}.from_subdivision_code("invalid", locale: "en")
             {:error, {Cldr.UnknownTerritoryError, "The territory \\"invalid\\" is unknown"}}
@@ -260,7 +260,7 @@ defmodule Cldr.Territory.Backend do
             {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
 
             iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", [locale: "zzz"])
-            {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+            {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
         """
         @spec from_subdivision_code(binary(), [locale: Cldr.Territory.binary_tag()]) :: {:ok, binary()} | {:error, Cldr.Territory.error()}
@@ -310,7 +310,6 @@ defmodule Cldr.Territory.Backend do
         def from_territory_code!(territory_code, options) do
           case from_territory_code(territory_code, options) do
             {:error, {exception, msg}} -> raise exception, msg
-
             {:ok, result}              -> result
           end
         end
@@ -390,7 +389,7 @@ defmodule Cldr.Territory.Backend do
         Translate a localized string from one locale to another.
         Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
-        * `to_locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `to_locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -431,7 +430,7 @@ defmodule Cldr.Territory.Backend do
         Translate a localized string from one locale to another.
         Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
-        * `to_locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+        * `to_locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
           The default is `Cldr.get_locale/0`
 
         ## Example
@@ -440,7 +439,7 @@ defmodule Cldr.Territory.Backend do
             {:ok, "Kumbria"}
 
             iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", "en", "bs")
-            {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for \\"gbcma\\"."}}
+            {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for :gbcma."}}
 
             iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", :zzz)
             {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
@@ -529,7 +528,7 @@ defmodule Cldr.Territory.Backend do
         Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
 
         * `options` are:
-          * `locale` is any configured locale. See `#{inspect __MODULE__}.known_locale_names/0`.
+          * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
             The default is `Cldr.get_locale/0`
 
           * `style` is one of those returned by `#{inspect __MODULE__}.available_styles/0`.
@@ -925,11 +924,9 @@ defmodule Cldr.Territory.Backend do
           |> Cldr.validate_locale(unquote(backend))
           |> case do
               {:error, error}                                    -> {:error, error}
-
               {:ok, %LanguageTag{cldr_locale_name: locale_name}} -> {:ok, code, locale_name}
             end
         end
-
 
         @doc """
         Unicode flag for the given territory code.
