@@ -1,5 +1,17 @@
 # Changelog
 
+## Cldr Territories v2.3.0 October 27th, 2021
+
+### Enhancements
+
+* Updates to support [CLDR release 40](https://cldr.unicode.org/index/downloads/cldr-40) via [ex_cldr version 2.24](https://hex.pm/packages/ex_cldr/2.24.0)
+
+* Replace deprecated `Cldr.Config.get_locale/2` and `Cldr.Config.known_locale_names/1` with the replacement versions in `Cldr.Locale.Loader`
+
+### Deprecations
+
+* Updates minimum Elixir version to 1.10 since this is the minimum supported by `ex_cldr` version 2.24 and later.
+
 ## Cldr Territories v2.3.0-rc.0 October 19th, 2021
 
 ### Enhancements
