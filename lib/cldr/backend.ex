@@ -788,10 +788,10 @@ defmodule Cldr.Territory.Backend do
         def info!(territory_code), do: Cldr.Territory.info!(territory_code)
 
         # Generate the functions that encapsulate the territory data from CDLR
-        @known_locales Cldr.Config.known_locale_names(config)
+        @known_locales Cldr.Locale.Loader.known_locale_names(config)
 
         for locale_name <- @known_locales do
-          locale = Config.get_locale(locale_name, config)
+          locale = Cldr.Locale.Loader.get_locale(locale_name, config)
           territories = Map.fetch!(locale, :territories)
           subdivisions = Map.fetch!(locale, :subdivisions)
           territory_codes = Map.keys(territories)
