@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        elixir: [1.8]
+        elixir: [1.10.4]
         otp: [22.3]
     steps:
     - uses: actions/checkout@v2
@@ -26,7 +26,7 @@ jobs:
       uses: actions/cache@v2
       id: cache-mix
       with:
-        path: | 
+        path: |
               deps
               _build
               priv/plts

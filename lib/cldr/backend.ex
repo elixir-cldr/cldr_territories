@@ -39,7 +39,7 @@ defmodule Cldr.Territory.Backend do
             {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
         """
-        @spec available_territories(Cldr.Territory.binary_tag()) :: [atom()] | {:error, Cldr.Territory.error()}
+        @spec available_territories(Cldr.Territory.atom_binary_tag()) :: [atom()] | {:error, Cldr.Territory.error()}
         def available_territories(locale \\ unquote(backend).get_locale())
         def available_territories(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
           available_territories(cldr_locale_name)
@@ -63,7 +63,7 @@ defmodule Cldr.Territory.Backend do
             {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
         """
-        @spec available_subdivisions(Cldr.Territory.binary_tag()) :: [atom()] | {:error, Cldr.Territory.error()}
+        @spec available_subdivisions(Cldr.Territory.atom_binary_tag()) :: [atom()] | {:error, Cldr.Territory.error()}
         def available_subdivisions(locale \\ unquote(backend).get_locale())
         def available_subdivisions(%LanguageTag{cldr_locale_name: cldr_locale_name}) do
           available_subdivisions(cldr_locale_name)

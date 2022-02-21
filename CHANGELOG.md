@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr Territories v2.4.0 February 22nd, 2022
+
+### Enhancements
+
+* Updates to [ex_cldr version 2.26.0](https://hex.pm/packages/ex_cldr/2.26.0) which use atoms for locale names and rbnf locale names. This is consistent with other elements of `t:Cldr.LanguageTag` where atoms are used when the cardinality of the data is fixed and relatively small and strings where the data is free format.
+
 ## Cldr Territories v2.3.0 October 27th, 2021
 
 ### Enhancements
