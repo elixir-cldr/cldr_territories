@@ -14,7 +14,7 @@ defmodule Cldr.Territory do
   @type error                      :: {module, binary()}
   @type styles                     :: :short | :standard | :variant
   @type tag                        :: LanguageTag.t()
-  @type options                    :: [{:locale, binary_tag()} | {:style, styles()}]
+  @type options                    :: [{:locale, atom_binary_tag()} | {:style, styles()}]
 
   @styles [:short, :standard, :variant]
   @territory_containment Cldr.Config.territory_containers()
@@ -186,7 +186,7 @@ defmodule Cldr.Territory do
       {:ok, "Reino Unido"}
 
       iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [locale: :zzz])
-      {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
       iex> Cldr.Territory.from_territory_code(:GB, TestBackend.Cldr, [locale: "zzz"])
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
@@ -215,13 +215,13 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, locale: "bs")
-      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for :gbcma."}}
+      {:error, {Cldr.UnknownSubdivisionError, "The locale :bs has no translation for :gbcma."}}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("invalid", TestBackend.Cldr, locale: "en")
       {:error, {Cldr.UnknownTerritoryError, "The territory \\"invalid\\" is unknown"}}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, [locale: :zzz])
-      {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, [locale: "zzz"])
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
@@ -341,10 +341,11 @@ defmodule Cldr.Territory do
       {:ok, "Reino Unido"}
 
       iex> Cldr.Territory.translate_territory("Reino Unido", :zzz, TestBackend.Cldr)
-      {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
       iex> Cldr.Territory.translate_territory("United Kingdom", "en", TestBackend.Cldr, "zzz")
-      {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
+
   """
   @spec translate_territory(binary(), binary_tag(), Cldr.backend(), binary_tag(), atom()) :: {:ok, binary()} | {:error, error()}
   def translate_territory(localized_string, from_locale, backend, to_locale, style) do
@@ -381,13 +382,14 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", "en", TestBackend.Cldr, "bs")
-      {:error, {Cldr.UnknownSubdivisionError, "The locale \\"bs\\" has no translation for :gbcma."}}
+      {:error, {Cldr.UnknownSubdivisionError, "The locale :bs has no translation for :gbcma."}}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", :zzz, TestBackend.Cldr)
-      {:error, {Cldr.UnknownLocaleError, "The locale :zzz is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", "en", TestBackend.Cldr, "zzz")
-      {:error, {Cldr.UnknownLocaleError, "The locale \\"zzz\\" is not known."}}
+      {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
+
   """
   @spec translate_subdivision(binary(), binary_tag(), Cldr.backend(), binary_tag()) ::
           {:ok, binary()} | {:error, error()}
