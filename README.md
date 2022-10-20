@@ -94,7 +94,7 @@ Add `ex_cldr_territories` as a dependency to your `mix` project:
 ```elixir
     defp deps do
       [
-        {:ex_cldr_territories, "~> 2.0"}
+        {:ex_cldr_territories, "~> 2.4.1"}
       ]
     end
 ```

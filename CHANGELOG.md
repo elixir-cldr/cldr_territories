@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr Territories v2.4.1 Octorber 20nd, 2022
+
+### Enhancements
+
+* Fixed spec for `known_territory_subdivisions/2` thanks to @zorbash
+
 ## Cldr Territories v2.4.0 February 22nd, 2022
 
 ### Enhancements
