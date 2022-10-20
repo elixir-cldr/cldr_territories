@@ -1032,4 +1032,17 @@ defmodule Cldr.TerritoryTest do
     end
   end
 
+  describe "known_territory_subdivisions/2" do
+    test "with valid params" do
+      assert {:ok, ["usak", "usal" | _]} =
+               Territory.known_territory_subdivisions(:US, TestBackend.Cldr)
+    end
+
+    test "with invalid params" do
+      assert {:ok, nil} = Territory.known_territory_subdivisions(:EU, TestBackend.Cldr)
+
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory :NOPE is unknown"}} =
+               Territory.known_territory_subdivisions(:NOPE, TestBackend.Cldr)
+    end
+  end
 end
