@@ -1,5 +1,12 @@
 # Changelog
 
+## Cldr Territories v2.5.0 TBA, 2022
+
+### Enhancements
+
+* Updates to [ex_cldr version 2.33](https://hex.pm/packages/ex_cldr/2.33.0)
+* Updates to support [CLDR release 41](https://cldr.unicode.org/index/downloads/cldr-41) via [ex_cldr version 2.28](https://hex.pm/packages/ex_cldr/2.28.0)
+
 ## Cldr Territories v2.4.1 Octorber 20nd, 2022
 
 ### Enhancements
