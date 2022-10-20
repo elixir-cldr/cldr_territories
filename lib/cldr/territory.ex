@@ -150,7 +150,7 @@ defmodule Cldr.Territory do
       "gbdal", "gbdby", "gbden", ...]}
   """
   @spec known_territory_subdivisions(atom_binary_tag(), Cldr.backend()) ::
-          {:ok, binary()} | {:error, error()}
+          {:ok, binary() | nil} | {:error, error()}
   def known_territory_subdivisions(territory_code, backend) do
     module = Module.concat(backend, Territory)
     module.known_territory_subdivisions(territory_code)
