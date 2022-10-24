@@ -1,6 +1,6 @@
 # Changelog
 
-## Cldr Territories v2.5.0 TBA, 2022
+## Cldr Territories v2.5.0 Octorber 24, 2022
 
 ### Enhancements
 
