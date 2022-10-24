@@ -732,7 +732,8 @@ defmodule Cldr.Territory.Backend do
                 "ta" => %{population_percent: 3.2},
                 "tr" => %{population_percent: 0.2},
                 "ur" => %{population_percent: 3.5},
-                "zh-Hant" => %{population_percent: 0.3}
+                "zh-Hant" => %{population_percent: 0.3},
+                "en-Shaw" => %{population_percent: 0}
                },
                literacy_percent: 99,
                measurement_system: %{
@@ -783,7 +784,8 @@ defmodule Cldr.Territory.Backend do
                 "ta" => %{population_percent: 3.2},
                 "tr" => %{population_percent: 0.2},
                 "ur" => %{population_percent: 3.5},
-                "zh-Hant" => %{population_percent: 0.3}
+                "zh-Hant" => %{population_percent: 0.3},
+                "en-Shaw" => %{population_percent: 0}
               },
               literacy_percent: 99,
               measurement_system: %{
