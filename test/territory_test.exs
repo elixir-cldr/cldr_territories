@@ -51,7 +51,10 @@ defmodule Cldr.TerritoryTest do
       "ru" => %{population_percent: 0.24},
       "vi" => %{population_percent: 0.34},
       "yi" => %{population_percent: 0.049},
-      "zh-Hant" => %{population_percent: 0.69}
+      "zh-Hant" => %{population_percent: 0.69},
+      "hnj" => %{population_percent: 0.035},
+      "io" => %{population_percent: 0},
+      "jbo" => %{population_percent: 0}
     },
     literacy_percent: 99,
     measurement_system: %{
@@ -89,7 +92,7 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "locales with subdivisions" do
-      assert 5517 == length(TestBackend.Cldr.Territory.available_subdivisions(@us))
+      assert 5384 == length(TestBackend.Cldr.Territory.available_subdivisions(@us))
     end
   end
 
