@@ -104,6 +104,17 @@ then retrieve `ex_cldr_territories` from [hex](https://hex.pm/packages/ex_cldr_t
     mix deps.get
     mix deps.compile
 
+In order to use this library, a backend module for `ex_cldr` must be defined.  This is described in full in the `ex_cldr` [readme](https://hexdocs.pm/ex_cldr/readme.html#configuration).
+To get started, define a backend module in your project as follows:
+
+```elixir
+defmodule MyApp.Cldr do
+  use Cldr,
+    locales: [:en],
+    providers: [Cldr.Territory]
+end
+```
+
 ## LICENSE
 
 (The MIT License)
