@@ -157,6 +157,47 @@ defmodule Cldr.Territory do
   end
 
   @doc """
+  Reurns the display name for the given territory code.
+  Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
+
+  * `options` are:
+    * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
+      The default is `Cldr.get_locale/1`
+
+    * `backend` ia any Cldr backend module. The default is
+      `Cldr.default_backend!/0`
+
+    * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
+      The current styles are `:short`, `:standard` and `:variant`.
+      The default is `:standard`
+
+  If no `:backend` option is specified and no default backend is
+  configured an exception will be raised.
+
+  ## Example
+
+      iex> Cldr.Territory.display_name(:GB, backend: TestBackend.Cldr)
+      {:ok, "United Kingdom"}
+
+      iex> Cldr.put_default_backend(TestBackend.Cldr)
+      iex> Cldr.Territory.display_name(:GB)
+      {:ok, "United Kingdom"}
+
+      iex> Cldr.Territory.display_name(:GB, locale: "pt")
+      {:ok, "Reino Unido"}
+
+  """
+  @spec display_name(atom_binary_tag(), options()) :: {:ok, binary()} | {:error, error()}
+  def display_name(territory, options \\ []) do
+    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend!/0)
+    locale = Keyword.get_lazy(options, :locale, fn -> Cldr.get_locale(backend) end)
+    style = Keyword.get(options, :style, :standard)
+    options = [locale: locale, style: style]
+
+    from_territory_code(territory, backend, options)
+  end
+
+  @doc """
   Localized string for the given territory code.
   Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
