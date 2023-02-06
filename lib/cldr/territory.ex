@@ -157,14 +157,14 @@ defmodule Cldr.Territory do
   end
 
   @doc """
-  Reurns the display name for the given territory code.
+  Returns the display name for the given territory code.
   Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
   * `options` are:
     * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
       The default is `Cldr.get_locale/1`
 
-    * `backend` ia any Cldr backend module. The default is
+    * `backend` is any Cldr backend module. The default is
       `Cldr.default_backend!/0`
 
     * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
