@@ -873,6 +873,7 @@ defmodule Cldr.Territory.Backend do
                 string -> {:ok, string}
               end
           end
+          def from_territory_code(territory_code, unquote(locale_name) = locale_name, style), do: {:error, unknown_territory_error(territory_code, locale_name, style)}
 
           @doc false
           def __from_subdivision_code__(subdivision_code, unquote(locale_name) = locale_name) do
