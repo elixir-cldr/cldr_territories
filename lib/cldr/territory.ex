@@ -1131,7 +1131,7 @@ defmodule Cldr.Territory do
   end
   defp map_binary(result) when is_atom(result), do: to_string(result)
 
-  defp map_binary!({:error, {exception, reason}}), do: raise exception, reason
+  defp map_binary!({:error, {exception, reason}}), do: raise(exception, reason)
   defp map_binary!({:ok, result}), do: map_binary(result)
 
   defp map_charlist({:error, reason}), do: {:error, reason}
@@ -1141,7 +1141,7 @@ defmodule Cldr.Territory do
   end
   defp map_charlist(result) when is_atom(result), do: to_charlist(result)
 
-  defp map_charlist!({:error, {exception, reason}}), do: raise exception, reason
+  defp map_charlist!({:error, {exception, reason}}), do: raise(exception, reason)
   defp map_charlist!({:ok, result}), do: map_charlist(result)
 
   @doc false

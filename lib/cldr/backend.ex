@@ -384,7 +384,7 @@ defmodule Cldr.Territory.Backend do
         def from_language_tag!(%LanguageTag{cldr_locale_name: cldr_locale_name, territory: territory}, [style: style]) do
           from_territory_code!(territory, [locale: cldr_locale_name, style: style])
         end
-        def from_language_tag!(tag, _options), do: raise Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`"
+        def from_language_tag!(tag, _options), do: raise(Cldr.UnknownLanguageTagError, "The tag #{inspect tag} is not a valid `LanguageTag.t`")
 
         @doc """
         Translate a localized string from one locale to another.
