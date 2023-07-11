@@ -1,5 +1,14 @@
 # Changelog
 
+## Cldr Territories v2.8.0 July 15, 2023
+
+### Enhancements
+
+* Fixed compiler warnings for Elixir 1.15, thanks to @alappe.
+* Resolve subdivision aliases in `from_subdivision_code/*` and `from_subdivision_code!/*` and,
+  allow optional style to be passed to the underlying `from_territory_code/*` in cases where a subdivision is to be treated as a territory.
+* Added `subdivision_aliases/0`.
+
 ## Cldr Territories v2.7.0 May 5, 2023
 
 ### Enhancements
