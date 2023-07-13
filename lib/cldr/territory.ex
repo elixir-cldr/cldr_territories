@@ -19,6 +19,10 @@ defmodule Cldr.Territory do
   @styles [:short, :standard, :variant]
   @territory_containment Cldr.Config.territory_containers()
   @territory_info Cldr.Config.territories()
+  @subdivision_aliases  Map.new(Map.fetch!(Cldr.Config.aliases(), :subdivision), fn
+                          {k, <<v::binary>>} -> {:"#{k}", :"#{v}"}
+                          {k, v} -> {:"#{k}", Enum.map(v, &:"#{&1}")}
+                        end)
 
   @doc """
   Returns a list of available styles.
@@ -30,6 +34,17 @@ defmodule Cldr.Territory do
   """
   @spec available_styles() :: [styles()]
   def available_styles(), do: @styles
+
+  @doc """
+  Returns a map of available subdivision aliases.
+
+  ## Example
+
+      iex#> Cldr.Territory.subdivision_aliases()
+      %{:uspr => :PR}
+  """
+  @spec subdivision_aliases() :: map()
+  def subdivision_aliases(), do: @subdivision_aliases
 
   @doc """
   Returns the available territories for a given locale.

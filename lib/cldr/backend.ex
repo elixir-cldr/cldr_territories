@@ -21,6 +21,18 @@ defmodule Cldr.Territory.Backend do
         def available_styles(), do: Cldr.Territory.available_styles()
 
         @doc """
+        Returns a map of available subdivision aliases.
+
+        ## Example
+
+            iex#> #{inspect __MODULE__}.subdivision_aliases()
+            %{:uspr => :PR}
+
+        """
+        @spec subdivision_aliases() :: map()
+        def subdivision_aliases(), do: Cldr.Territory.subdivision_aliases()
+
+        @doc """
         Returns the available territories for a given locale.
 
         * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
@@ -877,10 +889,14 @@ defmodule Cldr.Territory.Backend do
 
           @doc false
           def __from_subdivision_code__(subdivision_code, unquote(locale_name) = locale_name) do
-            case known_subdivisions(locale_name) do
-              %{^subdivision_code => subdivision_translation} -> {:ok, subdivision_translation}
-              subdivisions when map_size(subdivisions) == 0 -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no subdivisions."}}
-              _subdivisions -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no translation for #{inspect subdivision_code}."}}
+            subdivisions = known_subdivisions(locale_name)
+            subdivision_aliases = subdivision_aliases()
+            code = subdivision_aliases[subdivision_code]
+            case Map.values(Map.take(subdivisions, [subdivision_code | List.wrap(code)])) do
+             [subdivision_translation | _] -> {:ok, subdivision_translation}
+             [] when is_atom(code) and not is_nil(code) -> from_territory_code(code, unquote(locale_name), :standard)
+             [] when map_size(subdivisions) == 0 -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no subdivisions."}}
+             [] -> {:error, {Cldr.UnknownSubdivisionError, "The locale #{inspect unquote(locale_name)} has no translation for #{inspect subdivision_code}."}}
             end
           end
         end

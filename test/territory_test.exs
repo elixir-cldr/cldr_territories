@@ -161,6 +161,8 @@ defmodule Cldr.TerritoryTest do
   describe "from_subdivision_code/1" do
     test "with valid params" do
       assert {:ok, "Ontario"} == Territory.from_subdivision_code("CAON", TestBackend.Cldr, [locale: "en"])
+      assert {:ok, "Hebei"} == Territory.from_subdivision_code("CN13", TestBackend.Cldr, [locale: "en"])
+      assert {:ok, "Puerto Rico"} == Territory.from_subdivision_code("USPR", TestBackend.Cldr, [locale: "en"])
       assert {:ok, "אונטריו"} == Territory.from_subdivision_code("caon", TestBackend.Cldr, [locale: "he"])
     end
 
