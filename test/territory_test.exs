@@ -161,11 +161,13 @@ defmodule Cldr.TerritoryTest do
   describe "from_subdivision_code/1" do
     test "with valid params" do
       assert {:ok, "Ontario"} == Territory.from_subdivision_code("CAON", TestBackend.Cldr, [locale: "en"])
+      assert {:ok, "Hebei"} == Territory.from_subdivision_code("CN13", TestBackend.Cldr, [locale: "en"])
+      assert {:ok, "Puerto Rico"} == Territory.from_subdivision_code("USPR", TestBackend.Cldr, [locale: "en"])
       assert {:ok, "אונטריו"} == Territory.from_subdivision_code("caon", TestBackend.Cldr, [locale: "he"])
     end
 
     test "with invalid params" do
-      assert {:error, {Cldr.UnknownSubdivisionError, "The locale :\"en-001\" has no subdivisions."}} == Territory.from_subdivision_code("CAON", TestBackend.Cldr)
+      assert {:error, {Cldr.UnknownSubdivisionError, "No subdivision translation for :caon could be found in locale :\"en-001\""}} == Territory.from_subdivision_code("CAON", TestBackend.Cldr)
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.from_subdivision_code(:ZZ, TestBackend.Cldr)
       assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == Territory.from_subdivision_code("CAON", TestBackend.Cldr, [locale: "zzz"])
       assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == Territory.from_subdivision_code("CAON", TestBackend.Cldr, [locale: :zzz])
@@ -179,7 +181,7 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "with invalid params" do
-      assert_raise Cldr.UnknownSubdivisionError, "The locale :\"en-001\" has no subdivisions.", fn ->
+      assert_raise Cldr.UnknownSubdivisionError, "No subdivision translation for :caon could be found in locale :\"en-001\"", fn ->
         Territory.from_subdivision_code!("CAON", TestBackend.Cldr)
       end
       assert_raise Cldr.UnknownTerritoryError, "The territory :ZZ is unknown", fn ->
@@ -295,7 +297,7 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "with invalid params" do
-      assert {:error, {Cldr.UnknownSubdivisionError, "The locale :\"en-001\" has no subdivisions."}} == Territory.translate_subdivision("Ontario", "en-001", TestBackend.Cldr, "bs")
+      assert {:error, {Cldr.UnknownSubdivisionError, "No subdivision translation for \"Ontario\" could be found in locale :\"en-001\""}} == Territory.translate_subdivision("Ontario", "en-001", TestBackend.Cldr, "bs")
       assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == Territory.translate_subdivision("CAON", "zzz", TestBackend.Cldr, "bs")
       assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == Territory.translate_subdivision("CAON", "en", TestBackend.Cldr, "zzz")
       assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == Territory.translate_subdivision("CAON", :zzz, TestBackend.Cldr, "bs")
@@ -312,7 +314,7 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "with invalid params" do
-      assert_raise Cldr.UnknownSubdivisionError, "The locale :\"en-001\" has no subdivisions.", fn ->
+      assert_raise Cldr.UnknownSubdivisionError, "No subdivision translation for \"Ontario\" could be found in locale :\"en-001\"", fn ->
         Territory.translate_subdivision!("Ontario", "en-001", TestBackend.Cldr, "bs")
       end
       assert_raise Cldr.InvalidLanguageError, "The language \"zzz\" is invalid", fn ->
