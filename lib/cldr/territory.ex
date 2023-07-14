@@ -262,6 +262,10 @@ defmodule Cldr.Territory do
     * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
       The default is `Cldr.get_locale/1`
 
+    * `style` is one of those returned by `Cldr.Territory.available_styles/0`.
+      The current styles are `:short`, `:standard` and `:variant`.
+      The default is `:standard`
+
   ## Example
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, locale: "en")
@@ -271,7 +275,7 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("gbcma", TestBackend.Cldr, locale: "bs")
-      {:error, {Cldr.UnknownSubdivisionError, "The locale :bs has no translation for :gbcma."}}
+      {:error, {Cldr.UnknownSubdivisionError, "No subdivision translation for :gbcma could be found in locale :bs"}}
 
       iex> #{inspect __MODULE__}.from_subdivision_code("invalid", TestBackend.Cldr, locale: "en")
       {:error, {Cldr.UnknownTerritoryError, "The territory \\"invalid\\" is unknown"}}
@@ -283,15 +287,9 @@ defmodule Cldr.Territory do
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
   """
-  @spec from_subdivision_code(binary(), Cldr.backend(), [locale: binary_tag()]) ::
-          {:ok, binary()} | {:error, error()}
-  def from_subdivision_code(
-        subdivision_code,
-        backend,
-        options \\ [locale: Cldr.get_locale()]
-      ) do
-    module = Module.concat(backend, Territory)
-    module.from_subdivision_code(subdivision_code, options)
+  @spec from_subdivision_code(atom_binary_tag(), Cldr.backend(), options) :: {:ok, String.t()} | {:error, error()}
+  def from_subdivision_code(subdivision_code, backend, options \\ []) do
+    Module.concat(backend, Territory).from_subdivision_code(subdivision_code, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
   end
 
   @doc """
@@ -327,15 +325,9 @@ defmodule Cldr.Territory do
       "Kumbria"
 
   """
-  @spec from_subdivision_code!(binary(), Cldr.backend(), [locale: binary_tag()]) ::
-          binary() | no_return()
-  def from_subdivision_code!(
-        territory_code,
-        backend,
-        options \\ [locale: Cldr.get_locale()]
-      ) do
-    module = Module.concat(backend, Territory)
-    module.from_subdivision_code!(territory_code, options)
+  @spec from_subdivision_code!(String.t(), Cldr.backend(), options()) :: String.t() | no_return()
+  def from_subdivision_code!(territory_code, backend, options \\ []) do
+    Module.concat(backend, Territory).from_subdivision_code!(territory_code, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
   end
 
   @doc """
@@ -438,7 +430,7 @@ defmodule Cldr.Territory do
       {:ok, "Kumbria"}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", "en", TestBackend.Cldr, "bs")
-      {:error, {Cldr.UnknownSubdivisionError, "The locale :bs has no translation for :gbcma."}}
+      {:error, {Cldr.UnknownSubdivisionError, "No subdivision translation for :gbcma could be found in locale :bs"}}
 
       iex> #{inspect __MODULE__}.translate_subdivision("Cumbria", :zzz, TestBackend.Cldr)
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
@@ -447,11 +439,9 @@ defmodule Cldr.Territory do
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
   """
-  @spec translate_subdivision(binary(), binary_tag(), Cldr.backend(), binary_tag()) ::
-          {:ok, binary()} | {:error, error()}
-  def translate_subdivision(localized_string, from_locale, backend, to_locale \\ Cldr.get_locale()) do
-    module = Module.concat(backend, Territory)
-    module.translate_subdivision(localized_string, from_locale, to_locale)
+  @spec translate_subdivision(String.t(), binary_tag(), Cldr.backend(), binary_tag()) :: {:ok, String.t()} | {:error, error()}
+  def translate_subdivision(localized_string, from_locale, backend \\ Cldr.default_backend!(), to_locale \\ Cldr.get_locale(), style \\ :standard) do
+    Module.concat(backend, Territory).translate_subdivision(localized_string, from_locale, to_locale, style)
   end
 
   @doc """
@@ -499,11 +489,9 @@ defmodule Cldr.Territory do
       ** (Cldr.UnknownSubdivisionError) The locale "bs" has no translation for "gbcma".
 
   """
-  @spec translate_subdivision!(binary(), binary_tag(), Cldr.backend(), binary_tag()) ::
-          binary() | no_return()
-  def translate_subdivision!(localized_string, from_locale, backend, to_locale \\ Cldr.get_locale()) do
-    module = Module.concat(backend, Territory)
-    module.translate_subdivision!(localized_string, from_locale, to_locale)
+  @spec translate_subdivision!(String.t(), binary_tag(), Cldr.backend(), binary_tag()) :: String.t() | no_return()
+  def translate_subdivision!(localized_string, from_locale, backend \\ Cldr.default_backend!(), to_locale \\ Cldr.get_locale(), style \\ :standard) do
+    Module.concat(backend, Territory).translate_subdivision!(localized_string, from_locale, to_locale, style)
   end
 
   @doc """
