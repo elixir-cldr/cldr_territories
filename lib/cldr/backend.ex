@@ -1,4 +1,5 @@
 defmodule Cldr.Territory.Backend do
+  @moduledoc false
   def define_territory_module(config) do
     module = inspect(__MODULE__)
     backend = config.backend

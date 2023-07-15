@@ -60,7 +60,7 @@ end
 
 defmodule Cldr.UnknownSubdivisionError do
   @moduledoc """
-  Exception raised when there is an invalid or missing subdivision.
+  Exception raised when there is a missing subdivision.
   """
 
   defexception [:message]
