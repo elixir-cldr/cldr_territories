@@ -341,7 +341,7 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "with invalid params" do
-      assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag(@us, TestBackend.Cldr, locale: "zzz")
+      assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == Territory.translate_language_tag(@us, TestBackend.Cldr, locale: "zzz")
       assert {:error, {Cldr.UnknownLanguageTagError, "The tag \"US\" is not a valid `LanguageTag.t`"}} == Territory.translate_language_tag("US", TestBackend.Cldr, locale: @bs)
       assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.translate_language_tag(@bs, TestBackend.Cldr, [locale: @us, style: "zzz"])
       assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.translate_language_tag(@us, TestBackend.Cldr, [locale: @bs, style: :zzz])
@@ -357,7 +357,7 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "with invalid params" do
-      assert_raise Cldr.UnknownLanguageTagError, "The tag \"zzz\" is not a valid `LanguageTag.t`", fn ->
+      assert_raise Cldr.InvalidLanguageError , "The language \"zzz\" is invalid", fn ->
         Territory.translate_language_tag!(@us, TestBackend.Cldr, locale: "zzz")
       end
       assert_raise Cldr.UnknownLanguageTagError,"The tag \"US\" is not a valid `LanguageTag.t`", fn ->
@@ -415,7 +415,7 @@ defmodule Cldr.TerritoryTest do
     test "with invalid params" do
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ZZ is unknown"}} == Territory.children(:ZZ)
       assert {:error, {Cldr.UnknownTerritoryError, "The territory :ex is unknown"}} == Territory.children(:ex)
-      assert {:error, {Cldr.UnknownParentError, "The territory :DK has no children"}} == Territory.children("dk")
+      assert {:error, {Cldr.UnknownParentError, "The territory \"dk\" has no children"}} == Territory.children("dk")
     end
   end
 
@@ -431,7 +431,7 @@ defmodule Cldr.TerritoryTest do
       assert_raise Cldr.UnknownTerritoryError, "The territory :ex is unknown", fn ->
         Territory.children!(:ex)
       end
-      assert_raise Cldr.UnknownParentError, "The territory :DK has no children", fn ->
+      assert_raise Cldr.UnknownParentError, "The territory \"dk\" has no children", fn ->
         Territory.children!("dk")
       end
     end

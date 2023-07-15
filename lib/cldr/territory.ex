@@ -3,26 +3,18 @@ defmodule Cldr.Territory do
   Supports the CLDR Territories definitions which provide the localization of many
   territories.
   """
+  @moduledoc since: "1.0.0"
+
 
   alias Cldr.LanguageTag
-
-  @type as_options                 :: [as: :atom | :binary | :charlist]
-  @type atom_binary_charlist       :: atom() | binary() | charlist()
-  @type atom_binary_tag            :: atom() | binary() | LanguageTag.t()
-  @type atom_tag                   :: atom() | LanguageTag.t()
-  @type binary_tag                 :: binary() | LanguageTag.t()
-  @type error                      :: {module, binary()}
-  @type styles                     :: :short | :standard | :variant
-  @type tag                        :: LanguageTag.t()
-  @type options                    :: [{:locale, atom_binary_tag()} | {:style, styles()}]
 
   @styles [:short, :standard, :variant]
   @territory_containment Cldr.Config.territory_containers()
   @territory_info Cldr.Config.territories()
-  @subdivision_aliases  Map.new(Map.fetch!(Cldr.Config.aliases(), :subdivision), fn
-                          {k, <<v::binary>>} -> {:"#{k}", :"#{v}"}
-                          {k, v} -> {:"#{k}", Enum.map(v, &:"#{&1}")}
-                        end)
+  @subdivision_aliases Map.new(Map.fetch!(Cldr.Config.aliases(), :subdivision), fn
+    {k, <<v::binary>>} -> {:"#{k}", :"#{v}"}
+    {k, v} -> {:"#{k}", Enum.map(v, &:"#{&1}")}
+  end)
 
   @doc """
   Returns a list of available styles.
@@ -32,7 +24,8 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.available_styles()
       [:short, :standard, :variant]
   """
-  @spec available_styles() :: [styles()]
+  @doc since: "1.0.0"
+  @spec available_styles() :: [:short | :standard | :variant]
   def available_styles(), do: @styles
 
   @doc """
@@ -43,6 +36,7 @@ defmodule Cldr.Territory do
       iex#> Cldr.Territory.subdivision_aliases()
       %{:uspr => :PR}
   """
+  @doc since: "2.8.0"
   @spec subdivision_aliases() :: map()
   def subdivision_aliases(), do: @subdivision_aliases
 
@@ -61,11 +55,9 @@ defmodule Cldr.Territory do
       :"419", :AC, :AD, :AE, :AF, :AG, :AI, :AL, :AM, :AO, :AQ, :AR, :AS, :AT, :AU,
       :AW, :AX, :AZ, :BA, :BB, ...]
   """
+  @doc since: "2.0.0"
   @spec available_territories(Cldr.backend()) :: [atom()]
-  def available_territories(backend) do
-    module = Module.concat(backend, Territory)
-    module.available_territories()
-  end
+  def available_territories(backend), do: Module.concat(backend, Territory).available_territories()
 
   @doc """
   Returns the available territory subdivisions for a given locale.
@@ -78,11 +70,9 @@ defmodule Cldr.Territory do
       => Cldr.Territory.available_subdivisions(TestBackend.Cldr)
       ["ad02", "ad03", "ad04", "ad05", "ad06", "ad07", "ad08", ...]
   """
+  @doc since: "2.2.0"
   @spec available_subdivisions(Cldr.backend()) :: [atom()]
-  def available_subdivisions(backend) do
-    module = Module.concat(backend, Territory)
-    module.available_subdivisions()
-  end
+  def available_subdivisions(backend), do: Module.concat(backend, Territory).available_subdivisions()
 
   @doc """
   Returns a map of all known territories in a given locale.
@@ -120,11 +110,9 @@ defmodule Cldr.Territory do
       HN: %{standard: "Honduras"}, GI: %{standard: "Gibraltar"},
       "142": %{standard: "Asia"}, "029": %{...}, ...}
   """
-  @spec known_territories(Cldr.backend()) :: map() | {:error, error()}
-  def known_territories(backend) do
-    module = Module.concat(backend, Territory)
-    module.known_territories()
-  end
+  @doc since: "2.0.0"
+  @spec known_territories(Cldr.backend()) :: map() | {:error, {module(), String.t()}}
+  def known_territories(backend), do: Module.concat(backend, Territory).known_territories()
 
   @doc """
   Returns a map of all known territory subdivisions in a given locale.
@@ -144,11 +132,9 @@ defmodule Cldr.Territory do
         "ad07" => "Andorra la Vella",
         ...
   """
-  @spec known_subdivisions(Cldr.backend()) :: map() | {:error, error()}
-  def known_subdivisions(backend) do
-    module = Module.concat(backend, Territory)
-    module.known_subdivisions()
-  end
+  @doc since: "2.0.0"
+  @spec known_subdivisions(Cldr.backend()) :: map() | {:error, {module(), String.t()}}
+  def known_subdivisions(backend), do: Module.concat(backend, Territory).known_subdivisions()
 
   @doc """
   Returns a list of subdivisions of a given territory.
@@ -164,12 +150,9 @@ defmodule Cldr.Territory do
       "gbcma", "gbcmd", "gbcmn", "gbcon", "gbcov", "gbcrf", "gbcry", "gbcwy",
       "gbdal", "gbdby", "gbden", ...]}
   """
-  @spec known_territory_subdivisions(atom_binary_tag(), Cldr.backend()) ::
-          {:ok, list(binary()) | nil} | {:error, error()}
-  def known_territory_subdivisions(territory_code, backend) do
-    module = Module.concat(backend, Territory)
-    module.known_territory_subdivisions(territory_code)
-  end
+  @doc since: "2.2.0"
+  @spec known_territory_subdivisions(atom() | String.t() | LanguageTag.t(), Cldr.backend()) :: {:ok, [String.t()]} | {:error, {module(), String.t()}}
+  def known_territory_subdivisions(territory_code, backend), do: Module.concat(backend, Territory).known_territory_subdivisions(territory_code)
 
   @doc """
   Returns the display name for the given territory code.
@@ -202,15 +185,9 @@ defmodule Cldr.Territory do
       {:ok, "Reino Unido"}
 
   """
-  @spec display_name(atom_binary_tag(), options()) :: {:ok, binary()} | {:error, error()}
-  def display_name(territory, options \\ []) do
-    {backend, options} = Keyword.pop_lazy(options, :backend, &Cldr.default_backend!/0)
-    locale = Keyword.get_lazy(options, :locale, fn -> Cldr.get_locale(backend) end)
-    style = Keyword.get(options, :style, :standard)
-    options = [locale: locale, style: style]
-
-    from_territory_code(territory, backend, options)
-  end
+  @doc since: "2.7.0"
+  @spec display_name(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+  def display_name(territory, options \\ []), do: from_territory_code(territory, Keyword.get_lazy(options, :backend, &Cldr.default_backend!/0), options)
 
   @doc """
   Localized string for the given territory code.
@@ -248,11 +225,9 @@ defmodule Cldr.Territory do
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
   """
-  @spec from_territory_code(atom_binary_tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
-  def from_territory_code(territory_code, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
-    module = Module.concat(backend, Territory)
-    module.from_territory_code(territory_code, options)
-  end
+  @doc since: "2.0.0"
+  @spec from_territory_code(atom() | String.t() | LanguageTag.t(), Cldr.backend(), Keyword.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+  def from_territory_code(code, backend, options \\ []), do: Module.concat(backend, Territory).from_territory_code(code, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
 
   @doc """
   Localized string for the given subdivision code.
@@ -287,10 +262,9 @@ defmodule Cldr.Territory do
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
   """
-  @spec from_subdivision_code(atom_binary_tag(), Cldr.backend(), options) :: {:ok, String.t()} | {:error, error()}
-  def from_subdivision_code(subdivision_code, backend, options \\ []) do
-    Module.concat(backend, Territory).from_subdivision_code(subdivision_code, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
-  end
+  @doc since: "2.2.0"
+  @spec from_subdivision_code(String.t(), Cldr.backend(), Keyword.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+  def from_subdivision_code(code, backend, options \\ []), do: Module.concat(backend, Territory).from_subdivision_code(code, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
 
   @doc """
   The same as `from_territory_code/2`, but raises an exception if it fails.
@@ -307,11 +281,9 @@ defmodule Cldr.Territory do
       "Reino Unido"
 
   """
-  @spec from_territory_code!(atom_binary_tag(), Cldr.backend(), options()) :: binary() | no_return()
-  def from_territory_code!(territory_code, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
-    module = Module.concat(backend, Territory)
-    module.from_territory_code!(territory_code, options)
-  end
+  @doc since: "2.0.0"
+  @spec from_territory_code!(atom() | String.t() | LanguageTag.t(), Cldr.backend(), Keyword.t()) :: String.t()
+  def from_territory_code!(code, backend, options \\ []), do: Module.concat(backend, Territory).from_territory_code!(code, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
 
   @doc """
   The same as `from_subdivision_code/2`, but raises an exception if it fails.
@@ -325,10 +297,9 @@ defmodule Cldr.Territory do
       "Kumbria"
 
   """
-  @spec from_subdivision_code!(String.t(), Cldr.backend(), options()) :: String.t() | no_return()
-  def from_subdivision_code!(territory_code, backend, options \\ []) do
-    Module.concat(backend, Territory).from_subdivision_code!(territory_code, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
-  end
+  @doc since: "2.2.0"
+  @spec from_subdivision_code!(String.t(), Cldr.backend(), Keyword.t()) :: String.t()
+  def from_subdivision_code!(code, backend, options \\ []), do: Module.concat(backend, Territory).from_subdivision_code!(code, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
 
   @doc """
   Localized string for the given `LanguageTag.t`.
@@ -353,11 +324,9 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.from_language_tag(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr, [style: "ZZZ"])
       {:error, {Cldr.UnknownStyleError, "The style \\"ZZZ\\" is unknown"}}
   """
-  @spec from_language_tag(tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
-  def from_language_tag(tag, backend, options \\ [style: :standard]) do
-    module = Module.concat(backend, Territory)
-    module.from_language_tag(tag, options)
-  end
+  @doc since: "2.0.0"
+  @spec from_language_tag(LanguageTag.t(), Cldr.backend(), Keyword.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+  def from_language_tag(language_tag, backend, options \\ []), do: Module.concat(backend, Territory).from_language_tag(language_tag, Keyword.merge([style: :standard], options))
 
   @doc """
   The same as `from_language_tag/2`, but raises an exception if it fails.
@@ -367,11 +336,9 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.from_language_tag!(Cldr.get_locale(TestBackend.Cldr), TestBackend.Cldr)
       "world"
   """
-  @spec from_language_tag!(tag(), Cldr.backend(), options()) :: binary() | no_return()
-  def from_language_tag!(tag, backend, options \\ [style: :standard]) do
-    module = Module.concat(backend, Territory)
-    module.from_language_tag!(tag, options)
-  end
+  @doc since: "2.0.0"
+  @spec from_language_tag!(LanguageTag.t(), Cldr.backend(), Keyword.t()) :: String.t()
+  def from_language_tag!(language_tag, backend, options \\ []), do: Module.concat(backend, Territory).from_language_tag!(language_tag, Keyword.merge([style: :standard], options))
 
   @doc """
   Translate a localized string from one locale to another.
@@ -395,31 +362,13 @@ defmodule Cldr.Territory do
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
   """
-  @spec translate_territory(binary(), binary_tag(), Cldr.backend(), binary_tag(), atom()) :: {:ok, binary()} | {:error, error()}
-  def translate_territory(localized_string, from_locale, backend, to_locale, style) do
-    module = Module.concat(backend, Territory)
-    module.translate_territory(localized_string, from_locale, to_locale, style)
-  end
-
-  def translate_territory(localized_string, from_locale) do
-    backend = Cldr.default_backend!()
-    module = Module.concat(backend, Territory)
-    module.translate_territory(localized_string, from_locale, backend.get_locale(), :standard)
-  end
-
-  def translate_territory(localized_string, from_locale, backend) do
-    module = Module.concat(backend, Territory)
-    module.translate_territory(localized_string, from_locale, backend.get_locale(), :standard)
-  end
-
-  def translate_territory(localized_string, from_locale, backend, to_locale) do
-    module = Module.concat(backend, Territory)
-    module.translate_territory(localized_string, from_locale, to_locale, :standard)
-  end
+  @doc since: "2.0.0"
+  @spec translate_territory(String.t(), String.t() | LanguageTag.t(), Cldr.backend(), String.t() | LanguageTag.t(), atom()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+  def translate_territory(localized_string, from_locale, backend \\ Cldr.default_backend!(), to_locale \\ Cldr.get_locale(), style \\ :standard), do: Module.concat(backend, Territory).translate_territory(localized_string, from_locale, to_locale, style)
 
   @doc """
   Translate a localized string from one locale to another.
-  Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
+  Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
   * `to_locale` is any configured locale. See `Cldr.known_locale_names/1`.
     The default is `Cldr.get_locale/0`
@@ -439,10 +388,9 @@ defmodule Cldr.Territory do
       {:error, {Cldr.InvalidLanguageError, "The language \\"zzz\\" is invalid"}}
 
   """
-  @spec translate_subdivision(String.t(), binary_tag(), Cldr.backend(), binary_tag()) :: {:ok, String.t()} | {:error, error()}
-  def translate_subdivision(localized_string, from_locale, backend \\ Cldr.default_backend!(), to_locale \\ Cldr.get_locale(), style \\ :standard) do
-    Module.concat(backend, Territory).translate_subdivision(localized_string, from_locale, to_locale, style)
-  end
+  @doc since: "2.2.0"
+  @spec translate_subdivision(String.t(), String.t() | LanguageTag.t(), Cldr.backend(), String.t() | LanguageTag.t(), atom()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+  def translate_subdivision(localized_string, from_locale, backend, to_locale \\ Cldr.get_locale(), style \\ :standard), do: Module.concat(backend, Territory).translate_subdivision(localized_string, from_locale, to_locale, style)
 
   @doc """
   The same as `translate_territory/3`, but raises an exception if it fails.
@@ -455,27 +403,9 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.translate_territory!("United Kingdom", "en", TestBackend.Cldr, "pt")
       "Reino Unido"
   """
-  @spec translate_territory!(binary(), binary_tag(), Cldr.backend(), binary_tag()) :: binary() | no_return()
-  def translate_territory!(localized_string, from_locale, backend, to_locale, style) do
-    module = Module.concat(backend, Territory)
-    module.translate_territory!(localized_string, from_locale, to_locale, style)
-  end
-
-  def translate_territory!(localized_string, from_locale) do
-    backend = Cldr.default_backend!()
-    module = Module.concat(backend, Territory)
-    module.translate_territory!(localized_string, from_locale, backend.get_locale(), :standard)
-  end
-
-  def translate_territory!(localized_string, from_locale, backend) do
-    module = Module.concat(backend, Territory)
-    module.translate_territory!(localized_string, from_locale, backend.get_locale(), :standard)
-  end
-
-  def translate_territory!(localized_string, from_locale, backend, to_locale) do
-    module = Module.concat(backend, Territory)
-    module.translate_territory!(localized_string, from_locale, to_locale, :standard)
-  end
+  @doc since: "2.0.0"
+  @spec translate_territory!(String.t(), String.t() | LanguageTag.t(), Cldr.backend(), String.t() | LanguageTag.t(), atom()) :: String.t()
+  def translate_territory!(localized_string, from_locale, backend \\ Cldr.default_backend!(), to_locale \\ Cldr.get_locale(), style \\ :standard), do: Module.concat(backend, Territory).translate_territory!(localized_string, from_locale, to_locale, style)
 
   @doc """
   The same as `translate_subdivision/3`, but raises an exception if it fails.
@@ -489,14 +419,13 @@ defmodule Cldr.Territory do
       ** (Cldr.UnknownSubdivisionError) The locale "bs" has no translation for "gbcma".
 
   """
-  @spec translate_subdivision!(String.t(), binary_tag(), Cldr.backend(), binary_tag()) :: String.t() | no_return()
-  def translate_subdivision!(localized_string, from_locale, backend \\ Cldr.default_backend!(), to_locale \\ Cldr.get_locale(), style \\ :standard) do
-    Module.concat(backend, Territory).translate_subdivision!(localized_string, from_locale, to_locale, style)
-  end
+  @doc since: "2.2.0"
+  @spec translate_subdivision!(String.t(), String.t() | LanguageTag.t(), Cldr.backend(), String.t() | LanguageTag.t(), atom()) :: String.t()
+  def translate_subdivision!(localized_string, from_locale, backend, to_locale \\ Cldr.get_locale(), style \\ :standard), do: Module.concat(backend, Territory).translate_subdivision!(localized_string, from_locale, to_locale, style)
 
   @doc """
   Translate a LanguageTag.t into a localized string from one locale to another.
-  Returns `{:ok, result}` if successful, otherwise `{:error, reason}`.
+  Returns `{:ok, String.t}` if successful, otherwise `{:error, reason}`.
 
   * `options` are:
     * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
@@ -514,10 +443,10 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.translate_language_tag(Cldr.get_locale(), TestBackend.Cldr, [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
       {:ok, "Mundo"}
   """
-  @spec translate_language_tag(tag(), Cldr.backend(), options()) :: {:ok, binary()} | {:error, error()}
-  def translate_language_tag(from_locale, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
-    module = Module.concat(backend, Territory)
-    module.translate_language_tag(from_locale, options)
+  @doc since: "2.0.0"
+  @spec translate_language_tag(LanguageTag.t(), Cldr.backend(), Keyword.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+  def translate_language_tag(from_locale, backend \\ Cldr.default_backend!(), options \\ []) do
+    Module.concat(backend, Territory).translate_language_tag(from_locale, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
   end
 
   @doc """
@@ -531,13 +460,12 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.translate_language_tag!(Cldr.get_locale(), TestBackend.Cldr, [locale: Cldr.Locale.new!("pt", TestBackend.Cldr)])
       "Mundo"
   """
-  @spec translate_language_tag!(tag(), Cldr.backend(), options()) :: binary() | no_return()
-  def translate_language_tag!(from_locale, backend, options \\ [locale: Cldr.get_locale(), style: :standard]) do
-    module = Module.concat(backend, Territory)
-    module.translate_language_tag!(from_locale, options)
+  @doc since: "2.0.0"
+  @spec translate_language_tag!(LanguageTag.t(), Cldr.backend(), Keyword.t()) :: String.t()
+  def translate_language_tag!(from_locale, backend \\ Cldr.default_backend!(), options \\ []) do
+    Module.concat(backend, Territory).translate_language_tag!(from_locale, Keyword.merge([locale: Cldr.get_locale(), style: :standard], options))
   end
 
-  @children Enum.flat_map(@territory_containment, fn {_, v} -> v end)
   @doc """
   Lists parent(s) for the given territory code.
   Returns `{:ok, list}` if successful, otherwise `{:error, reason}`.
@@ -559,41 +487,21 @@ defmodule Cldr.Territory do
       {:error, {Cldr.UnknownChildrenError, "The territory :\\"001\\" has no parent(s)"}}
 
   """
-  @spec parent(atom_binary_tag(), as_options()) :: {:ok, atom_binary_charlist()} | {:error, error()}
-  def parent(territory_code, opts \\ [as: :atom])
-  def parent(%LanguageTag{territory: territory_code}, opts), do: parent(territory_code, opts)
+  @doc since: "1.0.0"
+  @spec parent(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, [atom() | LanguageTag.t() | charlist()]} | {:error, {module(), String.t()}}
+  def parent(territory_code, options \\ [])
+  def parent(%LanguageTag{territory: territory_code}, options), do: parent(territory_code, options)
   for code <- [:UN, :EU, :EZ] do
-    def parent(unquote(code), [as: :atom]),     do: {:ok, [:"001"]}
-    def parent(unquote(code), [as: :binary]),   do: {:ok, ["001"]}
-    def parent(unquote(code), [as: :charlist]), do: {:ok, ['001']}
+    def parent(unquote(code), options),  do: {:ok, [as(:"001", options)]}
   end
-  def parent(territory_code, [as: :atom]) do
-    territory_code
-    |> Cldr.validate_territory()
-    |> case do
-         {:error, error} -> {:error, error}
-
-         {:ok, code}     -> @children
-                            |> Enum.member?(code)
-                            |> case do
-                                 false -> {:error, {Cldr.UnknownChildrenError, "The territory #{inspect code} has no parent(s)"}}
-
-                                 true  -> {:ok, @territory_containment
-                                                |> Enum.filter(fn({_parent, children}) -> Enum.member?(children, code) end)
-                                                |> Enum.map(fn({parent, _children}) -> parent end)
-                                                |> Enum.sort()}
-                               end
-       end
-  end
-  def parent(territory_code, [as: :binary]) do
-    territory_code
-    |> parent()
-    |> map_binary()
-  end
-  def parent(territory_code, [as: :charlist]) do
-    territory_code
-    |> parent()
-    |> map_charlist()
+  def parent(territory_code, options) do
+    with {:ok, code} <- Cldr.validate_territory(territory_code),
+         [_ | _] = parents <- Enum.sort(for {parent, children} <- @territory_containment, code in children, do: as(parent, options)) do
+        {:ok, parents}
+    else
+      [] -> {:error, {Cldr.UnknownChildrenError, "The territory #{inspect territory_code} has no parent(s)"}}
+      error -> error
+    end
   end
 
   @doc """
@@ -610,29 +518,17 @@ defmodule Cldr.Territory do
       [:"154", :UN]
 
   """
-  @spec parent!(atom_binary_tag(), as_options()) :: [atom_binary_charlist()] | no_return()
-  def parent!(territory_code, opts \\ [as: :atom])
-  def parent!(%LanguageTag{territory: territory_code}, opts),  do: parent!(territory_code, opts)
-  def parent!(territory_code, [as: :atom]) do
-    case parent(territory_code) do
+  @doc since: "1.0.0"
+  @spec parent!(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: [atom() | LanguageTag.t() | charlist()]
+  def parent!(territory_code, options \\ []) do
+    case parent(territory_code, options) do
       {:error, {exception, msg}} -> raise exception, msg
 
       {:ok, result}              -> result
     end
   end
-  def parent!(territory_code, [as: :binary]) do
-    territory_code
-    |> parent()
-    |> map_binary!()
-  end
-  def parent!(territory_code, [as: :charlist]) do
-    territory_code
-    |> parent()
-    |> map_charlist!()
-  end
 
 
-  @parents (for {k, _v} <- @territory_containment, do: k)
   @doc """
   Lists children(s) for the given territory code.
   Returns `{:ok, list}` if successful, otherwise `{:error, reason}`.
@@ -656,33 +552,18 @@ defmodule Cldr.Territory do
       {:error, {Cldr.UnknownParentError, "The territory :GB has no children"}}
 
   """
-  @spec children(atom_binary_tag(), as_options()) :: {:ok, atom_binary_charlist()} | {:error, error()}
-  def children(territory_code, opts \\ [as: :atom])
-  def children(%LanguageTag{territory: territory_code}, opts),  do: children(territory_code, opts)
-  def children(territory_code, [as: :atom]) do
-    territory_code
-    |> Cldr.validate_territory()
-    |> case do
-         {:error, error} -> {:error, error}
-
-         {:ok, code}     -> @parents
-                            |> Enum.member?(code)
-                            |> case do
-                                 false -> {:error, {Cldr.UnknownParentError, "The territory #{inspect code} has no children"}}
-
-                                 true  -> {:ok, @territory_containment[code]}
-                               end
-       end
-  end
-  def children(territory_code, [as: :binary]) do
-    territory_code
-    |> children()
-    |> map_binary()
-  end
-  def children(territory_code, [as: :charlist]) do
-    territory_code
-    |> children()
-    |> map_charlist()
+  @doc since: "1.0.0"
+  @spec children(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, [atom() | LanguageTag.t() | charlist()]} | {:error, {module(), String.t()}}
+  def children(territory_code, options \\ [])
+  def children(%LanguageTag{territory: territory_code}, options),  do: children(territory_code, options)
+  def children(territory_code, options) do
+    with {:ok, code} <- Cldr.validate_territory(territory_code),
+        %{^code =>  [_ | _] = children} <- @territory_containment do
+          {:ok, Enum.map(children, &as(&1, options))}
+    else
+      %{} -> {:error, {Cldr.UnknownParentError, "The territory #{inspect territory_code} has no children"}}
+      error -> error
+    end
   end
 
   @doc """
@@ -700,25 +581,14 @@ defmodule Cldr.Territory do
        :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]
 
   """
-  @spec children!(atom_binary_tag(), as_options()) :: [atom_binary_charlist()] | no_return()
-  def children!(territory_code, opts \\ [as: :atom])
-  def children!(%LanguageTag{territory: territory_code}, opts),  do: children!(territory_code, opts)
-  def children!(territory_code, [as: :atom]) do
-    case children(territory_code) do
+  @doc since: "1.0.0"
+  @spec children!(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: [atom() |  LanguageTag.t() | charlist()]
+  def children!(territory_code, options \\ []) do
+    case children(territory_code, options) do
       {:error, {exception, msg}} -> raise exception, msg
 
       {:ok, result}              -> result
     end
-  end
-  def children!(territory_code, [as: :binary]) do
-    territory_code
-    |> children()
-    |> map_binary!()
-  end
-  def children!(territory_code, [as: :charlist]) do
-    territory_code
-    |> children()
-    |> map_charlist!()
   end
 
   @doc """
@@ -733,17 +603,15 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.contains?(:DK, :EU)
       false
   """
-  @spec contains?(atom_tag(), atom_tag()) :: boolean()
+  @doc since: "1.0.0"
+  @spec contains?(atom() | LanguageTag.t(), atom() | LanguageTag.t()) :: boolean()
   def contains?(%LanguageTag{territory: parent}, child), do: contains?(parent, child)
   def contains?(parent, %LanguageTag{territory: child}), do: contains?(parent, child)
   def contains?(parent, child) do
-    @parents
-    |> Enum.member?(parent)
-    |> case do
-         false -> false
-
-         true  -> Enum.member?(@territory_containment[parent], child)
-       end
+    case @territory_containment do
+      %{^parent => children} -> child in children
+      _ -> false
+    end
   end
 
   @doc """
@@ -796,16 +664,15 @@ defmodule Cldr.Territory do
        }}
 
   """
-  @spec info(atom_tag()) :: {:ok, map()} | {:error, error()}
+  @doc since: "1.0.0"
+  @spec info(atom() | LanguageTag.t()) :: {:ok, map()} | {:error, {module(), String.t()}}
   def info(%LanguageTag{territory: territory_code}), do: info(territory_code)
   def info(territory_code) do
-    territory_code
-    |> Cldr.validate_territory()
-    |> case do
-         {:error, reason} -> {:error, reason}
+    case Cldr.validate_territory(territory_code) do
+      {:error, reason} -> {:error, reason}
 
-         {:ok, code}      -> {:ok, @territory_info[code]}
-       end
+      {:ok, code}      -> {:ok, @territory_info[code]}
+    end
   end
 
   @doc """
@@ -855,8 +722,8 @@ defmodule Cldr.Territory do
         population: 65761100
       }
   """
-  @spec info!(atom_tag()) :: map() | no_return()
-  def info!(%LanguageTag{territory: territory_code}), do: info!(territory_code)
+  @doc since: "1.0.0"
+  @spec info!(atom() | LanguageTag.t()) :: map()
   def info!(territory_code) do
     case info(territory_code) do
       {:error, {exception, msg}} -> raise exception, msg
@@ -877,20 +744,18 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_unicode_flag(:EZ)
       {:error, {Cldr.UnknownFlagError, "The territory :EZ has no flag"}}
   """
-  @spec to_unicode_flag(atom_binary_tag() | {:ok, atom()} | {:error, error()}) :: {:ok, binary()} | {:error, error()}
+  @doc since: "1.0.0"
+  @spec to_unicode_flag(atom() | String.t() | LanguageTag.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
   def to_unicode_flag(%LanguageTag{territory: territory_code}), do: to_unicode_flag(territory_code)
-  def to_unicode_flag({:error, reason}), do: {:error, reason}
-  def to_unicode_flag({:ok, territory_code}) do
-    case flag_exists?(territory_code) do
+  def to_unicode_flag(territory_code) do
+    with {:ok, code} <- Cldr.validate_territory(territory_code),
+                true <- flag_exists?(code) do
+        {:ok, Enum.map_join('#{territory_code}', "", &to_unicode_font/1)}
+    else
       false -> {:error, {Cldr.UnknownFlagError, "The territory #{inspect territory_code} has no flag"}}
-
-      true  -> {:ok, territory_code
-                     |> Atom.to_charlist()
-                     |> Enum.map(&to_unicode_font/1)
-                     |> List.to_string()}
+      error -> error
     end
   end
-  def to_unicode_flag(territory_code), do: territory_code |> Cldr.validate_territory() |> to_unicode_flag()
 
 
   @doc """
@@ -901,8 +766,8 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_unicode_flag!(:US)
       "🇺🇸"
   """
-  @spec to_unicode_flag!(atom_binary_tag()) :: binary() | no_return()
-  def to_unicode_flag!(%LanguageTag{territory: territory_code}), do: to_unicode_flag!(territory_code)
+  @doc since: "1.0.0"
+  @spec to_unicode_flag!(atom() | String.t() | LanguageTag.t()) :: String.t()
   def to_unicode_flag!(territory_code) do
     case to_unicode_flag(territory_code) do
       {:error, {exception, msg}} -> raise exception, msg
@@ -943,26 +808,18 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_code("cu")
       {:ok, :CUP}
   """
-  @spec to_currency_code(atom_binary_tag(), as_options()) :: {:ok, atom_binary_charlist()} | {:error, error()}
-  def to_currency_code(territory_code, opts \\ [as: :atom])
-  def to_currency_code(%LanguageTag{territory: territory_code}, opts), do: to_currency_code(territory_code, opts)
-  def to_currency_code(territory_code, [as: :atom]) do
-    case info(territory_code) do
+  @doc since: "1.2.0"
+  @spec to_currency_code(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, atom() | String.t() | charlist()} | {:error, {module(), String.t()}}
+  def to_currency_code(territory_code, options \\ [])
+  def to_currency_code(%LanguageTag{territory: territory_code}, options), do: to_currency_code(territory_code, options)
+  def to_currency_code(territory_code, options) do
+    case to_currency_codes(territory_code, options) do
       {:error, reason} -> {:error, reason}
 
-      {:ok, territory} -> {:ok, territory |> sort_currency() |> Kernel.hd()}
+      {:ok, [code | _]} -> {:ok, code}
     end
   end
-  def to_currency_code(territory_code, [as: :binary]) do
-    territory_code
-    |> to_currency_code()
-    |> map_binary()
-  end
-  def to_currency_code(territory_code, [as: :charlist]) do
-    territory_code
-    |> to_currency_code()
-    |> map_charlist()
-  end
+
 
 
   @doc """
@@ -987,25 +844,16 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_code!("PS", as: :binary)
       "ILS"
   """
-  @spec to_currency_code!(atom_binary_tag(), as_options()) :: atom_binary_charlist() | no_return()
-  def to_currency_code!(territory_code, opts \\ [as: :atom])
-  def to_currency_code!(%LanguageTag{territory: territory_code}, opts), do: to_currency_code(territory_code, opts)
-  def to_currency_code!(territory_code, [as: :atom]) do
-    case to_currency_code(territory_code) do
+  @doc since: "1.2.0"
+  @spec to_currency_code!(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: atom() | String.t() | charlist()
+  def to_currency_code!(territory_code, options \\ [])
+  def to_currency_code!(%LanguageTag{territory: territory_code}, options), do: to_currency_code!(territory_code, options)
+  def to_currency_code!(territory_code, options) do
+    case to_currency_code(territory_code, options) do
       {:error, {exception, msg}} -> raise exception, msg
 
       {:ok, result}              -> result
     end
-  end
-  def to_currency_code!(territory_code, [as: :binary]) do
-    territory_code
-    |> to_currency_code()
-    |> map_binary!()
-  end
-  def to_currency_code!(territory_code, [as: :charlist]) do
-    territory_code
-    |> to_currency_code()
-    |> map_charlist!()
   end
 
 
@@ -1026,26 +874,18 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_codes("cu")
       {:ok, [:CUP, :CUC]}
   """
-  @spec to_currency_codes(atom_binary_tag(), as_options()) :: {:ok, [atom_binary_charlist()]} | {:error, error()}
-  def to_currency_codes(territory_code, opts \\ [as: :atom])
-  def to_currency_codes(territory_code, [as: :atom]) do
+  @doc since: "1.2.0"
+  @spec to_currency_codes(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, [atom() | String.t() | charlist()]} | {:error, {module(), String.t()}}
+  def to_currency_codes(territory_code, options \\ [])
+  def to_currency_codes(territory_code, options) do
     case info(territory_code) do
       {:error, reason} -> {:error, reason}
 
-      {:ok, territory} -> {:ok, sort_currency(territory)}
+      {:ok, %{currency: currency}} -> {:ok, (for {k, meta} <- currency, !Map.has_key?(meta, :tender) and !Map.has_key?(meta, :to), do: {as(k, options), meta})
+                                            |> Enum.sort(&(elem(&1, 1).from < elem(&2, 1).from))
+                                            |> Enum.map(&elem(&1, 0))}
     end
   end
-  def to_currency_codes(territory_code, [as: :binary]) do
-    territory_code
-    |> to_currency_codes()
-    |> map_binary()
-  end
-  def to_currency_codes(territory_code, [as: :charlist]) do
-    territory_code
-    |> to_currency_codes()
-    |> map_charlist()
-  end
-
 
   @doc """
   The same as `to_currency_codes/2`, but raises an exception if it fails.
@@ -1069,31 +909,15 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_codes!("PS", as: :binary)
       ["ILS", "JOD"]
   """
-  @spec to_currency_codes!(atom_binary_tag(), as_options()) :: [atom_binary_charlist()] | no_return()
-  def to_currency_codes!(territory_code, opts \\ [as: :atom])
-  def to_currency_codes!(territory_code, [as: :atom]) do
-    case to_currency_codes(territory_code) do
+  @doc since: "1.2.0"
+  @spec to_currency_codes!(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: [atom() | String.t() | charlist()]
+  def to_currency_codes!(territory_code, options \\ [])
+  def to_currency_codes!(territory_code, options) do
+    case to_currency_codes(territory_code, options) do
       {:error, {exception, msg}} -> raise exception, msg
 
       {:ok, result}              -> result
     end
-  end
-  def to_currency_codes!(territory_code, [as: :binary]) do
-    territory_code
-    |> to_currency_codes()
-    |> map_binary!()
-  end
-  def to_currency_codes!(territory_code, [as: :charlist]) do
-    territory_code
-    |> to_currency_codes()
-    |> map_charlist!()
-  end
-
-  defp sort_currency(%{currency: currency}) do
-    currency
-    |> Enum.filter(fn {_key, meta} -> !Map.has_key?(meta, :tender) and !Map.has_key?(meta, :to) end)
-    |> Enum.sort(&(elem(&1, 1).from < elem(&2, 1).from))
-    |> Keyword.keys()
   end
 
   @regions ["005", "011", "013", "014", "015", "017",
@@ -1117,35 +941,14 @@ defmodule Cldr.Territory do
        :BN, :BO, :BQ, :BR, :BS, :BT, :BV, :BW, :BY, :BZ, :CA, :CC, :CD,
        :CF, :CG, :CH, :CI, :CK, :CL, :CM, :CN, :CO, :CR, :CU, ...]
   """
-  @spec country_codes(as_options()) :: [atom_binary_charlist()]
-  def country_codes(opts \\ [as: :atom])
-  def country_codes([as: :atom]) do
+  @doc since: "1.2.0"
+  @spec country_codes(Keyword.t()) :: [atom() | String.t() | charlist()]
+  def country_codes(options \\ []) do
     @regions
     |> Enum.flat_map(&children!/1)
     |> Enum.sort()
+    |> Enum.map(&as(&1, options))
   end
-  def country_codes([as: :binary]), do: map_binary(country_codes())
-  def country_codes([as: :charlist]), do: map_charlist(country_codes())
-
-  defp map_binary({:error, reason}), do: {:error, reason}
-  defp map_binary({:ok, result}), do: {:ok, map_binary(result)}
-  defp map_binary(result) when is_list(result) do
-    Enum.map(result, &to_string/1)
-  end
-  defp map_binary(result) when is_atom(result), do: to_string(result)
-
-  defp map_binary!({:error, {exception, reason}}), do: raise(exception, reason)
-  defp map_binary!({:ok, result}), do: map_binary(result)
-
-  defp map_charlist({:error, reason}), do: {:error, reason}
-  defp map_charlist({:ok, result}), do: {:ok, map_charlist(result)}
-  defp map_charlist(result) when is_list(result) do
-    Enum.map(result, &to_charlist/1)
-  end
-  defp map_charlist(result) when is_atom(result), do: to_charlist(result)
-
-  defp map_charlist!({:error, {exception, reason}}), do: raise(exception, reason)
-  defp map_charlist!({:ok, result}), do: map_charlist(result)
 
   @doc false
   def normalize_name(string) do
@@ -1155,4 +958,9 @@ defmodule Cldr.Territory do
     |> String.replace(".", "")
     |> String.replace(~r/(\s)+/u, "\\1")
   end
+
+  defp as(value, [as: :atom]), do: :"#{value}"
+  defp as(value, [as: :binary]), do: "#{value}"
+  defp as(value, [as: :charlist]), do: '#{value}'
+  defp as(value, _options), do: as(value, [as: :atom])
 end
