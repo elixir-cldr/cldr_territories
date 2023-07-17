@@ -40,6 +40,10 @@ jobs:
         mix deps.get
         mix deps.compile
         mix dialyzer --plt
+    - name: Check compile time warnings
+      env:
+       MIX_ENV: test
+      run: mix compile --warnings-as-errors
     - name: Run test
       run: mix test
     - name: Run dialyzer
