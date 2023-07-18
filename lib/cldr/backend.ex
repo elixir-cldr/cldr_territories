@@ -812,10 +812,10 @@ defmodule Cldr.Territory.Backend do
             subdivisions = known_subdivisions(locale_name)
             subdivision_aliases = subdivision_aliases()
             aliases =  subdivision_aliases[subdivision_code]
-            case Map.values(Map.take(subdivisions, [subdivision_code | List.wrap(aliases)])) do
+            case Elixir.Map.values(Elixir.Map.take(subdivisions, [subdivision_code | Elixir.List.wrap(aliases)])) do
              [subdivision_translation | _] -> {:ok, subdivision_translation}
              _  when is_nil(aliases)       -> unknown_subdivision_error(subdivision_code, locale_name, style)
-             [] when is_atom(aliases)      -> from_territory_code(aliases, unquote(locale_name), style)
+             [] when is_atom(aliases)      -> from_territory_code(aliases, locale_name, style)
             end
           end
         end
