@@ -1,6 +1,6 @@
 # Changelog
 
-## Cldr Territories v2.8.1 July TBA, 2023
+## Cldr Territories v2.8.1 July 18, 2023
 
 ### Enhancements
 
