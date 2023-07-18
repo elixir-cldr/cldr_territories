@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr Territories v2.8.1 July TBA, 2023
+
+### Enhancements
+
+* Fixed compiler warning for `from_subdivision_code/*`.
+
 ## Cldr Territories v2.8.0 July 15, 2023
 
 ### Enhancements
