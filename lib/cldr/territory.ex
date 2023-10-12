@@ -13,6 +13,7 @@ defmodule Cldr.Territory do
   @territory_info Cldr.Config.territories()
   @subdivision_aliases Map.new(Map.fetch!(Cldr.Config.aliases(), :subdivision), fn
     {k, <<v::binary>>} -> {:"#{k}", :"#{v}"}
+    {k, v} when is_atom(v) -> {:"#{k}", v}
     {k, v} -> {:"#{k}", Enum.map(v, &:"#{&1}")}
   end)
 
