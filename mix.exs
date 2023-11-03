@@ -13,7 +13,7 @@ defmodule Cldr.Territories.Mixfile do
       description: description(),
       package: package(),
       docs: docs(),
-      start_permanent: Mix.env == :prod,
+      start_permanent: Mix.env() == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
       cldr_provider: {Cldr.Territory.Backend, :define_territory_module, []},
