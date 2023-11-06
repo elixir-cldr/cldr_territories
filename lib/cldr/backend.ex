@@ -180,7 +180,7 @@ defmodule Cldr.Territory.Backend do
         def known_territory_subdivisions(territory_code) do
           case Cldr.validate_territory(territory_code) do
             {:error, reason}      -> {:error, reason}
-            {:ok, territory_code} -> {:ok, Cldr.known_territory_subdivisions[territory_code]}
+            {:ok, territory_code} -> {:ok, Cldr.known_territory_subdivisions()[territory_code]}
           end
         end
 
@@ -224,7 +224,7 @@ defmodule Cldr.Territory.Backend do
         @spec from_territory_code(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
         def from_territory_code(territory_code, options \\ []) do
           with {:ok, code} <- Cldr.validate_territory(territory_code),
-               {:ok, local} <- Cldr.validate_locale(Keyword.get(options, :locale, Cldr.get_locale), unquote(backend)) do
+               {:ok, local} <- Cldr.validate_locale(Keyword.get(options, :locale, Cldr.get_locale()), unquote(backend)) do
             from_territory_code(code, local.cldr_locale_name, Keyword.get(options, :style, :standard))
           else
             error -> error
