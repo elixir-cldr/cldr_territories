@@ -152,7 +152,7 @@ defmodule Cldr.Territory do
       "gbdal", "gbdby", "gbden", ...]}
   """
   @doc since: "2.2.0"
-  @spec known_territory_subdivisions(atom() | String.t() | LanguageTag.t(), Cldr.backend()) :: {:ok, [String.t()]} | {:error, {module(), String.t()}}
+  @spec known_territory_subdivisions(atom() | String.t() | LanguageTag.t(), Cldr.backend()) :: {:ok, [String.t()] | nil} | {:error, {module(), String.t()}}
   def known_territory_subdivisions(territory_code, backend), do: Module.concat(backend, Territory).known_territory_subdivisions(territory_code)
 
   @doc """

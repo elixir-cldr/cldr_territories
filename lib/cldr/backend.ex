@@ -171,12 +171,15 @@ defmodule Cldr.Territory.Backend do
             "gbcma", "gbcmd", "gbcmn", "gbcon", "gbcov", "gbcrf", "gbcry", "gbcwy",
             "gbdal", "gbdby", "gbden", ...]}
 
+            => #{inspect __MODULE__}.known_territory_subdivisions(:AI)
+            {:ok, nil}
+
             iex> #{inspect __MODULE__}.known_territory_subdivisions(:ZZZ)
             {:error, {Cldr.UnknownTerritoryError, "The territory :ZZZ is unknown"}}
 
         """
         @doc since: "2.2.0"
-        @spec known_territory_subdivisions(atom() | String.t() | LanguageTag.t()) :: {:ok, String.t()} | {:error, {module(), String.t()}}
+        @spec known_territory_subdivisions(atom() | String.t() | LanguageTag.t()) :: {:ok, [String.t()] | nil} | {:error, {module(), String.t()}}
         def known_territory_subdivisions(territory_code) do
           case Cldr.validate_territory(territory_code) do
             {:error, reason}      -> {:error, reason}
