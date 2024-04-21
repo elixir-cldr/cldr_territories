@@ -666,7 +666,7 @@ defmodule Cldr.Territory do
 
   """
   @doc since: "1.0.0"
-  @spec info(atom() | LanguageTag.t()) :: {:ok, map()} | {:error, {module(), String.t()}}
+  @spec info(atom() | String.t() | LanguageTag.t()) :: {:ok, map()} | {:error, {module(), String.t()}}
   def info(%LanguageTag{territory: territory_code}), do: info(territory_code)
   def info(territory_code) do
     case Cldr.validate_territory(territory_code) do
@@ -724,7 +724,7 @@ defmodule Cldr.Territory do
       }
   """
   @doc since: "1.0.0"
-  @spec info!(atom() | LanguageTag.t()) :: map()
+  @spec info!(atom() | String.t() | LanguageTag.t()) :: map()
   def info!(territory_code) do
     case info(territory_code) do
       {:error, {exception, msg}} -> raise exception, msg
