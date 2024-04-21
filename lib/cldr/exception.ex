@@ -69,3 +69,15 @@ defmodule Cldr.UnknownSubdivisionError do
   %__MODULE__{message: message}
   end
 end
+
+defmodule Cldr.UnknownInformationError do
+  @moduledoc """
+  Exception raised when there is a missing information.
+  """
+
+  defexception [:message]
+
+  def exception(message) do
+  %__MODULE__{message: message}
+  end
+end

@@ -10,7 +10,16 @@ defmodule Cldr.Territory do
 
   @styles [:short, :standard, :variant]
   @territory_containment Cldr.Config.territory_containers()
+
+  # FIXME The mapping is here until until the next bug fix
+  # of ex_cldr which needs to sort the currency info
+  # Tracking issue: https://github.com/elixir-cldr/cldr/issues/227
   @territory_info Cldr.Config.territories()
+  |> Enum.map(fn {territory, info} ->
+    info = Map.put(info, :currency, Enum.sort(info.currency))
+    {territory, info}
+  end)
+
   @subdivision_aliases Map.new(Map.fetch!(Cldr.Config.aliases(), :subdivision), fn
     {k, <<v::binary>>} -> {:"#{k}", :"#{v}"}
     {k, v} when is_atom(v) -> {:"#{k}", v}
@@ -664,6 +673,10 @@ defmodule Cldr.Territory do
          population: 65761100
        }}
 
+      iex> Cldr.Territory.info(:"155")
+      {:error,
+       {Cldr.UnknownInformationError, "No information available for :\\"155\\""}}
+
   """
   @doc since: "1.0.0"
   @spec info(atom() | String.t() | LanguageTag.t()) :: {:ok, map()} | {:error, {module(), String.t()}}
@@ -672,7 +685,9 @@ defmodule Cldr.Territory do
     case Cldr.validate_territory(territory_code) do
       {:error, reason} -> {:error, reason}
 
-      {:ok, code}      -> {:ok, @territory_info[code]}
+      {:ok, code}      ->
+        info = @territory_info[code]
+        if info, do: {:ok, info}, else: {:error, {Cldr.UnknownInformationError, "No information available for #{inspect code}"}}
     end
   end
 
@@ -872,8 +887,8 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_codes(:US)
       {:ok, [:USD]}
 
-      iex> Cldr.Territory.to_currency_codes("cu")
-      {:ok, [:CUP, :CUC]}
+      iex> Cldr.Territory.to_currency_codes("ht")
+      {:ok, [:USD, :HTG]}
   """
   @doc since: "1.2.0"
   @spec to_currency_codes(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, [atom() | String.t() | charlist()]} | {:error, {module(), String.t()}}
