@@ -12,9 +12,8 @@ defmodule Cldr.Territory do
   @territory_containment Cldr.Config.territory_containers()
   @territory_info Cldr.Config.territories()
   @subdivision_aliases Map.new(Map.fetch!(Cldr.Config.aliases(), :subdivision), fn
-    {k, <<v::binary>>} -> {:"#{k}", :"#{v}"}
-    {k, v} when is_atom(v) -> {:"#{k}", v}
-    {k, v} -> {:"#{k}", Enum.map(v, &:"#{&1}")}
+    {k, v} when is_list(v) -> {:"#{k}", Enum.map(v, &:"#{&1}")}
+    {k, v} -> {:"#{k}", :"#{v}"}
   end)
 
   @doc """
@@ -872,8 +871,8 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_codes(:US)
       {:ok, [:USD]}
 
-      iex> Cldr.Territory.to_currency_codes("cu")
-      {:ok, [:CUP, :CUC]}
+      iex> Cldr.Territory.to_currency_codes("ht")
+      {:ok, [:USD, :HTG]}
   """
   @doc since: "1.2.0"
   @spec to_currency_codes(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, [atom() | String.t() | charlist()]} | {:error, {module(), String.t()}}
