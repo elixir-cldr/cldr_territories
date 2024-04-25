@@ -663,6 +663,10 @@ defmodule Cldr.Territory do
          population: 65761100
        }}
 
+      iex> Cldr.Territory.info(:"155")
+      {:error,
+       {Cldr.UnknownInformationError, "No information available for :\\"155\\""}}
+
   """
   @doc since: "1.0.0"
   @spec info(atom() | String.t() | LanguageTag.t()) :: {:ok, map()} | {:error, {module(), String.t()}}
@@ -671,7 +675,9 @@ defmodule Cldr.Territory do
     case Cldr.validate_territory(territory_code) do
       {:error, reason} -> {:error, reason}
 
-      {:ok, code}      -> {:ok, @territory_info[code]}
+      {:ok, code}      ->
+        info = @territory_info[code]
+        if info, do: {:ok, info}, else: {:error, {Cldr.UnknownInformationError, "No information available for #{inspect code}"}}
     end
   end
 
