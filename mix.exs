@@ -7,7 +7,7 @@ defmodule Cldr.Territories.Mixfile do
     [
       app: :ex_cldr_territories,
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.12",
       name: "Cldr Territories",
       source_url: "https://github.com/schultzer/cldr_territories",
       description: description(),
@@ -39,11 +39,19 @@ defmodule Cldr.Territories.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.37"},
+      cldr_dep(),
       {:ex_doc, "~> 0.18", only: [:release, :dev]},
       {:jason, "~> 1.0", optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true},
     ]
+  end
+
+  defp cldr_dep do
+    cond do
+      path = System.get_env("CLDR_PATH") -> {:ex_cldr, path: path}
+      branch = System.get_env("BRANCH") -> {:ex_cldr, github: "elixir-cldr/cldr", branch: branch}
+      true -> {:ex_cldr, git: "https://github.com/elixir-cldr/cldr.git"}
+    end
   end
 
   defp package do

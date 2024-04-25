@@ -29,8 +29,8 @@ defmodule Cldr.TerritoryTest do
  @info %{
     currency: [
       USD: %{from: ~D[1792-01-01]},
-      USS: %{tender: false, to: ~D[2014-03-01]},
-      USN: %{tender: false}
+      USN: %{tender: false},
+      USS: %{tender: false, to: ~D[2014-03-01]}
     ],
     gdp: 19490000000000,
     language_population: %{
@@ -112,6 +112,7 @@ defmodule Cldr.TerritoryTest do
       assert {:ok, "US"} == Territory.from_territory_code("US", TestBackend.Cldr, [style: :short])
       assert {:ok, "Sjedinjene Države"} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "bs"])
       assert {:ok, "SAD"} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "bs", style: :short])
+      assert {:ok, "Sark"} == Territory.from_territory_code(:CQ, TestBackend.Cldr, [locale: "nl"])
     end
 
     test "with invalid params" do
@@ -120,7 +121,6 @@ defmodule Cldr.TerritoryTest do
       assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: :zzz, style: :short])
       assert {:error, {Cldr.UnknownStyleError, "The style \"zzz\" is unknown"}} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "en", style: "zzz"])
       assert {:error, {Cldr.UnknownStyleError, "The style :zzz is unknown"}} == Territory.from_territory_code(:US, TestBackend.Cldr, [locale: "en", style: :zzz])
-      assert {:error, {Cldr.UnknownTerritoryError, "No territory translation for :CQ could be found in locale :nl"}} == Territory.from_territory_code(:CQ, TestBackend.Cldr, [locale: "nl"])
       assert {:error, {Cldr.UnknownTerritoryError, "The territory nil is unknown"}} == Territory.from_territory_code(nil, TestBackend.Cldr, [locale: "bs", style: :short])
     end
   end

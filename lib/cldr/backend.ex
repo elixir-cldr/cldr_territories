@@ -965,8 +965,8 @@ defmodule Cldr.Territory.Backend do
             iex> #{inspect __MODULE__}.to_currency_codes(:US)
             {:ok, [:USD]}
 
-            iex> #{inspect __MODULE__}.to_currency_codes("cu")
-            {:ok, [:CUP, :CUC]}
+            iex> #{inspect __MODULE__}.to_currency_codes("ht")
+            {:ok, [:USD, :HTG]}
 
         """
         @doc since: "2.0.0"
