@@ -750,7 +750,7 @@ defmodule Cldr.Territory do
   def to_unicode_flag(territory_code) do
     with {:ok, code} <- Cldr.validate_territory(territory_code),
                 true <- flag_exists?(code) do
-        {:ok, Enum.map_join('#{territory_code}', "", &to_unicode_font/1)}
+                  {:ok, Enum.map_join(~c"#{territory_code}", "", &to_unicode_font/1)}
     else
       false -> {:error, {Cldr.UnknownFlagError, "The territory #{inspect territory_code} has no flag"}}
       error -> error
@@ -836,7 +836,7 @@ defmodule Cldr.Territory do
       :USD
 
       iex> Cldr.Territory.to_currency_code!(:US, as: :charlist)
-      'USD'
+      ~c"USD"
 
       iex> Cldr.Territory.to_currency_code!("PS")
       :ILS
@@ -901,7 +901,7 @@ defmodule Cldr.Territory do
       [:USD]
 
       iex> Cldr.Territory.to_currency_codes!(:US, as: :charlist)
-      ['USD']
+      [~c"USD"]
 
       iex> Cldr.Territory.to_currency_codes!("PS")
       [:ILS, :JOD]
@@ -961,6 +961,6 @@ defmodule Cldr.Territory do
 
   defp as(value, [as: :atom]), do: :"#{value}"
   defp as(value, [as: :binary]), do: "#{value}"
-  defp as(value, [as: :charlist]), do: '#{value}'
+  defp as(value, [as: :charlist]), do: ~c"#{value}"
   defp as(value, _options), do: as(value, [as: :atom])
 end
