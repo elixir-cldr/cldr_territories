@@ -1,22 +1,15 @@
 name: Elixir CI
-
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-
+on: push
 jobs:
   build:
-
     name: Build, test and dialyzer
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        elixir: [">1.11"]
+        elixir: [">1.12"]
         otp: [">22"]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Elixir
       uses: erlef/setup-beam@v1
       with:
@@ -46,5 +39,7 @@ jobs:
       run: mix compile --warnings-as-errors
     - name: Run test
       run: mix test
+    - name: Make sure that compiled version works without build json available
+      run: rm _build/test/lib/ex_cldr/priv/cldr/territory_containment.json && mix test
     - name: Run dialyzer
       run: mix dialyzer --no-check
