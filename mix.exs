@@ -1,7 +1,7 @@
 defmodule Cldr.Territories.Mixfile do
   use Mix.Project
 
-  @version "2.8.1"
+  @version "2.9.0"
 
   def project do
     [
@@ -9,7 +9,7 @@ defmodule Cldr.Territories.Mixfile do
       version: @version,
       elixir: "~> 1.12",
       name: "Cldr Territories",
-      source_url: "https://github.com/schultzer/cldr_territories",
+      source_url: "https://github.com/elixir-cldr/cldr_territories",
       description: description(),
       package: package(),
       docs: docs(),
@@ -47,10 +47,10 @@ defmodule Cldr.Territories.Mixfile do
   end
 
   defp cldr_dep do
-    cond do
-      path = System.get_env("CLDR_PATH") -> {:ex_cldr, path: path}
-      branch = System.get_env("BRANCH") -> {:ex_cldr, github: "elixir-cldr/cldr", branch: branch}
-      true -> {:ex_cldr, git: "https://github.com/elixir-cldr/cldr.git"}
+    if path = System.get_env("CLDR_PATH") do
+      {:ex_cldr, path: path}
+    else
+      {:ex_cldr, github: "elixir-cldr/cldr", branch: System.get_env("BRANCH", "main")}
     end
   end
 
@@ -74,9 +74,9 @@ defmodule Cldr.Territories.Mixfile do
 
   def links do
     %{
-      "GitHub"    => "https://github.com/schultzer/cldr_territories",
-      "Readme"    => "https://github.com/schultzer/cldr_territories/blob/v#{@version}/README.md",
-      "Changelog" => "https://github.com/schultzer/cldr_territories/blob/v#{@version}/CHANGELOG.md"
+      "GitHub"    => "https://github.com/elixir-cldr/cldr_territories",
+      "Readme"    => "https://github.com/elixir-cldr/cldr_territories/blob/v#{@version}/README.md",
+      "Changelog" => "https://github.com/elixir-cldr/cldr_territories/blob/v#{@version}/CHANGELOG.md"
     }
   end
 

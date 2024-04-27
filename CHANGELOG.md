@@ -1,5 +1,15 @@
 # Changelog
 
+## Cldr Territories v2.9.0 Apr TBD, 2024
+
+### Enhancements
+
+* Updates to support [CLDR release 45](https://cldr.unicode.org/index/downloads/cldr-45) via [ex_cldr version 2.38](https://hex.pm/packages/ex_cldr/2.38.0)
+* Fixed typespec in `info/1` and `info!/1`, thanks to @jfpedroza.
+* Fixed typespec in `known_territory_subdivision/0`, thanks to @richard-ash.
+* Fixed compiler warnings for Elixir 1.16, thanks to @tomciopp.
+* Require Elixir 1.12.0.
+
 ## Cldr Territories v2.8.1 July 18, 2023
 
 ### Enhancements
