@@ -40,6 +40,6 @@ jobs:
     - name: Run test
       run: mix test
     - name: Make sure that compiled version works without build json available
-      run: rm _build/test/lib/ex_cldr/priv/cldr/territory_containment.json && mix test
+      run: rm -f _build/test/lib/ex_cldr/priv/cldr/territory_containment.json && mix test
     - name: Run dialyzer
       run: mix dialyzer --no-check
