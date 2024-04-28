@@ -39,18 +39,18 @@ defmodule Cldr.Territories.Mixfile do
 
   defp deps do
     [
-      cldr_dep(),
+      {:ex_cldr, cldr_dep()},
       {:ex_doc, "~> 0.18", only: [:release, :dev]},
       {:jason, "~> 1.0", optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true},
     ]
   end
 
-  defp cldr_dep do
-    if path = System.get_env("CLDR_PATH") do
-      {:ex_cldr, path: path}
-    else
-      {:ex_cldr, github: "elixir-cldr/cldr", branch: System.get_env("BRANCH", "main")}
+  defp cldr_dep() do
+    case {System.get_env("CLDR_PATH"), System.get_env("CLDR_BRANCH")} do
+      {nil, nil}    -> "~> 2.38"
+      {path, nil}   -> [path: path]
+      {nil, branch} -> [github: "elixir-cldr/cldr", branch: branch]
     end
   end
 
