@@ -40,6 +40,13 @@ defmodule Cldr.Territories.Mixfile do
   defp deps do
     [
       {:ex_cldr, cldr_dep()},
+      {:ex_cldr_calendars, ">= 0.0.0", only: :test, optional: true},
+      {:ex_cldr_dates_times, ">= 0.0.0", only: :test, optional: true},
+      {:ex_cldr_languages, ">= 0.0.0", only: :test, optional: true},
+      {:ex_cldr_lists, ">= 0.0.0", only: :test, optional: true},
+      {:ex_cldr_messages, ">= 0.0.0", only: :test, optional: true},
+      {:ex_cldr_numbers, ">= 0.0.0", only: :test, optional: true},
+      {:ex_cldr_units, ">= 0.0.0", only: :test, optional: true},
       {:ex_doc, "~> 0.18", only: [:release, :dev]},
       {:jason, "~> 1.0", optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true},
