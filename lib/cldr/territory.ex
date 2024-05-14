@@ -10,16 +10,7 @@ defmodule Cldr.Territory do
 
   @styles [:short, :standard, :variant]
   @territory_containment Cldr.Config.territory_containers()
-
-  # FIXME The mapping is here until until the next bug fix
-  # of ex_cldr which needs to sort the currency info
-  # Tracking issue: https://github.com/elixir-cldr/cldr/issues/227
   @territory_info Cldr.Config.territories()
-  |> Enum.map(fn {territory, info} ->
-    info = Map.put(info, :currency, Enum.sort(info.currency))
-    {territory, info}
-  end)
-
   @subdivision_aliases Map.new(Map.fetch!(Cldr.Config.aliases(), :subdivision), fn
     {k, v} when is_list(v) -> {:"#{k}", Enum.map(v, &:"#{&1}")}
     {k, v} -> {:"#{k}", :"#{v}"}
