@@ -47,10 +47,10 @@ defmodule Cldr.Territories.Mixfile do
   end
 
   defp cldr_dep() do
-    case {System.get_env("CLDR_PATH"), System.get_env("CLDR_BRANCH")} do
-      {nil, nil}    -> "~> 2.38"
-      {path, nil}   -> [path: path]
-      {nil, branch} -> [github: "elixir-cldr/cldr", branch: branch]
+    if path = System.get_env("CLDR_PATH") do
+      [path: path]
+    else
+      "~> 2.38"
     end
   end
 
