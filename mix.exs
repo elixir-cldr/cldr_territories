@@ -1,15 +1,15 @@
 defmodule Cldr.Territories.Mixfile do
   use Mix.Project
 
-  @version "2.8.1"
+  @version "2.9.0"
 
   def project do
     [
       app: :ex_cldr_territories,
       version: @version,
-      elixir: "~> 1.11",
+      elixir: "~> 1.12",
       name: "Cldr Territories",
-      source_url: "https://github.com/schultzer/cldr_territories",
+      source_url: "https://github.com/elixir-cldr/cldr_territories",
       description: description(),
       package: package(),
       docs: docs(),
@@ -39,11 +39,19 @@ defmodule Cldr.Territories.Mixfile do
 
   defp deps do
     [
-      {:ex_cldr, "~> 2.38"},
+      {:ex_cldr, cldr_dep()},
       {:ex_doc, "~> 0.18", only: [:release, :dev]},
       {:jason, "~> 1.0", optional: true},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false, optional: true},
     ]
+  end
+
+  defp cldr_dep() do
+    case {System.get_env("CLDR_PATH"), System.get_env("CLDR_BRANCH")} do
+      {nil, nil}    -> "~> 2.38"
+      {path, nil}   -> [path: path]
+      {nil, branch} -> [github: "elixir-cldr/cldr", branch: branch]
+    end
   end
 
   defp package do
@@ -66,9 +74,9 @@ defmodule Cldr.Territories.Mixfile do
 
   def links do
     %{
-      "GitHub"    => "https://github.com/schultzer/cldr_territories",
-      "Readme"    => "https://github.com/schultzer/cldr_territories/blob/v#{@version}/README.md",
-      "Changelog" => "https://github.com/schultzer/cldr_territories/blob/v#{@version}/CHANGELOG.md"
+      "GitHub"    => "https://github.com/elixir-cldr/cldr_territories",
+      "Readme"    => "https://github.com/elixir-cldr/cldr_territories/blob/v#{@version}/README.md",
+      "Changelog" => "https://github.com/elixir-cldr/cldr_territories/blob/v#{@version}/CHANGELOG.md"
     }
   end
 

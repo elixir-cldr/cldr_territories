@@ -1,6 +1,6 @@
 # Cldr for Territories
 
-[![CircleCI](https://circleci.com/gh/Schultzer/cldr_territories.svg?style=svg)](https://circleci.com/gh/Schultzer/cldr_territories)
+![main](https://github.com/elixir-cldr/cldr_territories/actions/workflows/ci.yml/badge.svg?branch=main)
 
 ## Introduction and Getting Started
 
@@ -87,14 +87,14 @@ iex> h MyCldr.Territory.from_territory_code
 
 ## Installation
 
-Note that `:ex_cldr_territories` requires Elixir 1.5 or later.
+Note that `:ex_cldr_territories` requires Elixir 1.12 or later.
 
 Add `ex_cldr_territories` as a dependency to your `mix` project:
 
 ```elixir
     defp deps do
       [
-        {:ex_cldr_territories, "~> 2.4.1"}
+        {:ex_cldr_territories, "~> 2.9.0"}
       ]
     end
 ```

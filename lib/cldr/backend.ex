@@ -937,7 +937,7 @@ defmodule Cldr.Territory.Backend do
             :USD
 
             iex> #{inspect __MODULE__}.to_currency_code!(:US, as: :charlist)
-            'USD'
+            ~c"USD"
 
             iex> #{inspect __MODULE__}.to_currency_code!("PS")
             :ILS
@@ -987,7 +987,7 @@ defmodule Cldr.Territory.Backend do
             [:USD]
 
             iex> #{inspect __MODULE__}.to_currency_codes!(:US, as: :charlist)
-            ['USD']
+            [~c"USD"]
 
             iex> #{inspect __MODULE__}.to_currency_codes!("PS")
             [:ILS, :JOD]
