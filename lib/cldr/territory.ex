@@ -813,9 +813,12 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.to_currency_code("cu")
       {:ok, :CUP}
+
+      iex> Cldr.Territory.to_currency_code("cq")
+      {:ok, nil}
   """
   @doc since: "1.2.0"
-  @spec to_currency_code(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, atom() | String.t() | charlist()} | {:error, {module(), String.t()}}
+  @spec to_currency_code(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, atom() | String.t() | charlist() | nil} | {:error, {module(), String.t()}}
   def to_currency_code(territory_code, options \\ [])
   def to_currency_code(%LanguageTag{territory: territory_code}, options), do: to_currency_code(territory_code, options)
   def to_currency_code(territory_code, options) do
@@ -823,10 +826,10 @@ defmodule Cldr.Territory do
       {:error, reason} -> {:error, reason}
 
       {:ok, [code | _]} -> {:ok, code}
+
+      {:ok, []} -> {:ok, nil}
     end
   end
-
-
 
   @doc """
   The same as `to_currency_code/2`, but raises an exception if it fails.
@@ -849,9 +852,12 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.to_currency_code!("PS", as: :binary)
       "ILS"
+
+      iex> Cldr.Territory.to_currency_code!("cq")
+      nil
   """
   @doc since: "1.2.0"
-  @spec to_currency_code!(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: atom() | String.t() | charlist()
+  @spec to_currency_code!(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: atom() | String.t() | charlist() | nil
   def to_currency_code!(territory_code, options \\ [])
   def to_currency_code!(%LanguageTag{territory: territory_code}, options), do: to_currency_code!(territory_code, options)
   def to_currency_code!(territory_code, options) do
@@ -861,7 +867,6 @@ defmodule Cldr.Territory do
       {:ok, result}              -> result
     end
   end
-
 
   @doc """
   A helper method to get a territory's currency codes.
