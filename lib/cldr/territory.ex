@@ -813,6 +813,9 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.to_currency_code("cu")
       {:ok, :CUP}
+
+      iex> Cldr.Territory.to_currency_code(:CQ)
+      {:error, {Cldr.UnknownCurrencyError, "No currencies for :CQ were found"}}
   """
   @doc since: "1.2.0"
   @spec to_currency_code(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, atom() | String.t() | charlist()} | {:error, {module(), String.t()}}
@@ -823,10 +826,10 @@ defmodule Cldr.Territory do
       {:error, reason} -> {:error, reason}
 
       {:ok, [code | _]} -> {:ok, code}
+
+      {:ok, []} -> {:error, {Cldr.UnknownCurrencyError, "No currencies for #{inspect territory_code} were found"}}
     end
   end
-
-
 
   @doc """
   The same as `to_currency_code/2`, but raises an exception if it fails.
@@ -861,7 +864,6 @@ defmodule Cldr.Territory do
       {:ok, result}              -> result
     end
   end
-
 
   @doc """
   A helper method to get a territory's currency codes.

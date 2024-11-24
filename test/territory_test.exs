@@ -545,4 +545,32 @@ defmodule Cldr.TerritoryTest do
                Territory.known_territory_subdivisions(:NOPE, TestBackend.Cldr)
     end
   end
+
+  describe "to_currency_code/1" do
+    test "with valid params" do
+      assert {:ok, :USD} == Territory.to_currency_code(:US)
+      assert {:ok, "DKK"} == Territory.to_currency_code(:DK, as: :binary)
+    end
+
+    test "with invalid params" do
+      assert {:error, {Cldr.UnknownCurrencyError, "No currencies for :CQ were found"}} == Territory.to_currency_code(:CQ)
+      assert {:error, {Cldr.UnknownTerritoryError, "The territory \"zz\" is unknown"}} == Territory.to_currency_code("zz")
+    end
+  end
+
+  describe "to_currency_code!/1" do
+    test "with valid params" do
+      assert :GBP == Cldr.Territory.to_currency_code!(:UK)
+      assert "SEK" == Cldr.Territory.to_currency_code!(:SE, as: :binary)
+    end
+
+    test "with invalid params" do
+      assert_raise Cldr.UnknownCurrencyError, "No currencies for :CQ were found", fn ->
+        Territory.to_currency_code!(:CQ)
+      end
+      assert_raise Cldr.UnknownTerritoryError, "The territory \"zzzzz\" is unknown", fn ->
+        Territory.to_currency_code!("zzzzz")
+      end
+    end
+  end
 end
