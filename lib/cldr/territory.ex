@@ -814,11 +814,11 @@ defmodule Cldr.Territory do
       iex> Cldr.Territory.to_currency_code("cu")
       {:ok, :CUP}
 
-      iex> Cldr.Territory.to_currency_code("cq")
-      {:ok, nil}
+      iex> Cldr.Territory.to_currency_code(:CQ)
+      {:error, {Cldr.UnknownCurrencyError, "No currencies for :CQ were found"}}
   """
   @doc since: "1.2.0"
-  @spec to_currency_code(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, atom() | String.t() | charlist() | nil} | {:error, {module(), String.t()}}
+  @spec to_currency_code(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, atom() | String.t() | charlist()} | {:error, {module(), String.t()}}
   def to_currency_code(territory_code, options \\ [])
   def to_currency_code(%LanguageTag{territory: territory_code}, options), do: to_currency_code(territory_code, options)
   def to_currency_code(territory_code, options) do
@@ -827,7 +827,7 @@ defmodule Cldr.Territory do
 
       {:ok, [code | _]} -> {:ok, code}
 
-      {:ok, []} -> {:ok, nil}
+      {:ok, []} -> {:error, {Cldr.UnknownCurrencyError, "No currencies for #{inspect territory_code} were found"}}
     end
   end
 
@@ -852,12 +852,9 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.to_currency_code!("PS", as: :binary)
       "ILS"
-
-      iex> Cldr.Territory.to_currency_code!("cq")
-      nil
   """
   @doc since: "1.2.0"
-  @spec to_currency_code!(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: atom() | String.t() | charlist() | nil
+  @spec to_currency_code!(atom() | String.t() | LanguageTag.t(), Keyword.t()) :: atom() | String.t() | charlist()
   def to_currency_code!(territory_code, options \\ [])
   def to_currency_code!(%LanguageTag{territory: territory_code}, options), do: to_currency_code!(territory_code, options)
   def to_currency_code!(territory_code, options) do
