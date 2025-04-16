@@ -3,7 +3,7 @@ on: [push, pull_request]
 jobs:
   build:
     name: Build, test and dialyzer
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         elixir: [">1.12"]
@@ -16,7 +16,7 @@ jobs:
         elixir-version: ${{ matrix.elixir }} # Define the elixir version [required]
         otp-version: ${{ matrix.otp }} # Define the OTP version [required]
     - name: Restore dependencies cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       id: cache-mix
       with:
         path: |
