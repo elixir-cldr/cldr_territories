@@ -573,4 +573,40 @@ defmodule Cldr.TerritoryTest do
       end
     end
   end
+
+  describe "to_territory_code/3" do
+    test "with valid params" do
+      assert {:ok, :GB} == Territory.to_territory_code("United Kingdom", "en", TestBackend.Cldr)
+      assert {:ok, :GB} == Territory.to_territory_code("Reino Unido", "pt", TestBackend.Cldr)
+      assert {:ok, :GB} == Territory.to_territory_code("UK", "en", TestBackend.Cldr)
+      assert {:ok, :US} == Territory.to_territory_code("United States", "en", TestBackend.Cldr)
+      assert {:ok, :US} == Territory.to_territory_code("Estados Unidos", "pt", TestBackend.Cldr)
+      assert {:ok, "GB"} == Territory.to_territory_code("United Kingdom", "en", TestBackend.Cldr, as: :binary)
+    end
+
+    test "with invalid params" do
+      assert {:error, {Cldr.UnknownTerritoryError, "No territory code for \"Unknown Country\" could be found in locale :en"}} == 
+        Territory.to_territory_code("Unknown Country", "en", TestBackend.Cldr)
+      assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == 
+        Territory.to_territory_code("United Kingdom", "zzz", TestBackend.Cldr)
+    end
+  end
+
+  describe "to_territory_code!/3" do
+    test "with valid params" do
+      assert :GB == Territory.to_territory_code!("United Kingdom", "en", TestBackend.Cldr)
+      assert :GB == Territory.to_territory_code!("Reino Unido", "pt", TestBackend.Cldr)
+      assert :US == Territory.to_territory_code!("United States", "en", TestBackend.Cldr)
+      assert "US" == Territory.to_territory_code!("United States", "en", TestBackend.Cldr, as: :binary)
+    end
+
+    test "with invalid params" do
+      assert_raise Cldr.UnknownTerritoryError, "No territory code for \"Unknown Country\" could be found in locale :en", fn ->
+        Territory.to_territory_code!("Unknown Country", "en", TestBackend.Cldr)
+      end
+      assert_raise Cldr.InvalidLanguageError, "The language \"zzz\" is invalid", fn ->
+        Territory.to_territory_code!("United Kingdom", "zzz", TestBackend.Cldr)
+      end
+    end
+  end
 end

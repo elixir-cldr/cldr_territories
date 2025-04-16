@@ -1021,6 +1021,63 @@ defmodule Cldr.Territory.Backend do
         @spec country_codes(Keyword.t()) :: [atom() | String.t() | charlist()]
         def country_codes(options \\ [as: :atom]), do: Cldr.Territory.country_codes(options)
 
+        @doc """
+        Converts a territory name in a given locale to a territory code.
+        Returns `{:ok, territory_code}` if successful, otherwise `{:error, reason}`.
+
+        * `territory_name` is the localized territory name
+        * `locale` is any configured locale. See `#{inspect backend}.known_locale_names/0`.
+          The default is `Cldr.get_locale/0`
+        * `options` are:
+          * `as: :atom`
+          * `as: :binary`
+          * `as: :charlist`
+
+        ## Example
+
+            iex> #{inspect __MODULE__}.to_territory_code("United Kingdom", "en")
+            {:ok, :GB}
+
+            iex> #{inspect __MODULE__}.to_territory_code("Reino Unido", "pt")
+            {:ok, :GB}
+
+            iex> #{inspect __MODULE__}.to_territory_code("Unknown Country", "en")
+            {:error, {Cldr.UnknownTerritoryError, "No territory code for \\"Unknown Country\\" could be found in locale :en"}}
+        """
+        @doc since: "2.10.0"
+        @spec to_territory_code(String.t(), String.t() | LanguageTag.t(), Keyword.t()) :: {:ok, atom() | String.t() | charlist()} | {:error, {module(), String.t()}}
+        def to_territory_code(territory_name, locale \\ Cldr.get_locale(), options \\ []) do
+          with {:ok, locale} <- Cldr.validate_locale(locale, unquote(backend)) do
+            normalized_name = Cldr.Territory.normalize_name(territory_name)
+            case inverted_territories(locale.cldr_locale_name) do
+              %{^normalized_name => territory_code} -> 
+                {:ok, Cldr.Territory.as(territory_code, options)}
+              _ -> 
+                {:error, {Cldr.UnknownTerritoryError, "No territory code for #{inspect territory_name} could be found in locale #{inspect locale.cldr_locale_name}"}}
+            end
+          end
+        end
+
+        @doc """
+        The same as `to_territory_code/2`, but raises an exception if it fails.
+
+        ## Example
+
+            iex> #{inspect __MODULE__}.to_territory_code!("United Kingdom", "en")
+            :GB
+
+            iex> #{inspect __MODULE__}.to_territory_code!("Reino Unido", "pt", as: :binary)
+            "GB"
+        """
+        @doc since: "2.10.0"
+        @spec to_territory_code!(String.t(), String.t() | LanguageTag.t(), Keyword.t()) :: atom() | String.t() | charlist()
+        def to_territory_code!(territory_name, locale \\ Cldr.get_locale(), options \\ []) do
+          case to_territory_code(territory_name, locale, options) do
+            {:error, {exception, msg}} -> raise exception, msg
+            {:ok, result} -> result
+          end
+        end
+
         defp unknown_territory_error(string, from, _to) do
           {:error, {Cldr.UnknownTerritoryError, "No territory translation for #{inspect string} could be found in locale #{inspect from}"}}
         end
