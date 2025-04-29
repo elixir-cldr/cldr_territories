@@ -1024,8 +1024,30 @@ defmodule Cldr.Territory do
     |> String.replace(~r/(\s)+/u, "\\1")
   end
 
-  defp as(value, [as: :atom]), do: :"#{value}"
-  defp as(value, [as: :binary]), do: "#{value}"
-  defp as(value, [as: :charlist]), do: ~c"#{value}"
-  defp as(value, _options), do: as(value, [as: :atom])
+  @doc """
+  Converts a territory code to a specified format.
+  
+  * `options` are:
+    * `as: :atom` (default)
+    * `as: :binary`
+    * `as: :charlist`
+    
+  ## Example
+  
+      iex> Cldr.Territory.as(:GB, [as: :atom])
+      :GB
+      
+      iex> Cldr.Territory.as(:GB, [as: :binary])
+      "GB"
+      
+      iex> Cldr.Territory.as(:GB, [as: :charlist])
+      ~c"GB"
+  """
+  @doc since: "2.10.0"
+  @spec as(atom() | String.t(), Keyword.t()) :: atom() | String.t() | charlist()
+  def as(value, options \\ [as: :atom])
+  def as(value, [as: :atom]), do: :"#{value}"
+  def as(value, [as: :binary]), do: "#{value}"
+  def as(value, [as: :charlist]), do: ~c"#{value}"
+  def as(value, _options), do: as(value, [as: :atom])
 end
