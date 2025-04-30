@@ -958,6 +958,63 @@ defmodule Cldr.Territory do
     |> Enum.map(&as(&1, options))
   end
 
+  @doc """
+  Converts a territory name in a given locale to a territory code.
+  Returns `{:ok, territory_code}` if successful, otherwise `{:error, reason}`.
+
+  * `territory_name` is the localized territory name
+  * `locale` is any configured locale. See `Cldr.known_locale_names/1`.
+    The default is `Cldr.get_locale/0`
+  * `options` are:
+    * `as: :atom` 
+    * `as: :binary`
+    * `as: :charlist`
+
+  ## Example
+
+      iex> Cldr.Territory.to_territory_code("United Kingdom", "en", TestBackend.Cldr)
+      {:ok, :GB}
+
+      iex> Cldr.Territory.to_territory_code("Reino Unido", "pt", TestBackend.Cldr)
+      {:ok, :GB}
+
+      iex> Cldr.Territory.to_territory_code("Unknown Country", "en", TestBackend.Cldr)
+      {:error, {Cldr.UnknownTerritoryError, "No territory code for \\"Unknown Country\\" could be found in locale :en"}}
+  """
+  @doc since: "2.10.0"
+  @spec to_territory_code(String.t(), String.t() | LanguageTag.t(), Cldr.backend(), Keyword.t()) :: {:ok, atom() | String.t() | charlist()} | {:error, {module(), String.t()}}
+  def to_territory_code(territory_name, locale, backend \\ Cldr.default_backend!(), options \\ []) do
+    with {:ok, locale} <- Cldr.validate_locale(locale, backend) do
+      normalized_name = normalize_name(territory_name)
+      inverted_territories = Module.concat(backend, Territory).inverted_territories(locale.cldr_locale_name)
+      
+      case inverted_territories do
+        %{^normalized_name => territory_code} -> {:ok, as(territory_code, options)}
+        _ -> {:error, {Cldr.UnknownTerritoryError, "No territory code for #{inspect territory_name} could be found in locale #{inspect locale.cldr_locale_name}"}}
+      end
+    end
+  end
+
+  @doc """
+  The same as `to_territory_code/3`, but raises an exception if it fails.
+
+  ## Example
+
+      iex> Cldr.Territory.to_territory_code!("United Kingdom", "en", TestBackend.Cldr)
+      :GB
+
+      iex> Cldr.Territory.to_territory_code!("Reino Unido", "pt", TestBackend.Cldr, as: :binary)
+      "GB"
+  """
+  @doc since: "2.10.0"
+  @spec to_territory_code!(String.t(), String.t() | LanguageTag.t(), Cldr.backend(), Keyword.t()) :: atom() | String.t() | charlist()
+  def to_territory_code!(territory_name, locale, backend \\ Cldr.default_backend!(), options \\ []) do
+    case to_territory_code(territory_name, locale, backend, options) do
+      {:error, {exception, msg}} -> raise exception, msg
+      {:ok, result} -> result
+    end
+  end
+
   @doc false
   def normalize_name(string) do
     string
@@ -967,8 +1024,30 @@ defmodule Cldr.Territory do
     |> String.replace(~r/(\s)+/u, "\\1")
   end
 
-  defp as(value, [as: :atom]), do: :"#{value}"
-  defp as(value, [as: :binary]), do: "#{value}"
-  defp as(value, [as: :charlist]), do: ~c"#{value}"
-  defp as(value, _options), do: as(value, [as: :atom])
+  @doc """
+  Converts a territory code to a specified format.
+  
+  * `options` are:
+    * `as: :atom` (default)
+    * `as: :binary`
+    * `as: :charlist`
+    
+  ## Example
+  
+      iex> Cldr.Territory.as(:GB, [as: :atom])
+      :GB
+      
+      iex> Cldr.Territory.as(:GB, [as: :binary])
+      "GB"
+      
+      iex> Cldr.Territory.as(:GB, [as: :charlist])
+      ~c"GB"
+  """
+  @doc since: "2.10.0"
+  @spec as(atom() | String.t(), Keyword.t()) :: atom() | String.t() | charlist()
+  def as(value, options \\ [as: :atom])
+  def as(value, [as: :atom]), do: :"#{value}"
+  def as(value, [as: :binary]), do: "#{value}"
+  def as(value, [as: :charlist]), do: ~c"#{value}"
+  def as(value, _options), do: as(value, [as: :atom])
 end
