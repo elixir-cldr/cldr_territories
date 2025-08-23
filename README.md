@@ -12,6 +12,9 @@
 iex> MyCldr.Territory.from_territory_code(:GB)
 {:ok, "United Kingdom"}
 
+iex> MyCldr.Territory.to_territory_code("United Kingdom", "en")
+{:ok, :GB}
+
 iex> MyCldr.Territory.translate_territory("Reino Unido", "pt", "en")
 {:ok, "UK"}
 
@@ -94,7 +97,7 @@ Add `ex_cldr_territories` as a dependency to your `mix` project:
 ```elixir
     defp deps do
       [
-        {:ex_cldr_territories, "~> 2.9.0"}
+        {:ex_cldr_territories, "~> 2.10.0"}
       ]
     end
 ```
