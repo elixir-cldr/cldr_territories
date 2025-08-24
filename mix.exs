@@ -50,7 +50,7 @@ defmodule Cldr.Territories.Mixfile do
     if path = System.get_env("CLDR_PATH") do
       [path: path]
     else
-      "~> 2.38"
+      "~> 2.42"
     end
   end
 
