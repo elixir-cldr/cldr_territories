@@ -661,7 +661,7 @@ defmodule Cldr.Territory.Backend do
             {:ok,
              %{
                currency: [GBP: %{from: ~D[1694-07-27]}],
-               gdp: 2925000000000,
+               gdp: 3700000000000,
                language_population: %{
                 "ar" => %{population_percent: 0.3},
                 "bn" => %{population_percent: 0.4},
@@ -669,7 +669,7 @@ defmodule Cldr.Territory.Backend do
                 "de" => %{population_percent: 9},
                 "en" => %{official_status: "official", population_percent: 98},
                 "es" => %{population_percent: 8},
-                "fr" => %{population_percent: 23},
+                "fr" => %{population_percent: 17},
                 "ga" => %{official_status: "official_regional", population_percent: 0.15},
                 "gd" => %{
                   official_status: "official_regional",
@@ -678,11 +678,12 @@ defmodule Cldr.Territory.Backend do
                 },
                 "gu" => %{population_percent: 2.9},
                 "it" => %{population_percent: 0.2},
-                "kw" => %{population_percent: 0.003},
+                "kw" => %{population_percent: 0.0029},
                 "lt" => %{population_percent: 0.2},
                 "pa" => %{population_percent: 3.6},
                 "pl" => %{population_percent: 4},
                 "pt" => %{population_percent: 0.2},
+                "ro" => %{population_percent: 0.8},
                 "sco" => %{population_percent: 2.5, writing_percent: 5},
                 "so" => %{population_percent: 0.2},
                 "ta" => %{population_percent: 3.2},
@@ -697,7 +698,7 @@ defmodule Cldr.Territory.Backend do
                  paper_size: :a4,
                  temperature: :uksystem
                },
-               population: 65761100
+               population: 68459100
              }}
 
         """
@@ -714,7 +715,7 @@ defmodule Cldr.Territory.Backend do
             iex> #{inspect __MODULE__}.info!(:GB)
             %{
               currency: [GBP: %{from: ~D[1694-07-27]}],
-              gdp: 2925000000000,
+              gdp: 3700000000000,
               language_population: %{
                 "ar" => %{population_percent: 0.3},
                 "bn" => %{population_percent: 0.4},
@@ -722,7 +723,7 @@ defmodule Cldr.Territory.Backend do
                 "de" => %{population_percent: 9},
                 "en" => %{official_status: "official", population_percent: 98},
                 "es" => %{population_percent: 8},
-                "fr" => %{population_percent: 23},
+                "fr" => %{population_percent: 17},
                 "ga" => %{official_status: "official_regional", population_percent: 0.15},
                 "gd" => %{
                   official_status: "official_regional",
@@ -731,11 +732,12 @@ defmodule Cldr.Territory.Backend do
                 },
                 "gu" => %{population_percent: 2.9},
                 "it" => %{population_percent: 0.2},
-                "kw" => %{population_percent: 0.003},
+                "kw" => %{population_percent: 0.0029},
                 "lt" => %{population_percent: 0.2},
                 "pa" => %{population_percent: 3.6},
                 "pl" => %{population_percent: 4},
                 "pt" => %{population_percent: 0.2},
+                "ro" => %{population_percent: 0.8},
                 "sco" => %{population_percent: 2.5, writing_percent: 5},
                 "so" => %{population_percent: 0.2},
                 "ta" => %{population_percent: 3.2},
@@ -750,7 +752,7 @@ defmodule Cldr.Territory.Backend do
                 paper_size: :a4,
                 temperature: :uksystem
               },
-              population: 65761100
+              population: 68459100
             }
 
         """
@@ -1050,9 +1052,9 @@ defmodule Cldr.Territory.Backend do
           with {:ok, locale} <- Cldr.validate_locale(locale, unquote(backend)) do
             normalized_name = Cldr.Territory.normalize_name(territory_name)
             case inverted_territories(locale.cldr_locale_name) do
-              %{^normalized_name => territory_code} -> 
+              %{^normalized_name => territory_code} ->
                 {:ok, Cldr.Territory.as(territory_code, options)}
-              _ -> 
+              _ ->
                 {:error, {Cldr.UnknownTerritoryError, "No territory code for #{inspect territory_name} could be found in locale #{inspect locale.cldr_locale_name}"}}
             end
           end
