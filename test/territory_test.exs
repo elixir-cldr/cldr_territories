@@ -32,7 +32,7 @@ defmodule Cldr.TerritoryTest do
       USN: %{tender: false},
       USS: %{tender: false, to: ~D[2014-03-01]}
     ],
-    gdp: 19490000000000,
+    gdp: 24660000000000,
     language_population: %{
       "cad" => %{population_percent: 0},
       "cho" => %{population_percent: 0.0033},
@@ -47,10 +47,10 @@ defmodule Cldr.TerritoryTest do
       "fr" => %{population_percent: 0.56},
       "frc" => %{population_percent: 0.0084},
       "haw" => %{official_status: "official_regional", population_percent: 0.0089},
-      "ik" => %{population_percent: 0.0024, writing_percent: 5},
+      "ik" => %{population_percent: 0.0023, writing_percent: 5},
       "it" => %{population_percent: 0.34},
       "ko" => %{population_percent: 0.3},
-      "lkt" => %{population_percent: 0.0025},
+      "lkt" => %{population_percent: 0.0024},
       "mus" => %{population_percent: 0.0012},
       "nv" => %{population_percent: 0.05},
       "osa" => %{population_percent: 0},
@@ -69,7 +69,7 @@ defmodule Cldr.TerritoryTest do
       paper_size: :us_letter,
       temperature: :ussystem
     },
-    population: 332639000
+    population: 341963000
   }
 
   @eu [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GR, :HR, :HU, :IE, :IT,
@@ -99,7 +99,7 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "locales with subdivisions" do
-      assert 5384 == length(TestBackend.Cldr.Territory.available_subdivisions(@us))
+      assert 5426 == length(TestBackend.Cldr.Territory.available_subdivisions(@us))
     end
   end
 
@@ -585,9 +585,9 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "with invalid params" do
-      assert {:error, {Cldr.UnknownTerritoryError, "No territory code for \"Unknown Country\" could be found in locale :en"}} == 
+      assert {:error, {Cldr.UnknownTerritoryError, "No territory code for \"Unknown Country\" could be found in locale :en"}} ==
         Territory.to_territory_code("Unknown Country", "en", TestBackend.Cldr)
-      assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} == 
+      assert {:error, {Cldr.InvalidLanguageError, "The language \"zzz\" is invalid"}} ==
         Territory.to_territory_code("United Kingdom", "zzz", TestBackend.Cldr)
     end
   end
