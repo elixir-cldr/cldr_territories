@@ -1,11 +1,12 @@
 # Changelog
 
-## Cldr Territories v2.10.0 TBD, 2025
+## Cldr Territories v2.10.0 August 25, 2025
 
 ### Enhancements
 
 * Fix error where `to_currency_code/1` would break for countries with no currencies, thanks to @Stroemgren
 * Add `to_territory_code/3` and `to_territory_code!/3` functions for territory name conversion, thanks to @elepedus
+* Updates to [ex_cldr version 2.42](https://hex.pm/packages/ex_cldr/2.42.0), thanks to @JonatanLindstrom
 
 ## Cldr Territories v2.9.0 May 14, 2024
 
