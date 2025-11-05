@@ -622,21 +622,22 @@ defmodule Cldr.Territory do
 
       iex> Cldr.Territory.info(:GB)
       {:ok,
-       %{
-         currency: [GBP: %{from: ~D[1694-07-27]}],
-         gdp: 3700000000000,
-         language_population: %{
+        %{
+        currency: [GBP: %{from: ~D[1694-07-27]}],
+        gdp: 3700000000000,
+        language_population: %{
           "ar" => %{population_percent: 0.3},
           "bn" => %{population_percent: 0.4},
-          "cy" => %{official_status: "official_regional", population_percent: 1.3},
+          "cy" => %{population_percent: 1.3, official_status: "official_regional"},
           "de" => %{population_percent: 9},
-          "en" => %{official_status: "official", population_percent: 98},
+          "en" => %{population_percent: 98, official_status: "official"},
+          "en-Shaw" => %{population_percent: 0},
           "es" => %{population_percent: 8},
           "fr" => %{population_percent: 17},
-          "ga" => %{official_status: "official_regional", population_percent: 0.15},
+          "ga" => %{population_percent: 0.15, official_status: "official_regional"},
           "gd" => %{
-            official_status: "official_regional",
             population_percent: 0.11,
+            official_status: "official_regional",
             writing_percent: 5
           },
           "gu" => %{population_percent: 2.9},
@@ -644,6 +645,7 @@ defmodule Cldr.Territory do
           "kw" => %{population_percent: 0.0029},
           "lt" => %{population_percent: 0.2},
           "pa" => %{population_percent: 3.6},
+          "pi" => %{population_percent: 0.0002},
           "pl" => %{population_percent: 4},
           "pt" => %{population_percent: 0.2},
           "ro" => %{population_percent: 0.8},
@@ -652,17 +654,16 @@ defmodule Cldr.Territory do
           "ta" => %{population_percent: 3.2},
           "tr" => %{population_percent: 0.2},
           "ur" => %{population_percent: 3.5},
-          "zh-Hant" => %{population_percent: 0.3},
-          "en-Shaw" => %{population_percent: 0}
-         },
-         literacy_percent: 99,
-         measurement_system: %{
-           default: :uksystem,
-           paper_size: :a4,
-           temperature: :uksystem
-         },
-         population: 68459100
-       }}
+          "zh-Hant" => %{population_percent: 0.3}
+        },
+        literacy_percent: 99,
+        measurement_system: %{
+          default: :uksystem,
+          paper_size: :a4,
+          temperature: :uksystem
+        },
+        population: 68459100
+      }}
 
       iex> Cldr.Territory.info(:"155")
       {:error,
@@ -694,15 +695,16 @@ defmodule Cldr.Territory do
         language_population: %{
           "ar" => %{population_percent: 0.3},
           "bn" => %{population_percent: 0.4},
-          "cy" => %{official_status: "official_regional", population_percent: 1.3},
+          "cy" => %{population_percent: 1.3, official_status: "official_regional"},
           "de" => %{population_percent: 9},
-          "en" => %{official_status: "official", population_percent: 98},
+          "en" => %{population_percent: 98, official_status: "official"},
+          "en-Shaw" => %{population_percent: 0},
           "es" => %{population_percent: 8},
           "fr" => %{population_percent: 17},
-          "ga" => %{official_status: "official_regional", population_percent: 0.15},
+          "ga" => %{population_percent: 0.15, official_status: "official_regional"},
           "gd" => %{
-            official_status: "official_regional",
             population_percent: 0.11,
+            official_status: "official_regional",
             writing_percent: 5
           },
           "gu" => %{population_percent: 2.9},
@@ -710,6 +712,7 @@ defmodule Cldr.Territory do
           "kw" => %{population_percent: 0.0029},
           "lt" => %{population_percent: 0.2},
           "pa" => %{population_percent: 3.6},
+          "pi" => %{population_percent: 0.0002},
           "pl" => %{population_percent: 4},
           "pt" => %{population_percent: 0.2},
           "ro" => %{population_percent: 0.8},
@@ -718,8 +721,7 @@ defmodule Cldr.Territory do
           "ta" => %{population_percent: 3.2},
           "tr" => %{population_percent: 0.2},
           "ur" => %{population_percent: 3.5},
-          "zh-Hant" => %{population_percent: 0.3},
-          "en-Shaw" => %{population_percent: 0}
+          "zh-Hant" => %{population_percent: 0.3}
         },
         literacy_percent: 99,
         measurement_system: %{
@@ -788,7 +790,15 @@ defmodule Cldr.Territory do
   defp flag_exists?(territory_code) do
     :"001"
     |> children!()
-    |> Enum.flat_map(fn c -> Enum.flat_map(children!(c), &children!/1) end)
+    |> Enum.flat_map(fn c ->
+      Enum.flat_map(children!(c), fn territory ->
+        case children(territory) do
+          {:ok, child} -> child
+          _other -> []
+        end
+      end)
+    end)
+    |> List.flatten()
     |> Enum.concat([:EU, :UN])
     |> Enum.member?(territory_code)
   end
