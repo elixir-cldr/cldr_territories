@@ -27,50 +27,52 @@ defmodule Cldr.TerritoryTest do
                           :WS, :XA, :XB, :XK, :YE, :YT, :ZA, :ZM, :ZW, :ZZ]
 
  @info %{
-    currency: [
-      USD: %{from: ~D[1792-01-01]},
-      USN: %{tender: false},
-      USS: %{tender: false, to: ~D[2014-03-01]}
-    ],
-    gdp: 24660000000000,
-    language_population: %{
-      "cad" => %{population_percent: 0},
-      "cho" => %{population_percent: 0.0033},
-      "chr" => %{population_percent: 0.0077, writing_percent: 5},
-      "cic" => %{population_percent: 0},
-      "dak" => %{population_percent: 0.0059},
-      "de" => %{population_percent: 0.47},
-      "en" => %{official_status: "de_facto_official", population_percent: 96},
-      "es" => %{official_status: "official_regional", population_percent: 9.6},
-      "esu" => %{population_percent: 0.0063},
-      "fil" => %{population_percent: 0.42},
-      "fr" => %{population_percent: 0.56},
-      "frc" => %{population_percent: 0.0084},
-      "haw" => %{official_status: "official_regional", population_percent: 0.0089},
-      "ik" => %{population_percent: 0.0023, writing_percent: 5},
-      "it" => %{population_percent: 0.34},
-      "ko" => %{population_percent: 0.3},
-      "lkt" => %{population_percent: 0.0024},
-      "mus" => %{population_percent: 0.0012},
-      "nv" => %{population_percent: 0.05},
-      "osa" => %{population_percent: 0},
-      "pdc" => %{population_percent: 0.039},
-      "ru" => %{population_percent: 0.24},
-      "vi" => %{population_percent: 0.34},
-      "yi" => %{population_percent: 0.049},
-      "zh-Hant" => %{population_percent: 0.69},
-      "hnj" => %{population_percent: 0.035},
-      "io" => %{population_percent: 0},
-      "jbo" => %{population_percent: 0}
-    },
-    literacy_percent: 99,
-    measurement_system: %{
-      default: :ussystem,
-      paper_size: :us_letter,
-      temperature: :ussystem
-    },
-    population: 341963000
-  }
+     currency: [
+       USD: %{from: ~D[1792-01-01]},
+       USN: %{tender: false},
+       USS: %{to: ~D[2014-03-01], tender: false}
+     ],
+     measurement_system: %{
+       default: :ussystem,
+       paper_size: :us_letter,
+       temperature: :ussystem
+     },
+     language_population: %{
+       "cad" => %{population_percent: 0},
+       "cho" => %{population_percent: 0.0033},
+       "chr" => %{population_percent: 0.0077, writing_percent: 5},
+       "cic" => %{population_percent: 0},
+       "dak" => %{population_percent: 0.0059},
+       "de" => %{population_percent: 0.47},
+       "en" => %{population_percent: 96, official_status: "de_facto_official"},
+       "es" => %{population_percent: 9.6, official_status: "official_regional"},
+       "esu" => %{population_percent: 0.0063},
+       "fil" => %{population_percent: 0.42},
+       "fr" => %{population_percent: 0.56},
+       "frc" => %{population_percent: 0.0084},
+       "haw" => %{population_percent: 0.0089, official_status: "official_regional"},
+       "hnj" => %{population_percent: 0.035},
+       "ik" => %{population_percent: 0.0023, writing_percent: 5},
+       "io" => %{population_percent: 0},
+       "it" => %{population_percent: 0.34},
+       "jbo" => %{population_percent: 0},
+       "ko" => %{population_percent: 0.3},
+       "lkt" => %{population_percent: 0.0024},
+       "mus" => %{population_percent: 0.0012},
+       "mww" => %{population_percent: 0.068},
+       "nv" => %{population_percent: 0.05},
+       "oka" => %{population_percent: 0.0001},
+       "osa" => %{population_percent: 0},
+       "pdc" => %{population_percent: 0.039},
+       "ru" => %{population_percent: 0.24},
+       "vi" => %{population_percent: 0.34},
+       "yi" => %{population_percent: 0.049},
+       "zh-Hant" => %{population_percent: 0.69}
+     },
+     gdp: 24660000000000,
+     literacy_percent: 99,
+     population: 341963000
+   }
 
   @eu [:AT, :BE, :CY, :CZ, :DE, :DK, :EE, :ES, :FI, :FR, :GR, :HR, :HU, :IE, :IT,
        :LT, :LU, :LV, :MT, :NL, :PL, :PT, :SE, :SI, :SK, :BG, :RO]
@@ -99,7 +101,7 @@ defmodule Cldr.TerritoryTest do
     end
 
     test "locales with subdivisions" do
-      assert 5426 == length(TestBackend.Cldr.Territory.available_subdivisions(@us))
+      assert 5399 == length(TestBackend.Cldr.Territory.available_subdivisions(@us))
     end
   end
 

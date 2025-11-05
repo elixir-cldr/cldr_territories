@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr Territories v2.11.0 November 6th, 2025
+
+### Enhancements
+
+* Updated to [CLDR 48](https://cldr.unicode.org/downloads/cldr-48) data.
+
 ## Cldr Territories v2.10.0 August 25, 2025
 
 ### Enhancements
