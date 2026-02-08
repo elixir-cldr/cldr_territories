@@ -1,7 +1,7 @@
 defmodule Cldr.Territories.Mixfile do
   use Mix.Project
 
-  @version "2.11.0"
+  @version "2.12.0"
 
   def project do
     [
@@ -50,7 +50,7 @@ defmodule Cldr.Territories.Mixfile do
     if path = System.get_env("CLDR_PATH") do
       [path: path]
     else
-      "~> 2.44"
+      "~> 2.47"
     end
   end
 
