@@ -745,7 +745,7 @@ defmodule Cldr.Territory do
 
   @doc """
   Returns a mapping of territory codes (ISO 3166 Alpha-2 codes) to
-  their respective ALpha-3, FIPS 10 and numerica codes (where available).
+  their respective Alpha-3, FIPS 10 and numeric codes (where available).
 
   """
   @doc since: "2.12.0"
