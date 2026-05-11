@@ -1,5 +1,11 @@
 # Changelog
 
+## Cldr Territories v2.12.0 February 9th, 2026
+
+### Enhancements
+
+* Adds `Cldr.Territory.territory_codes/0`.
+
 ## Cldr Territories v2.11.0 November 6th, 2025
 
 ### Enhancements
