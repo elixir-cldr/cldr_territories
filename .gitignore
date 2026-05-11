@@ -18,3 +18,7 @@ erl_crash.dump
 
 # Dialyzer
 /priv/plts
+
+mise.toml
+.mise.toml
+.tool-versions

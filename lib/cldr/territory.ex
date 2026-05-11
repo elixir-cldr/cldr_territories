@@ -945,13 +945,36 @@ defmodule Cldr.Territory do
             "039", "053", "054", "057", "061", "143",
             "145", "151", "154", "155"]
 
+  # Pre-compute the set of CLDR territory codes whose UN M.49 numeric
+  # assignment falls within the official ISO 3166-1 range (< 900). The
+  # 900–999 range is reserved by ISO for user-assigned/exceptional codes
+  # (e.g. XK=983 for Kosovo) and is therefore excluded along with CLDR
+  # codes that have no numeric assignment at all (IC, EA, AC, DG, TA,
+  # CP, QO, EU, …). The result matches the ISO 3166-1 alpha-2 list.
+  @iso_3166_codes (
+    for {code, info} <- Cldr.Config.territory_codes(),
+        is_map(info),
+        numeric = Map.get(info, :numeric),
+        is_binary(numeric),
+        {n, ""} <- [Integer.parse(numeric)],
+        n < 900,
+        into: %{},
+        do: {code, true}
+  )
+
   @doc """
   Returns a list of country codes.
 
-  * `options` are:
-    * `as: :atom`
-    * `as: :binary`
-    * `as: :charlist`
+  ## Options
+
+    * `:iso_3166` (boolean) — when `true`, filters the result to those
+      territories that are part of ISO 3166-1 alpha-2 (excluding CLDR-only
+      codes such as `:IC`, `:EA`, `:XK` and exceptional reservations like
+      `:AC`, `:DG`, `:TA`). The default is `false` (return the full CLDR
+      country list, preserving the existing behaviour).
+
+    * `:as` — the form in which each code is returned. One of `:atom`,
+      `:binary` or `:charlist`. Default `:atom`.
 
   ## Example
 
@@ -960,14 +983,27 @@ defmodule Cldr.Territory do
        :AX, :AZ, :BA, :BB, :BD, :BE, :BF, :BG, :BH, :BI, :BJ, :BL, :BM,
        :BN, :BO, :BQ, :BR, :BS, :BT, :BV, :BW, :BY, :BZ, :CA, :CC, :CD,
        :CF, :CG, :CH, :CI, :CK, :CL, :CM, :CN, :CO, :CR, :CU, ...]
+
+      # Restrict to ISO 3166-1 alpha-2 codes only:
+      => Cldr.Territory.country_codes(iso_3166: true)
+
   """
   @doc since: "1.2.0"
   @spec country_codes(Keyword.t()) :: [atom() | String.t() | charlist()]
   def country_codes(options \\ []) do
+    {iso_3166?, options} = Keyword.pop(options, :iso_3166, false)
+
     @regions
     |> Enum.flat_map(&children!/1)
+    |> maybe_filter_iso_3166(iso_3166?)
     |> Enum.sort()
     |> Enum.map(&as(&1, options))
+  end
+
+  defp maybe_filter_iso_3166(codes, false), do: codes
+
+  defp maybe_filter_iso_3166(codes, true) do
+    Enum.filter(codes, &Map.has_key?(@iso_3166_codes, &1))
   end
 
   @doc """

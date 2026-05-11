@@ -89,6 +89,39 @@ defmodule Cldr.TerritoryTest do
     assert [:short, :standard, :variant] == Territory.available_styles()
   end
 
+  describe "country_codes/1" do
+    test "returns the full CLDR country list by default" do
+      codes = Territory.country_codes()
+      assert is_list(codes)
+      assert :US in codes
+      # CLDR-only codes are included in the default list.
+      assert :IC in codes
+      assert :EA in codes
+    end
+
+    test "iso_3166: true filters out CLDR-only and exceptional codes" do
+      codes = Territory.country_codes(iso_3166: true)
+      assert :US in codes
+      assert :DE in codes
+      # CLDR-only / user-assigned codes are excluded.
+      refute :IC in codes
+      refute :EA in codes
+      refute :XK in codes
+      refute :CQ in codes
+    end
+
+    test "iso_3166: true composes with as: :binary" do
+      codes = Territory.country_codes(iso_3166: true, as: :binary)
+      assert "US" in codes
+      refute "XK" in codes
+    end
+
+    test "the ISO 3166-1 subset is smaller than the full CLDR set" do
+      assert length(Territory.country_codes(iso_3166: true)) <
+               length(Territory.country_codes())
+    end
+  end
+
   describe "available_territories/2" do
     test "with valid params" do
       assert @available_territories == Territory.available_territories(TestBackend.Cldr)
